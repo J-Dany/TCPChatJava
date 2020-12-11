@@ -133,7 +133,7 @@ public class Server extends Thread
             s.logger.add_msg("[ OK ] - Server avviato");
 
             // Aspetto per un messaggio qualunque per interrompere il server
-            int t = System.in.read();
+            System.in.read();
 
             // Chiudo il socket
             s.socket.close();
