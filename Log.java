@@ -1,3 +1,4 @@
+import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Formatter;
@@ -27,8 +28,11 @@ public class Log extends Thread
     @Override
     public void run()
     {
-        try (Formatter write = new Formatter(this.filename))
+        try
         {
+            FileWriter f = new FileWriter(this.filename, true);
+            Formatter write = new Formatter(f);
+            
             while (!Thread.currentThread().isInterrupted())
             {
                 LocalDateTime myDateObj = LocalDateTime.now();
@@ -45,6 +49,8 @@ public class Log extends Thread
 
                 Thread.sleep(500);
             }
+
+            write.close();
         }
         catch (Exception e)
         {

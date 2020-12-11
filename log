@@ -1,3 +1,30 @@
-[ 11-12-2020 22:19:39 ] -- [ OK ] - Il server si sta avviando...
-[ 11-12-2020 22:19:39 ] -- [ OK ] - Server avviato
-[ 11-12-2020 22:19:40 ] -- [ OK ] - SERVER sta in ascolto per i client
+[ 11-12-2020 23:53:50 ] -- [ OK ] - Server partito
+[ 11-12-2020 23:53:50 ] -- [ OK ] - SERVER sta in ascolto per i client
+[ 11-12-2020 23:54:00 ] -- [ ER ] - java.net.SocketException: Socket closed
+[ 11-12-2020 23:54:00 ] -- [ OK ] - Sto chiudendo il server...
+[ 11-12-2020 23:54:01 ] -- [ OK ] - Server chiuso.
+[ 11-12-2020 23:55:19 ] -- [ OK ] - Server partito
+[ 11-12-2020 23:55:19 ] -- [ OK ] - SERVER sta in ascolto per i client
+[ 11-12-2020 23:55:57 ] -- [ OK ] - Server partito
+[ 11-12-2020 23:55:57 ] -- [ OK ] - SERVER sta in ascolto per i client
+[ 11-12-2020 23:56:16 ] -- [ OK ] - Server partito
+[ 11-12-2020 23:56:16 ] -- [ OK ] - SERVER sta in ascolto per i client
+[ 11-12-2020 23:56:19 ] -- [ ER ] - java.net.SocketException: Socket closed
+[ 11-12-2020 23:56:20 ] -- [ OK ] - Sto chiudendo il server...
+[ 11-12-2020 23:56:20 ] -- [ OK ] - Server chiuso.
+[ 11-12-2020 23:57:25 ] -- [ OK ] - Server partito
+[ 11-12-2020 23:57:25 ] -- [ OK ] - SERVER sta in ascolto per i client
+[ 11-12-2020 23:58:00 ] -- [ OK ] - Server partito
+[ 11-12-2020 23:58:00 ] -- [ OK ] - SERVER sta in ascolto per i client
+[ 11-12-2020 23:58:49 ] -- [ OK ] - Server partito
+[ 11-12-2020 23:58:50 ] -- [ OK ] - SERVER sta in ascolto per i client
+[ 11-12-2020 23:59:03 ] -- [ OK ] - Server partito
+[ 11-12-2020 23:59:03 ] -- [ OK ] - SERVER sta in ascolto per i client
+[ 11-12-2020 23:59:07 ] -- [ ER ] - java.net.SocketException: Socket closed
+[ 11-12-2020 23:59:07 ] -- [ OK ] - Sto chiudendo il server...
+[ 11-12-2020 23:59:08 ] -- [ OK ] - Server chiuso.
+[ 11-12-2020 23:59:27 ] -- [ OK ] - Server partito
+[ 11-12-2020 23:59:27 ] -- [ OK ] - SERVER sta in ascolto per i client
+[ 11-12-2020 23:59:33 ] -- [ ER ] - java.net.SocketException: Socket closed
+[ 11-12-2020 23:59:33 ] -- [ OK ] - Sto chiudendo il server...
+[ 11-12-2020 23:59:34 ] -- [ OK ] - Server chiuso.

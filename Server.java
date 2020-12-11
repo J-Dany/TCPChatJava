@@ -1,6 +1,8 @@
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
@@ -29,6 +31,7 @@ public class Server extends Thread
     @Override
     public void run()
     {
+        this.logger.add_msg("[ OK ] - Server partito");
         try
         {
             // Esegui finché non viene interrotto il server
@@ -93,9 +96,14 @@ public class Server extends Thread
             this.logger.add_msg("[ ER ] - " + e);
         }
 
+        this.logger.add_msg("[ OK ] - Sto chiudendo il server...");
+
         // Provo a chiudere il socket
-        try { this.socket.close(); }
+        try { if (!socket.isClosed()) { socket.close(); } }
         catch (Exception e) { this.logger.add_msg("[ ER ] - " + e); }
+
+        this.logger.add_msg("[ OK ] - Server chiuso.");
+        this.logger.shutdown();
     }
 
     public static Server getServer()
@@ -105,6 +113,7 @@ public class Server extends Thread
 
     public static void main(String[] args)
     {
+        ExecutorService threadPool = Executors.newFixedThreadPool(2);
         Server s = null;
         server = s;
 
@@ -121,40 +130,22 @@ public class Server extends Thread
                 s = new Server("SERVER", Integer.parseInt(args[1]));
             }
             
-            // Setto il logger come un thread demone
-            s.logger.setDaemon(true);
-
-            // Faccio partire il logger
-            s.logger.start();
-
-            // Faccio partire il server
-            s.logger.add_msg("[ OK ] - Il server si sta avviando..."); 
-                s.start(); 
-            s.logger.add_msg("[ OK ] - Server avviato");
+            threadPool.submit(s);
+            threadPool.submit(s.logger);
 
             // Aspetto per un messaggio qualunque per interrompere il server
-            System.in.read();
+            int t = System.in.read();
+
+            s.interrupt();
 
             // Chiudo il socket
             s.socket.close();
-
-            // Interrompo il server
-            s.logger.add_msg("[ OK ] - Sto interrompendo il server..."); 
-                s.interrupt(); 
-            s.logger.add_msg("[ OK ] - Server interrotto. Adesso aspetto la fine della sua esecuzione");
-
-            // Aspetto il server che finisca di fare robe
-            s.join();
         }
-        catch (IOException | InterruptedException e)
+        catch (IOException e)
         {
             s.logger.add_msg("[ ER ] - " + e);
         }
 
-        // Ultimo messaggio di log prima di chiudere definitivamente il server
-        s.logger.add_msg("[ OK ] - Server interrotto.");
-
-        // Interrompo il logger
-        s.logger.shutdown();
+        threadPool.shutdownNow();
     }
 }
