@@ -33,12 +33,12 @@ public class Log extends Thread
     {
         try
         {
-            File file = new File(this.filename);
-            if (!file.exists())
+            File lop_dir = new File("../lop");
+            if (!lop_dir.exists())
             {
-                file.createNewFile();
+                lop_dir.mkdirs();
             }
-            
+
             FileWriter f = new FileWriter(this.filename, true);
             Formatter write = new Formatter(f);
             

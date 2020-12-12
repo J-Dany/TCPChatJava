@@ -161,6 +161,7 @@ public class Server extends Thread
                 {
                     case "s":
                     case "stop":
+                    case "e":
                     case "exit":
                         command = null;
                     break;
