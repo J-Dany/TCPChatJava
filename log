@@ -1,8 +1,9 @@
-[ 12-12-2020 14:08:04 ] -- [ OK ] - Server partito
-[ 12-12-2020 14:08:05 ] -- [ OK ] - SERVER sta in ascolto per i client
-[ 12-12-2020 14:09:17 ] -- [ OK ] - Server partito
-[ 12-12-2020 14:09:17 ] -- [ OK ] - SERVER sta in ascolto per i client
-[ 12-12-2020 14:09:41 ] -- [ OK ] - Server partito
-[ 12-12-2020 14:09:41 ] -- [ OK ] - SERVER sta in ascolto per i client
-[ 12-12-2020 14:10:15 ] -- [ OK ] - Server partito
-[ 12-12-2020 14:10:15 ] -- [ OK ] - SERVER sta in ascolto per i client
+[ 12-12-2020 18:42:46 ] -- [ OK ] - Server partito
+[ 12-12-2020 18:42:46 ] -- [ OK  ] - SERVER sta in ascolto per i client
+[ 12-12-2020 18:42:52 ] -- [ ERR ] - SERVER exception: java.net.SocketException: Socket closed
+[ 12-12-2020 18:42:52 ] -- [ ERR ] - SERVER exception: java.lang.NullPointerException
+[ 12-12-2020 18:42:52 ] -- [ OK  ] - Sto chiudendo il server...
+[ 12-12-2020 18:42:52 ] -- [ OK  ] - Server chiuso.
+[ 12-12-2020 18:44:42 ] -- [ OK  ] - Server partito
+[ 12-12-2020 18:44:42 ] -- [ OK  ] - SERVER sta in ascolto per i client
+[ 12-12-2020 18:44:45 ] -- [ ERR ] - SERVER exception: java.net.SocketException: Socket closed

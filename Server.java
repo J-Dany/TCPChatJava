@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
@@ -31,33 +32,33 @@ public class Server extends Thread
     @Override
     public void run()
     {
-        this.logger.add_msg("[ OK ] - Server partito");
+        this.logger.add_msg("[ OK  ] - Server partito");
         try
         {
             // Esegui finché non viene interrotto il server
             while (!Thread.currentThread().isInterrupted())
             {
                 // Sta in ascolto per le connessioni in entrata
-                this.logger.add_msg("[ OK ] - " + this.getName() + " sta in ascolto per i client");
+                this.logger.add_msg("[ OK  ] - " + this.getName() + " sta in ascolto per i client");
                     Socket sclient = null;
                     try
                     {
                         sclient = this.socket.accept();
-                        this.logger.add_msg("[ OK ] - Connessione accettata per " + sclient.getInetAddress());
+                        this.logger.add_msg("[ OK  ] - Connessione accettata per " + sclient.getInetAddress());
                     }
                     catch (SocketException e)
                     {
-                        this.logger.add_msg("[ ER ] - " + e);
+                        this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " + e);
                         Thread.currentThread().interrupt();
                     }
-                this.logger.add_msg("[ OK ] - " + this.getName() + " accettata la connessione per " + sclient.getInetAddress());
+                this.logger.add_msg("[ OK  ] - " + this.getName() + " accettata la connessione per " + sclient.getInetAddress());
 
                 // Creo un nuovo oggetto client, che rappresenta il client connesso
-                this.logger.add_msg("[ OK ] - Creo un oggetto Client per rappresentare il client connesso..."); 
+                this.logger.add_msg("[ OK  ] - Creo un oggetto Client per rappresentare il client connesso..."); 
                     Client c = new Client(sclient.getInetAddress()); 
-                this.logger.add_msg("[ OK ] - Oggetto creato");
+                this.logger.add_msg("[ OK  ] - Oggetto creato");
                 
-                this.logger.add_msg("[ OK ] - Controllo se il client esiste gia'");
+                this.logger.add_msg("[ OK  ] - Controllo se il client esiste gia'");
 
                 // Controllo se è un client che gia' si era connesso in precedenza, altrimenti lo aggiungo
                 if (!this.connected_clients.containsKey(c))
@@ -65,8 +66,8 @@ public class Server extends Thread
                     this.connected_clients.put(c, sclient);
                 }
 
-                this.logger.add_msg("[ OK ] - Scalo le richieste che puo' fare al minuto");
-                this.logger.add_msg("[ OK ] - Creo l'array di client per scalare le richieste per il client giusto");
+                this.logger.add_msg("[ OK  ] - Scalo le richieste che puo' fare al minuto");
+                this.logger.add_msg("[ OK  ] - Creo l'array di client per scalare le richieste per il client giusto");
 
                 // Scalo le richieste che puo' fare al minuto
                 Socket client_socket = null;
@@ -103,17 +104,16 @@ public class Server extends Thread
         }
         catch (Exception e)
         {
-            this.logger.add_msg("[ ER ] - " + e);
+            this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " + e);
         }
 
-        this.logger.add_msg("[ OK ] - Sto chiudendo il server...");
+        this.logger.add_msg("[ OK  ] - Sto chiudendo il server...");
 
         // Provo a chiudere il socket
-        try { if (!socket.isClosed()) { socket.close(); } }
-        catch (Exception e) { this.logger.add_msg("[ ER ] - " + e); }
+        try { if (!socket.isClosed()) { this.socket.close(); } }
+        catch (Exception e) { this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " +  e); }
 
-        this.logger.add_msg("[ OK ] - Server chiuso.");
-        this.logger.shutdown();
+        this.logger.add_msg("[ OK  ] - Server chiuso.");
     }
 
     public static Server getServer()
@@ -140,23 +140,25 @@ public class Server extends Thread
                 s = new Server("SERVER", Integer.parseInt(args[1]));
             }
             
-            threadPool.submit(s);
+            s.setPriority(Thread.MAX_PRIORITY);
+            Future<?> ser = threadPool.submit(s);
+            s.logger.setPriority(Thread.NORM_PRIORITY);
             threadPool.submit(s.logger);
 
             // Aspetto per un messaggio qualunque per interrompere il server
             int t = System.in.read();
-            
+
             // Chiudo il socket
             s.socket.close();
 
-            // Interrompo il server
-            s.interrupt();
+            while (!ser.isDone());
         }
         catch (IOException e)
         {
-            s.logger.add_msg("[ ER ] - " + e);
+            s.logger.add_msg("[ ERR ] - Main exception: " + e);
         }
 
+        // Spengo la threadpool
         threadPool.shutdownNow();
     }
 }
