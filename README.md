@@ -5,10 +5,18 @@ Piccolo progetto per una chat in java criptata.
 - make
 - mysql (command line)
 
+## Aggiungere il database
+Per aggiungere il database basta scrivere:
+```bash
+make db
+```
+
 ## Come compilare ed avviare il Server
 Date i seguenti comandi nella directory del progetto:
-- make compile
-- make run-server
+```bash
+make compile
+make run-server
+```
 
 ## Console del programma Server
 Quando avviate un server, nella console apparirà:
