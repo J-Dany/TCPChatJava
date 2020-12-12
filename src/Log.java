@@ -1,3 +1,5 @@
+package src;
+
 import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,7 +15,7 @@ public class Log extends Thread
     
     public Log(String filename)
     {
-        this.filename = filename;
+        this.filename = "../lop/" + filename;
         this.coda = new LinkedList<>();
     }
 

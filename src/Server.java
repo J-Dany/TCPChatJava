@@ -1,3 +1,5 @@
+package src;
+
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,7 +112,7 @@ public class Server extends Thread
         this.logger.add_msg("[ OK  ] - Sto chiudendo il server...");
 
         // Provo a chiudere il socket
-        try { if (!socket.isClosed()) { this.socket.close(); } }
+        try { if (!this.socket.isClosed()) { this.socket.close(); } }
         catch (Exception e) { this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " +  e); }
 
         this.logger.add_msg("[ OK  ] - Server chiuso.");
