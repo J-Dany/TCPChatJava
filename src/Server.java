@@ -87,11 +87,16 @@ public class Server extends Thread
                 }
                 c.clientConnected();
 
+                this.logger.add_msg("[ OK  ] - Creo il buffer di ricezione e leggo il messaggio che il client ha mandato.");
+                
                 // Buffer per il messaggio ricevuto
                 byte[] buffer = new byte[512];
                 int l = client_socket.getInputStream().read(buffer);
                 String msg = new String(buffer, 0, l, "ISO-8859-1");
 
+                this.logger.add_msg("[ OK  ] - Creato il buffer e letto il messaggio.");
+                this.logger.add_msg("[ OK  ] - Inoltro i messaggi a tutti gli altri client.");
+                
                 // Mando il messaggio ricevuto a ogni client connesso
                 Socket send;
                 for (int i = 0; i < this.connected_clients.size(); ++i)
@@ -102,8 +107,11 @@ public class Server extends Thread
                         OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "ISO-8859-1");
                         out.write(msg);
                         out.flush();
+                        out.close();
                     }
                 }
+
+                this.logger.add_msg("[ OK  ] - Messaggio inoltrato.");
             }
         }
         catch (Exception e)

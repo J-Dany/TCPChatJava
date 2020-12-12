@@ -1,8 +1,12 @@
 # TCP Server & Client
 Piccolo progetto per una chat in java criptata.
 
+## Dipendenze
+- make
+- mysql (command line)
+
 ## Come compilare ed avviare il Server
-Scaricate make e date i seguenti comandi nella directory del progetto:
+Date i seguenti comandi nella directory del progetto:
 - make compile
 - make run-server
 
