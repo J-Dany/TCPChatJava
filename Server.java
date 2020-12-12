@@ -38,8 +38,18 @@ public class Server extends Thread
             while (!Thread.currentThread().isInterrupted())
             {
                 // Sta in ascolto per le connessioni in entrata
-                this.logger.add_msg("[ OK ] - " + this.getName() + " sta in ascolto per i client"); 
-                    Socket sclient = this.socket.accept(); 
+                this.logger.add_msg("[ OK ] - " + this.getName() + " sta in ascolto per i client");
+                    Socket sclient = null;
+                    try
+                    {
+                        sclient = this.socket.accept();
+                        this.logger.add_msg("[ OK ] - Connessione accettata per " + sclient.getInetAddress());
+                    }
+                    catch (SocketException e)
+                    {
+                        this.logger.add_msg("[ ER ] - " + e);
+                        Thread.currentThread().interrupt();
+                    }
                 this.logger.add_msg("[ OK ] - " + this.getName() + " accettata la connessione per " + sclient.getInetAddress());
 
                 // Creo un nuovo oggetto client, che rappresenta il client connesso
@@ -135,11 +145,12 @@ public class Server extends Thread
 
             // Aspetto per un messaggio qualunque per interrompere il server
             int t = System.in.read();
-
-            s.interrupt();
-
+            
             // Chiudo il socket
             s.socket.close();
+
+            // Interrompo il server
+            s.interrupt();
         }
         catch (IOException e)
         {

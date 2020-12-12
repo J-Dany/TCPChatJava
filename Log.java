@@ -46,8 +46,6 @@ public class Log extends Thread
                     write.format("[ %s ] -- %s\n", formattedDate, msg);
                     write.flush();
                 }
-
-                Thread.sleep(500);
             }
 
             write.close();
@@ -65,8 +63,8 @@ public class Log extends Thread
             // Interrompo il logger
             Thread.currentThread().interrupt();
 
-            // Aspetto che finisca la sua esecuzione
-            Thread.currentThread().join();
+            // Aspetto la fine del thread
+            Thread.currentThread().join(100);
         }
         catch (Exception e)
         {
