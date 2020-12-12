@@ -3,6 +3,7 @@ package src;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -52,6 +53,7 @@ public class Server extends Thread
                     {
                         this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " + e);
                         Thread.currentThread().interrupt();
+                        break;
                     }
                 this.logger.add_msg("[ OK  ] - " + this.getName() + " accettata la connessione per " + sclient.getInetAddress());
 
@@ -109,12 +111,6 @@ public class Server extends Thread
             this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " + e);
         }
 
-        this.logger.add_msg("[ OK  ] - Sto chiudendo il server...");
-
-        // Provo a chiudere il socket
-        try { if (!this.socket.isClosed()) { this.socket.close(); } }
-        catch (Exception e) { this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " +  e); }
-
         this.logger.add_msg("[ OK  ] - Server chiuso.");
     }
 
@@ -142,13 +138,36 @@ public class Server extends Thread
                 s = new Server("SERVER", Integer.parseInt(args[1]));
             }
             
+            // Setto la priorita' del server
             s.setPriority(Thread.MAX_PRIORITY);
-            Future<?> ser = threadPool.submit(s);
-            s.logger.setPriority(Thread.NORM_PRIORITY);
-            threadPool.submit(s.logger);
 
-            // Aspetto per un messaggio qualunque per interrompere il server
-            int t = System.in.read();
+            // Uso un future per rappresentare il task del server
+            Future<?> ser = threadPool.submit(s);
+
+            // Setto la priorita' del logger
+            s.logger.setPriority(Thread.NORM_PRIORITY);
+
+            // Faccio il submit del logger
+            threadPool.submit(s.logger);            
+
+            String command = "";
+
+            while (command != null)
+            {
+                System.out.print("? ");
+                command = new Scanner(System.in).nextLine();
+
+                switch (command)
+                {
+                    case "s":
+                    case "stop":
+                    case "exit":
+                        command = null;
+                    break;
+                    default:
+                        System.out.println("Comando non riconosciuto.");
+                }
+            }
 
             // Chiudo il socket
             s.socket.close();
