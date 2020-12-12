@@ -15,7 +15,7 @@ Questo simbolo sta a significare che potete dare dei comandi al server che lui e
 I comandi per ora disponibili, con alias, sono:
 - **exit** | **stop** (v. corta: *e*, *s*)
     - Interrompe il server
-- **show-connected-client** (v. corta. *show-cc*, *scc*)
+- **show-connected-client** (v. corta: *show-cc*, *scc*)
     - Stampa una lista dei client in questo momento connessi
 
 #### Thanks to: Daniele Castiglia, Francesco Borri, Sultan Zhunushov
