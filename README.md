@@ -1,12 +1,12 @@
 # TCP Server & Client
 Piccolo progetto per una chat in java criptata.
 
-## Come compilare ed avviare
+## Come compilare ed avviare il Server
 Scaricate make e date i seguenti comandi nella directory del progetto:
 - make compile
 - make run-server
 
-## Console del programma
+## Console del programma Server
 Quando avviate un server, nella console apparirà:
 ```bash
 ?
