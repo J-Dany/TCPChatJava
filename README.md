@@ -18,4 +18,4 @@ I comandi per ora disponibili, con alias, sono:
 - **show-connected-client** (v. corta. *show-cc*, *scc*)
     - Stampa una lista dei client in questo momento connessi
 
-#### Thanks to: Daniele Castiglia, Francesco Borri
+#### Thanks to: Daniele Castiglia, Francesco Borri, Sultan Zhunushov
