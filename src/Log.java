@@ -1,5 +1,6 @@
 package src;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +33,12 @@ public class Log extends Thread
     {
         try
         {
+            File file = new File(this.filename);
+            if (!file.exists())
+            {
+                file.createNewFile();
+            }
+            
             FileWriter f = new FileWriter(this.filename, true);
             Formatter write = new Formatter(f);
             

@@ -164,6 +164,14 @@ public class Server extends Thread
                     case "exit":
                         command = null;
                     break;
+                    case "show-connected-client":
+                    case "showcc":
+                    case "scc":
+                        for (Socket c : (Socket[])s.connected_clients.values().toArray())
+                        {
+                            System.out.println(c.getInetAddress());
+                        }
+                    break;
                     default:
                         System.out.println("Comando non riconosciuto.");
                 }
