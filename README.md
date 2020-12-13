@@ -29,5 +29,7 @@ I comandi per ora disponibili, con alias, sono:
     - Interrompe il server
 - **show-connected-client** (v. corta: *show-cc*, *scc*)
     - Stampa una lista dei client in questo momento connessi
+- **history**
+    - Stampa la lista dei comandi dati al server
 
 #### Thanks to: Daniele Castiglia, Francesco Borri, Sultan Zhunushov

@@ -10,7 +10,6 @@ import java.util.Queue;
 
 public class Log extends Thread
 {
-    
     private Queue<String> coda;
     private String filename;
     
@@ -28,33 +27,21 @@ public class Log extends Thread
         }
     }
 
-    @Override
-    public void run()
+    public void writeToFile(String msg)
     {
         try
         {
-            File lop_dir = new File("../lop");
-            if (!lop_dir.exists())
-            {
-                lop_dir.mkdirs();
-            }
-
             FileWriter f = new FileWriter(this.filename, true);
             Formatter write = new Formatter(f);
-            
-            while (!Thread.currentThread().isInterrupted())
-            {
-                LocalDateTime myDateObj = LocalDateTime.now();
-                DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-                String formattedDate = myDateObj.format(myFormatObj);
-                
-                String msg = this.coda.poll();
 
-                if (msg != null)
-                {
-                    write.format("[ %s ] -- %s\n", formattedDate, msg);
-                    write.flush();
-                }
+            LocalDateTime myDateObj = LocalDateTime.now();
+            DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            String formattedDate = myDateObj.format(myFormatObj);
+
+            if (msg != null)
+            {
+                write.format("[ %s ] -- %s\n", formattedDate, msg);
+                write.flush();
             }
 
             write.close();
@@ -65,19 +52,43 @@ public class Log extends Thread
         }
     }
 
-    public void shutdown ()
+    @Override
+    public void run()
     {
         try
         {
-            // Interrompo il logger
-            Thread.currentThread().interrupt();
-
-            // Aspetto la fine del thread
-            Thread.currentThread().join(100);
+            File lop_dir = new File("../lop");
+            if (!lop_dir.exists())
+            {
+                lop_dir.mkdirs();
+            }
+            
+            while (!Thread.currentThread().isInterrupted())
+            {
+                this.writeToFile(this.coda.poll());
+            }
         }
         catch (Exception e)
         {
             e.printStackTrace();
+        }
+    }
+
+    public void shutdown ()
+    {
+        if (this.coda.size() > 0)
+        {
+            try
+            {
+                for (String msg : this.coda)
+                {
+                    this.writeToFile(msg);
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }
