@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS messaggi
     id INT NOT NULL AUTO_INCREMENT,
     message VARCHAR(2048) NOT NULL,
     user VARCHAR(255) NOT NULL,
+    date DATE NOT NULL,
+    time TIME NOT NULL,
     CONSTRAINT pk PRIMARY KEY (id),
     CONSTRAINT foreign_key_utente FOREIGN KEY (`user`) REFERENCES `utenti`(`username`)
 )DEFAULT CHARACTER SET utf8 ENGINE=InnoDB;
