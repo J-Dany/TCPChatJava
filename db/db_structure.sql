@@ -32,5 +32,5 @@ CREATE TABLE IF NOT EXISTS messaggi
     CONSTRAINT foreign_key_utente FOREIGN KEY (`user`) REFERENCES `utenti`(`username`)
 )DEFAULT CHARACTER SET utf8 ENGINE=InnoDB;
 
-CREATE USER IF NOT EXISTS 'chat'@'localhost' IDENTIFIED BY 'Abcd1234';
+CREATE USER IF NOT EXISTS 'chat'@'localhost' IDENTIFIED BY 'Abcd1234'; -- MODIFY !! --
 GRANT ALL PRIVILEGES ON chat.* TO 'chat'@'localhost';

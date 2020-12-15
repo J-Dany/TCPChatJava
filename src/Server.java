@@ -1,6 +1,7 @@
 package src;
 
 import java.net.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -25,7 +26,12 @@ public class Server extends Thread
     /**
      * Rappresenta il logger
      */
-    private Log logger = new Log("log");
+    public Log logger = new Log("log");
+
+    /**
+     * Thread che scrive nel DB
+     */
+    public WriteToDB writer;
 
     /**
      * Rappresenta il socket TCP
@@ -43,12 +49,13 @@ public class Server extends Thread
      */
     private ArrayList<InetAddress> banned;
 
-    public Server(String name, int port) throws IOException 
+    public Server(String name, int port) throws IOException, SQLException
     {
         super(name);
         this.socket = new ServerSocket(port);
         this.banned = new ArrayList<>();
         this.connected_clients = new HashMap<>();
+        this.writer = new WriteToDB("WriterDB");
     }
 
     public void ban(InetAddress address)
@@ -153,7 +160,6 @@ public class Server extends Thread
     public static void main(String[] args)
     {
         Server s = null;
-        server = s;
 
         try
         {
@@ -168,6 +174,8 @@ public class Server extends Thread
                 s = new Server("SERVER", Integer.parseInt(args[1]));
             }
             
+            server = s;
+            
             // Setto la priorita' del server
             s.setPriority(Thread.MAX_PRIORITY);
 
@@ -177,6 +185,10 @@ public class Server extends Thread
             // Faccio partire server e logger
             s.start();
             s.logger.start();
+
+            // Setto la priorità del Thread write e lo faccio partire
+            s.writer.setPriority(Thread.NORM_PRIORITY);
+            s.writer.start();
 
             String command = "";
 
@@ -235,8 +247,16 @@ public class Server extends Thread
             
             // Aspetto che il server si chiuda correttamente
             s.join();
+
+            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " interrompe il thread WriterToDB");
+
+            // Interrompo e aspetto il thread Writer
+            s.writer.interrupt();
+            s.writer.join();
+
+            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " thread WriterToDB interrotto");
         }
-        catch (IOException | InterruptedException e)
+        catch (IOException | InterruptedException | SQLException e)
         {
             s.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " exception: " + e);
         }
