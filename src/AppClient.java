@@ -40,6 +40,16 @@ public class AppClient
         System.out.println("Il messaggio deve essere lungo max. 256 e, per smettere di inviare i messaggi, invio con messaggio vuoto.");
         System.out.println("*********************************");
 
+        OutputStreamWriter write;
+        try
+        {
+            write = new OutputStreamWriter(socket.getOutputStream(), "ISO-8859-1");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
         String msg = "";
         while (msg != null)
         {
@@ -56,11 +66,9 @@ public class AppClient
                 {
                     String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                     String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-                    OutputStreamWriter write = new OutputStreamWriter(socket.getOutputStream(), "ISO-8859-1");
                     
                     write.write(data + " " + time + "|" + nomeUtente + "|" + msg);
                     write.flush();
-                    write.close();
                 }
                 catch (Exception e)
                 {
