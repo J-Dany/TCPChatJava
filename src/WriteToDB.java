@@ -44,6 +44,7 @@ public class WriteToDB extends Thread
 
     public synchronized void addMsg(String msg)
     {
+        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " arrivato nuovo messaggio");
         this.msgs.add(msg);
     }
 
@@ -52,24 +53,27 @@ public class WriteToDB extends Thread
     {
         try
         {
-            synchronized (this)
+            while (!Thread.currentThread().isInterrupted())
             {
-                while (!Thread.currentThread().isInterrupted())
-                {
-                    while (this.msgs.size() == 0)
-                    {
-                        wait();
-                    }
-    
-                    String[] obj = this.msgs.poll().split("|");
+                while (this.msgs.size() == 0 && !Thread.currentThread().isInterrupted()) { }
+   
+                String o = this.msgs.poll();
+                System.out.println(o);
+                String[] obj = o.split("|");
 
-                    String user = obj[1];
-                    String datetime = obj[0];
-                    String msg = obj[2];
-    
-                    this.insertMessage(user, datetime, msg);
-                }
+                String user = obj[1];
+                String datetime = obj[0];
+                String msg = obj[2];
+
+                System.out.println("User: " + user + ", datetime: " + datetime + ", msg: " + msg);
+
+                Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aggiungo un nuovo messaggio al db");
+
+                this.insertMessage(user, datetime, msg);
+
+                Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " messaggio aggiunto");
             }
+            
         }
         catch (Exception e)
         {
@@ -82,8 +86,9 @@ public class WriteToDB extends Thread
         Connection c = null;
         try
         {
-            String data = datetime.split(" ")[0];
-            String time = datetime.split(" ")[1];
+            String[] objs = datetime.split(" ");
+            String data = objs[0];
+            String time = objs[1];
 
             Server.getServer().logger.add_msg("[ OK  ] - " + this.getName() + " Stabilisco la connessione con il db");
                 c = this.getConnection();

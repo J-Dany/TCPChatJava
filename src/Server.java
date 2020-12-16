@@ -110,7 +110,9 @@ public class Server extends Thread
                 try {
                     sclient = this.socket.accept();
                     this.logger.add_msg("[ OK  ] - Connessione accettata per " + sclient.getInetAddress());
-                } catch (SocketException e) {
+                } 
+                catch (SocketException e) 
+                {
                     this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " + e);
                     Thread.currentThread().interrupt();
                     break;
@@ -139,20 +141,26 @@ public class Server extends Thread
 
                 // Scalo le richieste che puo' fare al minuto
                 Socket client_socket = null;
-                Client[] arr = null;
+                Object[] arr = null;
                 synchronized (this)
                 {
-                    arr = (Client[]) this.connected_clients.keySet().toArray();
+                    arr = this.connected_clients.keySet().toArray();
                     for (int i = 0; i < arr.length; ++i) {
                         if (arr[i].equals(c)) {
                             client_socket = this.connected_clients.get(arr[i]);
-                            c = arr[i];
+                            c = (Client)arr[i];
                             break;
                         }
                     }
                     c.clientConnected();
                 }
-                
+
+                this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
+                if (this.banned.contains(c.getAddress()) || c.getCounter() == 0)
+                {
+                    continue;
+                }
+
                 this.logger.add_msg("[ OK  ] - Creo il buffer di ricezione e leggo il messaggio che il client ha mandato.");
 
                 // Buffer per il messaggio ricevuto
@@ -160,6 +168,7 @@ public class Server extends Thread
                 int l = client_socket.getInputStream().read(buffer);
                 String msg = new String(buffer, 0, l, "ISO-8859-1");
 
+                this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aggiungo il messaggio al db");
                 this.writer.addMsg(msg);
 
                 this.logger.add_msg("[ OK  ] - Creato il buffer e letto il messaggio.");
