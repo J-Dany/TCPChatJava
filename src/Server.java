@@ -249,15 +249,19 @@ public class Server extends Thread
 
             String command = "";
 
+            Scanner input = new Scanner(System.in);
+
             // Finché il comando non e' null processa il comando letto
             while (command != null)
             {
                 System.out.print("? ");
-                command = new Scanner(System.in).nextLine();
+                command = input.nextLine();
+                String[] arguments = command.split(" ");
+                String com = arguments[0];
 
                 s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " ricevuto comando: " + command);
 
-                switch (command)
+                switch (com)
                 {
                     case "history":
                         int i = 0;
@@ -271,6 +275,11 @@ public class Server extends Thread
                     case "e":
                     case "exit":
                         command = null;
+                    break;
+                    case "ban":
+                        String ip = arguments[1];
+                        s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " banna: " + ip);
+                        s.ban(InetAddress.getByName(ip));
                     break;
                     case "show-connected-client":
                     case "showcc":
@@ -293,6 +302,8 @@ public class Server extends Thread
 
                 history.push(command);
             }
+
+            input.close();
 
             s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " sta per chiudere il server");
 
