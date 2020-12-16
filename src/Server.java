@@ -203,6 +203,9 @@ public class Server extends Thread
         // Elimino i client bannati
         this.banned.clear();
 
+        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " spengo la ThreadPool");
+        exec.shutdown();
+
         this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " chiuso.");
     }
 

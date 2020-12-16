@@ -28,11 +28,10 @@ public class ConnectionClient implements Runnable
 
                 if (msg == "close")
                 {
-                    msg = null;
                     break;
                 }
 
-                Server.getServer().mandaMessaggio(msg);
+                Server.getServer().mandaMessaggio(msg.split("\\|")[1] + ": " + msg.split("\\|")[2]);
 
                 Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aggiungo il messaggio al db");
                 Server.getServer().writer.addMsg(msg);
@@ -43,6 +42,7 @@ public class ConnectionClient implements Runnable
             Server.getServer().logger.add_msg("[ ERR ] - Errore in Connection: " + e);
         }
 
+        try { this.socket.close(); } catch (Exception e) { Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e); }
         Server.getServer().rimuoviClient(this.client);
     }
 }
