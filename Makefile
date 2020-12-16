@@ -1,5 +1,5 @@
 compile:
-	javac -d out src/*.java
+	javac -d out -classpath .:./mysql-connector-java-8.0.22.jar src/*.java
 
 db:
 	cd db; \
@@ -8,4 +8,4 @@ db:
 run-server:
 	echo "<< You need to run this with sudo >>"
 	cd out; \
-	sudo java src.Server
+	sudo java -classpath .:./mysql-connector-java-8.0.22.jar src.Server

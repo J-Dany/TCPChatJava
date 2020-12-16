@@ -21,14 +21,22 @@ public class WriteToDB extends Thread
      */
     private final int PORT = 3306;
 
-    private final String URL = "jdbc:sqlserver://localhost:" + PORT + ";"
-        + "database=AdventureWorks;"
+    /**
+     * Rappresenta il nome del database
+     */
+    private final String DB_NAME = "chat";
+
+    /*private final String URL = "jdbc:mysql://localhost:" + PORT + ";"
+        + "database=" + DB_NAME + ";"
         + "user=" + USER + ";"
         + "password=" + PASSWD + ";"
         + "encrypt=true;"
-        + "trustServerCertificate=false;"
-        + "loginTimeout=30;";
+        + "trustServerCertificate=false;";*/
+    private final String URL = "jdbc:mysql://localhost:" + PORT + "/" + DB_NAME;
 
+    /**
+     * Rappresenta la coda dei messaggi arrivati
+     */
     private Queue<String> msgs;
 
     public WriteToDB(String name) throws SQLException
@@ -39,7 +47,15 @@ public class WriteToDB extends Thread
 
     private Connection getConnection() throws SQLException
     {
-        return DriverManager.getConnection(URL);
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return DriverManager.getConnection(URL, USER, PASSWD);
     }
 
     public synchronized void addMsg(String msg)
@@ -56,16 +72,12 @@ public class WriteToDB extends Thread
             while (!Thread.currentThread().isInterrupted())
             {
                 while (this.msgs.size() == 0 && !Thread.currentThread().isInterrupted()) { }
-   
-                String o = this.msgs.poll();
-                System.out.println(o);
-                String[] obj = o.split("|");
+                
+                String[] obj = this.msgs.poll().split("\\|");
 
                 String user = obj[1];
                 String datetime = obj[0];
                 String msg = obj[2];
-
-                System.out.println("User: " + user + ", datetime: " + datetime + ", msg: " + msg);
 
                 Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aggiungo un nuovo messaggio al db");
 
@@ -112,10 +124,14 @@ public class WriteToDB extends Thread
             {
                 Server.getServer().logger.add_msg("[ ERR ] - " + this.getName() + " errore nell'eseguire la query di inserimento");
             }
-
-            Server.getServer().logger.add_msg("[ OK  ] - " + this.getName() + " query eseguita correttamente");
+            else
+            {
+                Server.getServer().logger.add_msg("[ OK  ] - " + this.getName() + " query eseguita correttamente");
+            }
 
             c.commit();
+
+            return true;
         }
         catch (Exception e)
         {

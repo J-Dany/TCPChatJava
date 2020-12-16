@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class AppClient 
@@ -51,7 +52,7 @@ public class AppClient
                 try
                 {
                     LocalDate data = LocalDate.now();
-                    LocalTime time = LocalTime.now();
+                    String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
                     OutputStreamWriter write = new OutputStreamWriter(socket.getOutputStream(), "ISO-8859-1");
                     
                     write.write(data + " " + time + "|" + nomeUtente + "|" + msg);
