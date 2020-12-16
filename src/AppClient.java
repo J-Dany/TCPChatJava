@@ -40,7 +40,7 @@ public class AppClient
         System.out.println("Il messaggio deve essere lungo max. 256 e, per smettere di inviare i messaggi, invio con messaggio vuoto.");
         System.out.println("*********************************");
 
-        OutputStreamWriter write;
+        OutputStreamWriter write = null;
         try
         {
             write = new OutputStreamWriter(socket.getOutputStream(), "ISO-8859-1");
@@ -48,6 +48,11 @@ public class AppClient
         catch (Exception e)
         {
             e.printStackTrace();
+        }
+
+        if (write == null)
+        {
+            System.exit(1);
         }
 
         String msg = "";
