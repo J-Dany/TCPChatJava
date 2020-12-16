@@ -66,7 +66,6 @@ public class Server extends Thread
         this.banned = new ArrayList<>();
         this.connected_clients = new HashMap<>();
         this.writer = new WriteToDB("WriterDB");
-        cc = connected_clients;
     }
 
     public void ban(InetAddress address)
@@ -160,8 +159,8 @@ public class Server extends Thread
                     c.clientConnected();
                 }
 
-                Server.arr = arr;
-                Server.cl = c;
+                this.arr = arr;
+                cl = c;
 
                 this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
                 if (this.banned.contains(c.getAddress()) || c.getCounter() == 0)
