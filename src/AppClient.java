@@ -2,6 +2,7 @@ package src;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.time.LocalDate;
@@ -11,6 +12,10 @@ import java.util.Scanner;
 
 public class AppClient {
     // Struttura messaggio: Data Tempo|Utente|Messaggio
+
+    public static int CONNESSIONE_RIFIUTATA = 1;
+    public static int IO_EXCEPTION = 2;
+    public static int OUTPUT_STREAM_NON_ISTANZIATO = 3;
 
     public static void main(String[] args) 
     {
@@ -26,9 +31,15 @@ public class AppClient {
         {
             socket.connect(server_address);
         } 
-        catch (Exception e) 
+        catch (ConnectException e)
         {
             e.printStackTrace();
+            System.exit(CONNESSIONE_RIFIUTATA);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            System.exit(IO_EXCEPTION);
         }
 
         String nomeUtente;
@@ -72,11 +83,17 @@ public class AppClient {
         }
 
         if (write == null) {
-            System.exit(1);
+            System.exit(OUTPUT_STREAM_NON_ISTANZIATO);
         }
 
         String msg = "";
-        while (msg != null) {
+        while (msg != null) 
+        {
+            if (socket.isClosed())
+            {
+                break;
+            }
+
             System.out.print("Tu: ");
             msg = input.nextLine();
 
@@ -94,8 +111,7 @@ public class AppClient {
                     e.printStackTrace();
                 }
 
-                msg = null;
-                continue;
+                break;
             }
             else
             {

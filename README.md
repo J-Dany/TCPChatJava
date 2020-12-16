@@ -32,4 +32,23 @@ I comandi per ora disponibili, con alias, sono:
 - **history**
     - Stampa la lista dei comandi dati al server
 
+## Come avviare il Client
+Per avviare il client è sufficiente digitare:
+```bash
+cd out
+java src.AppClient {indirizzo} {porta}
+```
+
+## Codice di errore Client
+Se non riesci a connetterti con il client al server, puoi controllare
+il codice di ritorno del client digitando (su Linux):
+```bash
+echo $?
+```
+
+Ecco una tabella dei codici di errore:
+- 1 => **Connessione rifiutata**, il server potrebbe essere spento
+- 2 => **IO Exception**, c'è stato un errore con il socket
+- 3 => **Stream di output non inizializzato**, non è stato possibile inizializzare lo stream di output per mandare i messaggi
+
 #### Thanks to: Daniele Castiglia, Francesco Borri, Sultan Zhunushov
