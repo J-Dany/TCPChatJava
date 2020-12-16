@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
@@ -54,6 +56,9 @@ public class Server extends Thread
      */
     private Thread eliminaClientNonConnessi;
 
+    private Object[] arr;
+    private Client cl;
+
     public Server(String name, int port) throws IOException, SQLException
     {
         super(name);
@@ -61,6 +66,7 @@ public class Server extends Thread
         this.banned = new ArrayList<>();
         this.connected_clients = new HashMap<>();
         this.writer = new WriteToDB("WriterDB");
+        cc = connected_clients;
     }
 
     public void ban(InetAddress address)
@@ -68,37 +74,36 @@ public class Server extends Thread
         this.banned.add(address);
     }
 
+    public void mandaMessaggio(String msg)
+    {
+        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
+        Client c = this.cl;
+        Socket send;
+        for (int i = 0; i < this.connected_clients.size(); ++i) 
+        {
+            send = this.connected_clients.get(arr[i]);
+            if (send.isConnected() && !arr[i].equals(c)) 
+            {
+                try
+                {
+                    OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "ISO-8859-1");
+                    out.write(msg);
+                    out.flush();
+                }
+                catch (Exception e)
+                {
+                    this.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                }
+            }
+        }
+        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " messaggio inoltrato");
+    }
+
     @Override
     public void run() 
     {
-        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " fa partire il thread per eliminare i client non connessi");
-        this.eliminaClientNonConnessi = new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                while (!Thread.currentThread().isInterrupted())
-                {
-                    synchronized (this)
-                    {
-                        Object[] clients = connected_clients.keySet().toArray();
-
-                        for (int i = 0; i < clients.length; ++i)
-                        {
-                            if (!connected_clients.get(clients[i]).isConnected())
-                            {
-                                logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " elimino client " + clients[i]);
-                                connected_clients.remove(clients[i]);
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        this.eliminaClientNonConnessi.setName("EliminaClientNonConnessi");
-        this.eliminaClientNonConnessi.start();
-        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Thread elimina client partito");
-
+        ExecutorService exec = Executors.newScheduledThreadPool(32);
+        
         this.logger.add_msg("[ OK  ] - Server partito");
         try 
         {
@@ -155,37 +160,19 @@ public class Server extends Thread
                     c.clientConnected();
                 }
 
+                Server.arr = arr;
+                Server.cl = c;
+
                 this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
                 if (this.banned.contains(c.getAddress()) || c.getCounter() == 0)
                 {
                     continue;
                 }
 
-                this.logger.add_msg("[ OK  ] - Creo il buffer di ricezione e leggo il messaggio che il client ha mandato.");
+                this.logger.add_msg("[ OK  ] - Sto in ascolto per i messaggi di questo client.");
 
                 // Buffer per il messaggio ricevuto
-                byte[] buffer = new byte[1024];
-                int l = client_socket.getInputStream().read(buffer);
-                String msg = new String(buffer, 0, l, "ISO-8859-1");
-
-                this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aggiungo il messaggio al db");
-                this.writer.addMsg(msg);
-
-                this.logger.add_msg("[ OK  ] - Creato il buffer e letto il messaggio.");
-                this.logger.add_msg("[ OK  ] - Inoltro i messaggi a tutti gli altri client.");
-
-                // Mando il messaggio ricevuto a ogni client connesso
-                Socket send;
-                for (int i = 0; i < this.connected_clients.size(); ++i) {
-                    send = this.connected_clients.get(arr[i]);
-                    if (send.isConnected() && !arr[i].equals(c)) {
-                        OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "ISO-8859-1");
-                        out.write(msg);
-                        out.flush();
-                    }
-                }
-
-                this.logger.add_msg("[ OK  ] - Messaggio inoltrato.");
+                exec.submit(new ConnectionClient(client_socket));
             }
         } 
         catch (Exception e) 
