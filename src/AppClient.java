@@ -37,10 +37,13 @@ public class AppClient
         System.out.print("Inserisci nome utente: ");
         nomeUtente = input.nextLine();
 
+        System.out.println("Il messaggio deve essere lungo max. 256 e, per smettere di inviare i messaggi, invio con messaggio vuoto.");
+        System.out.println("*********************************");
+
         String msg = "";
         while (msg != null)
         {
-            System.out.print("Inserisci messaggio (max. 256, invio con messaggio vuoto per smettere di inviare): ");
+            System.out.print("Tu: ");
             msg = input.nextLine();
             
             if (msg.length() == 0)
@@ -51,7 +54,7 @@ public class AppClient
             {
                 try
                 {
-                    LocalDate data = LocalDate.now();
+                    String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                     String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
                     OutputStreamWriter write = new OutputStreamWriter(socket.getOutputStream(), "ISO-8859-1");
                     

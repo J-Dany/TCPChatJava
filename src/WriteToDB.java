@@ -120,7 +120,7 @@ public class WriteToDB extends Thread
 
             PreparedStatement preparedStatement = c.prepareStatement(query);
         
-            if (!preparedStatement.execute())
+            if (preparedStatement.execute())
             {
                 Server.getServer().logger.add_msg("[ ERR ] - " + this.getName() + " errore nell'eseguire la query di inserimento");
             }
