@@ -82,4 +82,10 @@ public class Client
 
         return false;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Indirizzo: " + this.address;
+    }
 }

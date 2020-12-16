@@ -48,6 +48,11 @@ public class Server extends Thread
      * Una lista di indirizzi bannati
      */
     private ArrayList<InetAddress> banned;
+    
+    /**
+     * Thread che elimina i client non connessi
+     */
+    private Thread eliminaClientNonConnessi;
 
     public Server(String name, int port) throws IOException, SQLException
     {
@@ -66,8 +71,37 @@ public class Server extends Thread
     @Override
     public void run() 
     {
+        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " fa partire il thread per eliminare i client non connessi");
+        this.eliminaClientNonConnessi = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                while (!Thread.currentThread().isInterrupted())
+                {
+                    synchronized (this)
+                    {
+                        Object[] clients = connected_clients.keySet().toArray();
+
+                        for (int i = 0; i < clients.length; ++i)
+                        {
+                            if (!connected_clients.get(clients[i]).isConnected())
+                            {
+                                logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " elimino client " + clients[i]);
+                                connected_clients.remove(clients[i]);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        this.eliminaClientNonConnessi.setName("EliminaClientNonConnessi");
+        this.eliminaClientNonConnessi.start();
+        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Thread elimina client partito");
+
         this.logger.add_msg("[ OK  ] - Server partito");
-        try {
+        try 
+        {
             // Esegui finché non viene interrotto il server
             while (!Thread.currentThread().isInterrupted()) {
                 // Sta in ascolto per le connessioni in entrata
@@ -85,38 +119,48 @@ public class Server extends Thread
 
                 // Creo un nuovo oggetto client, che rappresenta il client connesso
                 this.logger.add_msg("[ OK  ] - Creo un oggetto Client per rappresentare il client connesso...");
-                Client c = new Client(sclient.getInetAddress());
+                    Client c = new Client(sclient.getInetAddress());
                 this.logger.add_msg("[ OK  ] - Oggetto creato");
 
                 this.logger.add_msg("[ OK  ] - Controllo se il client esiste gia'");
 
                 // Controllo se è un client che gia' si era connesso in precedenza, altrimenti
                 // lo aggiungo
-                if (!this.connected_clients.containsKey(c)) {
-                    this.connected_clients.put(c, sclient);
+                synchronized (this)
+                {
+                    if (!this.connected_clients.containsKey(c)) 
+                    {
+                        this.connected_clients.put(c, sclient);
+                    }
                 }
-
+                
                 this.logger.add_msg("[ OK  ] - Scalo le richieste che puo' fare al minuto");
                 this.logger.add_msg("[ OK  ] - Creo l'array di client per scalare le richieste per il client giusto");
 
                 // Scalo le richieste che puo' fare al minuto
                 Socket client_socket = null;
-                Client[] arr = (Client[]) this.connected_clients.keySet().toArray();
-                for (int i = 0; i < arr.length; ++i) {
-                    if (arr[i].equals(c)) {
-                        client_socket = this.connected_clients.get(arr[i]);
-                        c = arr[i];
-                        break;
+                Client[] arr = null;
+                synchronized (this)
+                {
+                    arr = (Client[]) this.connected_clients.keySet().toArray();
+                    for (int i = 0; i < arr.length; ++i) {
+                        if (arr[i].equals(c)) {
+                            client_socket = this.connected_clients.get(arr[i]);
+                            c = arr[i];
+                            break;
+                        }
                     }
+                    c.clientConnected();
                 }
-                c.clientConnected();
-
+                
                 this.logger.add_msg("[ OK  ] - Creo il buffer di ricezione e leggo il messaggio che il client ha mandato.");
 
                 // Buffer per il messaggio ricevuto
-                byte[] buffer = new byte[512];
+                byte[] buffer = new byte[1024];
                 int l = client_socket.getInputStream().read(buffer);
                 String msg = new String(buffer, 0, l, "ISO-8859-1");
+
+                this.writer.addMsg(msg);
 
                 this.logger.add_msg("[ OK  ] - Creato il buffer e letto il messaggio.");
                 this.logger.add_msg("[ OK  ] - Inoltro i messaggi a tutti gli altri client.");
@@ -139,6 +183,17 @@ public class Server extends Thread
         catch (Exception e) 
         {
             this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " + e);
+        }
+
+        try
+        {
+            this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " interrompo e aspetto il thread EliminaClientNonConnessi");
+            this.eliminaClientNonConnessi.interrupt();
+            this.eliminaClientNonConnessi.join(); 
+        }
+        catch (Exception e)
+        {
+            this.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
         }
 
         this.logger.add_msg("[ OK  ] - Libero la memoria creata per contenere hashmap");
@@ -258,6 +313,10 @@ public class Server extends Thread
         }
         catch (IOException | InterruptedException | SQLException e)
         {
+            if (s == null)
+            {
+                System.out.println("Errore nell'inizializzare il server");
+            }
             s.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " exception: " + e);
         }
 
@@ -265,8 +324,6 @@ public class Server extends Thread
         // Elimino history
         history.clear();
 
-        // Interrompo il logger
-        s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " fine programma");
         try
         {
             s.logger.interrupt();
@@ -274,8 +331,11 @@ public class Server extends Thread
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            s.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
         }
+
+        // Interrompo il logger
+        s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " fine programma");
 
         // Chiudo correttamente il logger
         s.logger.shutdown();
