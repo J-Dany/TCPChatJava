@@ -3,7 +3,8 @@ Piccolo progetto per una chat in java criptata.
 
 ## Dipendenze
 - make
-- mysql (command line)
+- mysql
+- driver java per connettere il programma con mysql (su Linux: libmysql-java)
 
 ## Aggiungere il database
 Per aggiungere il database basta scrivere:
