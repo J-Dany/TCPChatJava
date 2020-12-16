@@ -73,6 +73,11 @@ public class Server extends Thread
         this.banned.add(address);
     }
 
+    public void rimuoviClient(Client c)
+    {
+        this.connected_clients.remove(c);
+    }
+
     public void mandaMessaggio(String msg)
     {
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
@@ -171,7 +176,7 @@ public class Server extends Thread
                 this.logger.add_msg("[ OK  ] - Sto in ascolto per i messaggi di questo client.");
 
                 // Buffer per il messaggio ricevuto
-                exec.submit(new ConnectionClient(client_socket));
+                exec.submit(new ConnectionClient(client_socket, c));
             }
         } 
         catch (Exception e) 

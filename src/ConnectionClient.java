@@ -5,10 +5,12 @@ import java.net.Socket;
 public class ConnectionClient implements Runnable
 {
     private Socket socket;
+    private Client client;
 
-    public ConnectionClient(Socket socket)
+    public ConnectionClient(Socket socket, Client client)
     {
         this.socket = socket;
+        this.client = client;
     }
 
     @Override
@@ -24,6 +26,12 @@ public class ConnectionClient implements Runnable
                 int l = this.socket.getInputStream().read(buffer);
                 msg = new String(buffer, 0, l, "ISO-8859-1");
 
+                if (msg == "close")
+                {
+                    msg = null;
+                    break;
+                }
+
                 Server.getServer().mandaMessaggio(msg);
 
                 Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aggiungo il messaggio al db");
@@ -34,5 +42,7 @@ public class ConnectionClient implements Runnable
         {
             Server.getServer().logger.add_msg("[ ERR ] - Errore in Connection: " + e);
         }
+
+        Server.getServer().rimuoviClient(this.client);
     }
 }

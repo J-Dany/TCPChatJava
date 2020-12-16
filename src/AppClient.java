@@ -1,5 +1,6 @@
 package src;
 
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -8,25 +9,19 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
-public class AppClient 
-{    
+public class AppClient {
     // Struttura messaggio: Data Tempo|Utente|Messaggio
 
-    public static void main(String[] args)
-    {
-        if (args.length == 0)
-        {
+    public static void main(String[] args) {
+        if (args.length == 0) {
             System.out.println("Non sono stati forniti argomenti all'applicazione");
             System.exit(1);
         }
         Socket socket = new Socket();
         InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
-        try
-        {
+        try {
             socket.connect(server_address);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -41,29 +36,34 @@ public class AppClient
         System.out.println("*********************************");
 
         OutputStreamWriter write = null;
-        try
-        {
+        try {
             write = new OutputStreamWriter(socket.getOutputStream(), "ISO-8859-1");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        if (write == null)
-        {
+        if (write == null) {
             System.exit(1);
         }
 
         String msg = "";
-        while (msg != null)
-        {
+        while (msg != null) {
             System.out.print("Tu: ");
             msg = input.nextLine();
-            
-            if (msg.length() == 0)
+
+            if (msg.length() == 0) 
             {
-                msg = null;
+                msg = "close";
+                
+                try 
+                {
+                    write.write(msg);
+                    write.flush();
+                } 
+                catch (IOException e) 
+                {
+                    e.printStackTrace();
+                }
             }
             else
             {
