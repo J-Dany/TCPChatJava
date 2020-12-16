@@ -53,7 +53,7 @@ public class AppClient {
                         int l = socket.getInputStream().read(buffer);
                         String msg = new String(buffer, 0, l, "ISO-8859-1");
 
-                        System.out.println(msg);
+                        System.out.println("\n" + msg);
                     }
                     catch (Exception e)
                     {
