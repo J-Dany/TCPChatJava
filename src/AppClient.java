@@ -32,7 +32,7 @@ public class AppClient {
         System.out.print("Inserisci nome utente: ");
         nomeUtente = input.nextLine();
 
-        System.out.println("Il messaggio deve essere lungo max. 256 e, per smettere di inviare i messaggi, invio con messaggio vuoto.");
+        System.out.println("Il messaggio deve essere lungo max. 256 e, per smettere di inviare i messaggi, inserisci '!close'");
         System.out.println("*********************************");
 
         OutputStreamWriter write = null;
@@ -51,7 +51,7 @@ public class AppClient {
             System.out.print("Tu: ");
             msg = input.nextLine();
 
-            if (msg.length() == 0) 
+            if (msg.equals("!close")) 
             {
                 msg = "close";
                 
@@ -64,6 +64,9 @@ public class AppClient {
                 {
                     e.printStackTrace();
                 }
+
+                msg = null;
+                continue;
             }
             else
             {
