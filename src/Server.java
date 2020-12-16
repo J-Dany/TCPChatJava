@@ -182,7 +182,6 @@ public class Server extends Thread
                         OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "ISO-8859-1");
                         out.write(msg);
                         out.flush();
-                        out.close();
                     }
                 }
 
