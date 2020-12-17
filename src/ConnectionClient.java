@@ -31,7 +31,7 @@ public class ConnectionClient implements Runnable
                     break;
                 }
 
-                Server.getServer().mandaMessaggio(msg.split("\\|")[1] + ": " + msg.split("\\|")[2]);
+                Server.getServer().mandaMessaggio(msg.split("\\|")[1] + ": " + msg.split("\\|")[2], this.client);
 
                 Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aggiungo il messaggio al db");
                 Server.getServer().writer.addMsg(msg);

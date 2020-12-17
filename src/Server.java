@@ -57,7 +57,6 @@ public class Server extends Thread
     private Thread eliminaClientNonConnessi;
 
     private Object[] arr;
-    private Client cl;
 
     public Server(String name, int port) throws IOException, SQLException
     {
@@ -78,15 +77,15 @@ public class Server extends Thread
         this.connected_clients.remove(c);
     }
 
-    public void mandaMessaggio(String msg)
+    public void mandaMessaggio(String msg, Client c)
     {
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
-        Client c = this.cl;
+        Client mittente = c;
         Socket send;
         for (int i = 0; i < this.connected_clients.size(); ++i) 
         {
             send = this.connected_clients.get(arr[i]);
-            if (send.isConnected() && !arr[i].equals(c)) 
+            if (send.isConnected() && !arr[i].equals(mittente)) 
             {
                 try
                 {
@@ -165,7 +164,6 @@ public class Server extends Thread
                 }
 
                 this.arr = arr;
-                cl = c;
 
                 this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
                 if (this.banned.contains(c.getAddress()) || c.getCounter() == 0)
