@@ -52,4 +52,4 @@ Ecco una tabella dei codici di errore:
 - 2 => **IO Exception**, c'è stato un errore con il socket
 - 3 => **Stream di output non inizializzato**, non è stato possibile inizializzare lo stream di output per mandare i messaggi
 
-#### Thanks to: Daniele Castiglia, Francesco Borri, Sultan Zhunushov
+#### Thanks to: Daniele Castiglia
