@@ -56,6 +56,9 @@ public class Server extends Thread
      */
     private Thread eliminaClientNonConnessi;
 
+    /**
+     * Rappresenta l'array di client connessi
+     */
     private Object[] arr;
 
     public Server(String name, int port) throws IOException, SQLException
