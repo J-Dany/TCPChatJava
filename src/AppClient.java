@@ -52,7 +52,8 @@ public class AppClient {
         System.out.println("Il messaggio deve essere lungo max. 256 e, per smettere di inviare i messaggi, inserisci '!close'");
         System.out.println("*********************************");
 
-        Thread read = new Thread(new Runnable(){
+        Thread read = new Thread(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -76,9 +77,12 @@ public class AppClient {
         read.start();
 
         OutputStreamWriter write = null;
-        try {
+        try 
+        {
             write = new OutputStreamWriter(socket.getOutputStream(), "ISO-8859-1");
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             e.printStackTrace();
         }
 

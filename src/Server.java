@@ -50,11 +50,6 @@ public class Server extends Thread
      * Una lista di indirizzi bannati
      */
     private ArrayList<InetAddress> banned;
-    
-    /**
-     * Thread che elimina i client non connessi
-     */
-    private Thread eliminaClientNonConnessi;
 
     /**
      * Rappresenta l'array di client connessi
@@ -114,7 +109,8 @@ public class Server extends Thread
         try 
         {
             // Esegui finché non viene interrotto il server
-            while (!Thread.currentThread().isInterrupted()) {
+            while (!Thread.currentThread().isInterrupted()) 
+            {
                 // Sta in ascolto per le connessioni in entrata
                 this.logger.add_msg("[ OK  ] - " + this.getName() + " sta in ascolto per i client");
                 Socket sclient = null;
@@ -183,17 +179,6 @@ public class Server extends Thread
         catch (Exception e) 
         {
             this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " + e);
-        }
-
-        try
-        {
-            this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " interrompo e aspetto il thread EliminaClientNonConnessi");
-            this.eliminaClientNonConnessi.interrupt();
-            this.eliminaClientNonConnessi.join(); 
-        }
-        catch (Exception e)
-        {
-            this.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
         }
 
         this.logger.add_msg("[ OK  ] - Libero la memoria creata per contenere hashmap");
