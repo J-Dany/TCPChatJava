@@ -46,15 +46,15 @@ public class ConnectionClient implements Runnable
 
                         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " connesso al database e creato oggetto Statement, ora eseguo la query di ricerca utete");
 
-                        ResultSet utenti = s.executeQuery("SELECT username FROM utenti WHERE username = '" + nomeUtente + "'");
+                        ResultSet utenti = s.executeQuery("SELECT COUNT(*) as num_rows FROM utenti WHERE username = '" + nomeUtente + "'");
 
                         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
-
-                        if (utenti.getFetchSize() == 0)
+                        
+                        if (utenti.next() && utenti.getInt("num_rows") == 0)
                         {
-                            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " esiste di gia' l'utente richiesto (" + nomeUtente + ")");
+                            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " utente non riconosciuto (" + nomeUtente + ")");
                             Server.getServer().mandaMessaggio("UTENTE_NON_RICONOSCIUTO", this.client);
-                            return;
+                            throw new Exception("Utente non riconosciuto");
                         }
 
                         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " si e' connesso " + nomeUtente);
@@ -72,7 +72,7 @@ public class ConnectionClient implements Runnable
                 else if (msg.equals("close"))
                 {
                     Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " si e' disconnesso un utente");
-                    break;
+                    throw new Exception("Close connection by client");
                 }
                 
                 Server.getServer().mandaMessaggio(msg.split("\\|")[1] + ": " + msg.split("\\|")[2], this.client);
@@ -83,7 +83,7 @@ public class ConnectionClient implements Runnable
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg("[ ERR ] - Errore in ConnectionClient: " + e);
+            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
         }
 
         try { this.socket.close(); } catch (Exception e) { Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e); }
