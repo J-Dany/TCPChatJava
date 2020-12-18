@@ -214,7 +214,7 @@ public class Server extends Thread
             // Altrimenti ascolta nella porta passata come parametro
             else
             {
-                s = new Server("SERVER", Integer.parseInt(args[1]));
+                s = new Server("SERVER", Integer.parseInt(args[0]));
             }
             
             server = s;
