@@ -53,7 +53,7 @@ public class ConnectionClient implements Runnable
                         if (utenti.next() && utenti.getInt("num_rows") == 0)
                         {
                             Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " utente non riconosciuto (" + nomeUtente + ")");
-                            Server.getServer().mandaMessaggio("UTENTE_NON_RICONOSCIUTO", this.client);
+                            Server.getServer().mandaMessaggio("UTENTE_NON_RICONOSCIUTO", null, this.socket);
                             throw new Exception("Utente non riconosciuto");
                         }
 
@@ -75,7 +75,7 @@ public class ConnectionClient implements Runnable
                     throw new Exception("Close connection by client");
                 }
                 
-                Server.getServer().mandaMessaggio(msg.split("\\|")[1] + ": " + msg.split("\\|")[2], this.client);
+                Server.getServer().mandaMessaggio(msg.split("\\|")[1] + ": " + msg.split("\\|")[2], this.client, null);
 
                 Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aggiungo il messaggio al db");
                 Server.getServer().writer.addMsg(msg);

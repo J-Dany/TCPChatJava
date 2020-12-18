@@ -75,9 +75,24 @@ public class Server extends Thread
         this.connected_clients.remove(c);
     }
 
-    public void mandaMessaggio(String msg, Client c)
+    public void mandaMessaggio(String msg, Client c, Socket s)
     {
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
+        if (c == null && s != null)
+        {
+            try
+            {
+                OutputStreamWriter out = new OutputStreamWriter(s.getOutputStream(), "ISO-8859-1");
+                out.write(msg);
+                out.flush();
+            }
+            catch (Exception e)
+            {
+                this.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+            }
+
+            return;
+        }
         Client mittente = c;
         Socket send;
         for (int i = 0; i < this.connected_clients.size(); ++i) 
