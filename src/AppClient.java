@@ -1,5 +1,6 @@
 package src;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.ConnectException;
@@ -41,6 +42,10 @@ public class AppClient {
             e.printStackTrace();
             System.exit(IO_EXCEPTION);
         }
+
+        JFrame frame = new JFrame("Chat");
+        frame.setSize(853, 480);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         String nomeUtente;
 
