@@ -49,6 +49,24 @@ public class AppClient {
         System.out.print("Inserisci nome utente: ");
         nomeUtente = input.nextLine();
 
+        OutputStreamWriter write = null;
+        try 
+        {
+            write = new OutputStreamWriter(socket.getOutputStream(), "ISO-8859-1");
+
+            write.write(nomeUtente + "%%!");
+            write.flush();
+        } 
+        catch (Exception e) 
+        {
+            e.printStackTrace();
+        }
+
+        if (write == null) 
+        {
+            System.exit(OUTPUT_STREAM_NON_ISTANZIATO);
+        }
+
         System.out.println("Il messaggio deve essere lungo max. 256 e, per smettere di inviare i messaggi, inserisci '!close'");
         System.out.println("*********************************");
 
@@ -65,6 +83,11 @@ public class AppClient {
                         int l = socket.getInputStream().read(buffer);
                         String msg = new String(buffer, 0, l, "ISO-8859-1");
 
+                        if (msg.equals("UTENTE_NON_RICONOSCIUTO"))
+                        {
+                            break;
+                        }
+
                         System.out.println("\n" + msg);
                     }
                     catch (Exception e)
@@ -75,20 +98,6 @@ public class AppClient {
             }
         });
         read.start();
-
-        OutputStreamWriter write = null;
-        try 
-        {
-            write = new OutputStreamWriter(socket.getOutputStream(), "ISO-8859-1");
-        } 
-        catch (Exception e) 
-        {
-            e.printStackTrace();
-        }
-
-        if (write == null) {
-            System.exit(OUTPUT_STREAM_NON_ISTANZIATO);
-        }
 
         String msg = "";
         while (msg != null) 

@@ -1,6 +1,7 @@
 package src;
 
 import java.net.Socket;
+import java.sql.*;
 
 public class ConnectionClient implements Runnable
 {
@@ -26,7 +27,43 @@ public class ConnectionClient implements Runnable
                 int l = this.socket.getInputStream().read(buffer);
                 msg = new String(buffer, 0, l, "ISO-8859-1");
 
-                if (msg == "close")
+                if (msg.contains("%%!"))
+                {
+                    String nomeUtente = msg.split("%%!")[0];
+                    Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " nuovo client: " + nomeUtente);
+
+                    try
+                    {
+                        Class.forName("com.mysql.cj.jdbc.Driver");
+
+                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database e istanzio un oggetto di tipo Statement");
+
+                        Connection c = DriverManager.getConnection(Config.URL, Config.USER, Config.PASSWD);
+                        Statement s = c.createStatement();
+
+                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " connesso al database e creato oggetto Statement, ora eseguo la query di ricerca utete");
+
+                        ResultSet utenti = s.executeQuery("SELECT username FROM utenti WHERE username = '" + nomeUtente + "'");
+
+                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
+
+                        if (utenti.getFetchSize() > 0)
+                        {
+                            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " esiste di gia' l'utente richiesto (" + nomeUtente + ")");
+                            Server.getServer().mandaMessaggio("Server: esiste gia' utente con questo nome.", this.client);
+                            break;
+                        }
+
+                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " si e' connesso " + nomeUtente);
+
+                        msg = " si è connesso!";
+                    }
+                    catch (Exception e)
+                    {
+                        Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                    }
+                }
+                else if (msg == "close")
                 {
                     break;
                 }

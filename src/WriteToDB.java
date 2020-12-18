@@ -7,34 +7,6 @@ import java.util.LinkedList;
 public class WriteToDB extends Thread
 {
     /**
-     * Rappresenta l'utente del database
-     */
-    private final String USER = "chat";
-
-    /**
-     * Rappresenta la password dell'utente {USER} del db
-     */
-    private final String PASSWD = "Abcd1234";
-
-    /**
-     * Rappresenta la porta in cui mysql sta in ascolto
-     */
-    private final int PORT = 3306;
-
-    /**
-     * Rappresenta il nome del database
-     */
-    private final String DB_NAME = "chat";
-
-    /*private final String URL = "jdbc:mysql://localhost:" + PORT + ";"
-        + "database=" + DB_NAME + ";"
-        + "user=" + USER + ";"
-        + "password=" + PASSWD + ";"
-        + "encrypt=true;"
-        + "trustServerCertificate=false;";*/
-    private final String URL = "jdbc:mysql://localhost:" + PORT + "/" + DB_NAME;
-
-    /**
      * Rappresenta la coda dei messaggi arrivati
      */
     private Queue<String> msgs;
@@ -55,7 +27,7 @@ public class WriteToDB extends Thread
         {
             e.printStackTrace();
         }
-        return DriverManager.getConnection(URL, USER, PASSWD);
+        return DriverManager.getConnection(Config.URL, Config.USER, Config.PASSWD);
     }
 
     public synchronized void addMsg(String msg)

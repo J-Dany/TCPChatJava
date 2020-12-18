@@ -17,7 +17,6 @@ USE chat;
 CREATE TABLE IF NOT EXISTS utenti
 (
     username VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
     CONSTRAINT pk_utenti PRIMARY KEY (username)
 )DEFAULT CHARACTER SET utf8 ENGINE=InnoDB;
 

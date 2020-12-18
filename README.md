@@ -32,6 +32,8 @@ I comandi per ora disponibili, con alias, sono:
     - Stampa una lista dei client in questo momento connessi
 - **history**
     - Stampa la lista dei comandi dati al server
+- **ban** {ip}
+    - Banna l'indirizzo IP passato
 
 ## Come avviare il Client
 Per avviare il client è sufficiente digitare:
