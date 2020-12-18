@@ -80,8 +80,7 @@ public class AppClient {
                     try
                     {
                         byte[] buffer = new byte[1024];
-                        int l = 0;
-                        while ((l = socket.getInputStream().read(buffer)) == -1);
+                        int l = socket.getInputStream().read(buffer);
                         String msg = new String(buffer, 0, l, "ISO-8859-1");
 
                         if (msg.equals("UTENTE_NON_RICONOSCIUTO"))

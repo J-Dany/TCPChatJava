@@ -25,7 +25,7 @@ public class WriteToDB extends Thread
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
         }
         return DriverManager.getConnection(Config.URL, Config.USER, Config.PASSWD);
     }
@@ -53,11 +53,15 @@ public class WriteToDB extends Thread
 
                 Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aggiungo un nuovo messaggio al db");
 
-                this.insertMessage(user, datetime, msg);
-
-                Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " messaggio aggiunto");
+                if (this.insertMessage(user, datetime, msg))
+                {
+                    Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " messaggio aggiunto");
+                }
+                else
+                {
+                    Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " non e' stato possibile aggiungere il messaggio al db da parte di " + user + " con testo: " + msg);
+                }
             }
-            
         }
         catch (Exception e)
         {
@@ -74,31 +78,36 @@ public class WriteToDB extends Thread
             String data = objs[0];
             String time = objs[1];
 
-            Server.getServer().logger.add_msg("[ OK  ] - " + this.getName() + " Stabilisco la connessione con il db");
+            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Stabilisco la connessione con il db");
                 c = this.getConnection();
-            Server.getServer().logger.add_msg("[ OK  ] - " + this.getName() + " Connessione al db stabilita");
+            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Connessione al db stabilita");
 
             c.setAutoCommit(false);
 
             String query = "INSERT INTO messaggi(message, user, `date`, `time`) " + 
-                "VALUES(" +
-                    "'" + msg + "', '" +
-                    user + "', '" +
-                    data + "', '" +
-                    time +
-                "')";
+                "VALUES("
+                +    "?," 
+                +    "?,"
+                +    "?,"
+                +    "?"  
+                + ")";
 
-            Server.getServer().logger.add_msg("[ OK  ] - " + this.getName() + " query: " + query);
+            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query: " + query);
 
             PreparedStatement preparedStatement = c.prepareStatement(query);
+
+            preparedStatement.setString(1, msg);
+            preparedStatement.setString(2, user);
+            preparedStatement.setString(3, data);
+            preparedStatement.setString(4, time);
         
             if (preparedStatement.execute())
             {
-                Server.getServer().logger.add_msg("[ ERR ] - " + this.getName() + " errore nell'eseguire la query di inserimento");
+                Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " errore nell'eseguire la query di inserimento");
             }
             else
             {
-                Server.getServer().logger.add_msg("[ OK  ] - " + this.getName() + " query eseguita correttamente");
+                Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
             }
 
             c.commit();
@@ -107,11 +116,11 @@ public class WriteToDB extends Thread
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg("[ ERR ] - " + this.getName() + " " + e);
+            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
         }
 
-        try { c.rollback(); } catch (SQLException e) { Server.getServer().logger.add_msg("[ ERR ] - " + this.getName() + " " + e); }
-        Server.getServer().logger.add_msg("[ ERR ] - " + this.getName() + " Errore nell'inserimento del messaggio nel db");
+        try { c.rollback(); } catch (SQLException e) { Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e); }
+        Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " Errore nell'inserimento del messaggio nel db");
         return false;
     }
 }

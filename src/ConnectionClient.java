@@ -2,6 +2,9 @@ package src;
 
 import java.net.Socket;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class ConnectionClient implements Runnable
 {
@@ -47,27 +50,31 @@ public class ConnectionClient implements Runnable
 
                         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
 
-                        if (utenti.getFetchSize() > 0)
+                        if (utenti.getFetchSize() == 0)
                         {
                             Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " esiste di gia' l'utente richiesto (" + nomeUtente + ")");
-                            Server.getServer().mandaMessaggio("Server: esiste gia' utente con questo nome.", this.client);
-                            break;
+                            Server.getServer().mandaMessaggio("UTENTE_NON_RICONOSCIUTO", this.client);
+                            return;
                         }
 
                         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " si e' connesso " + nomeUtente);
 
-                        msg = " si è connesso!";
+                        String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
+
+                        msg = data + " " + time + "|" + nomeUtente + "|si e' connesso!";
                     }
                     catch (Exception e)
                     {
                         Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
                     }
                 }
-                else if (msg == "close")
+                else if (msg.equals("close"))
                 {
+                    Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " si e' disconnesso un utente");
                     break;
                 }
-
+                
                 Server.getServer().mandaMessaggio(msg.split("\\|")[1] + ": " + msg.split("\\|")[2], this.client);
 
                 Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aggiungo il messaggio al db");
@@ -76,7 +83,7 @@ public class ConnectionClient implements Runnable
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg("[ ERR ] - Errore in Connection: " + e);
+            Server.getServer().logger.add_msg("[ ERR ] - Errore in ConnectionClient: " + e);
         }
 
         try { this.socket.close(); } catch (Exception e) { Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e); }
