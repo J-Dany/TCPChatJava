@@ -2,20 +2,14 @@ package src;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import javax.swing.plaf.FontUIResource;
-import javax.swing.plaf.InsetsUIResource;
 import javax.swing.text.StyledDocument;
-
 import java.net.Socket;
 import java.io.OutputStreamWriter;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.ConnectException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -55,7 +49,8 @@ public class AppClient {
 
             Thread read = new Thread(new Runnable() {
                 @Override
-                public void run() {
+                public void run() 
+                {
                     while (!Thread.currentThread().isInterrupted()) 
                     {
                         try 
@@ -85,7 +80,8 @@ public class AppClient {
         }
     }
 
-    static class ChatUI {
+    static class ChatUI 
+    {
         private OutputStreamWriter writer;
         private Socket socket;
         private JFrame app;
@@ -174,44 +170,34 @@ public class AppClient {
 
 				@Override
                 public void addPropertyChangeListener(PropertyChangeListener arg0) 
-                {
-					// TODO Auto-generated method stub
-					
+                {					
 				}
 
 				@Override
                 public Object getValue(String arg0) 
                 {
-					// TODO Auto-generated method stub
 					return null;
 				}
 
 				@Override
                 public boolean isEnabled() 
                 {
-					// TODO Auto-generated method stub
 					return false;
 				}
 
 				@Override
                 public void putValue(String arg0, Object arg1) 
-                {
-					// TODO Auto-generated method stub
-					
+                {					
 				}
 
 				@Override
                 public void removePropertyChangeListener(PropertyChangeListener arg0) 
-                {
-					// TODO Auto-generated method stub
-					
+                {					
 				}
 
 				@Override
                 public void setEnabled(boolean arg0) 
-                {
-					// TODO Auto-generated method stub
-					
+                {					
                 }                
             });
             buttonInviaMessaggio.setBorder(null);
