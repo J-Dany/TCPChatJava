@@ -50,10 +50,6 @@ public class AppClient
             System.exit(IO_EXCEPTION);
         }
 
-        Socket socket = new Socket();
-        InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
-        socket.connect(server_address);
-
         String nomeUtente;
 
         Scanner input = new Scanner(System.in);
