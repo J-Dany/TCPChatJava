@@ -1,5 +1,5 @@
 compile:
-	javac -d out -classpath .:./mysql-connector-java-8.0.22.jar src/*.java
+	javac -d out -classpath .:./mysql-connector-java-8.0.22.jar --module-path /usr/share/java src/*.java
 
 db:
 	cd db; \

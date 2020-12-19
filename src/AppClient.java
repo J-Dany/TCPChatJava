@@ -1,22 +1,29 @@
 package src;
 
-import javax.swing.*;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.ConnectException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.io.OutputStreamWriter;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ConnectException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
-public class AppClient {
-    // Struttura messaggio: Data Tempo|Utente|Messaggio
+public class AppClient 
+{
+    /**
+     * Codici di ritorno dell'applicazione
+     */
+    public static final int CONNESSIONE_RIFIUTATA = 1;
+    public static final int IO_EXCEPTION = 2;
+    public static final int OUTPUT_STREAM_NON_ISTANZIATO = 3;
 
-    public static int CONNESSIONE_RIFIUTATA = 1;
-    public static int IO_EXCEPTION = 2;
-    public static int OUTPUT_STREAM_NON_ISTANZIATO = 3;
+    /**
+     * Grandezza dell'applicazione
+     */
+    public static final int HEIGHT = 480;
+    public static final int WIDTH  = 853;
 
     public static void main(String[] args) 
     {
@@ -43,9 +50,9 @@ public class AppClient {
             System.exit(IO_EXCEPTION);
         }
 
-        JFrame frame = new JFrame("Chat");
-        frame.setSize(853, 480);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Socket socket = new Socket();
+        InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
+        socket.connect(server_address);
 
         String nomeUtente;
 
@@ -93,7 +100,8 @@ public class AppClient {
                             break;
                         }
 
-                        System.out.println("\n" + msg);
+                        System.out.println("\r" + msg);
+                        System.out.print("Tu: ");
                     }
                     catch (Exception e)
                     {
@@ -138,6 +146,7 @@ public class AppClient {
                     String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                     String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
                     
+                    // Struttura messaggio: Data Tempo|Utente|Messaggio
                     write.write(data + " " + time + "|" + nomeUtente + "|" + msg);
                     write.flush();
                 }
