@@ -78,7 +78,7 @@ public class Server extends Thread
     public void mandaMessaggio(String msg, Client c, Socket s)
     {
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
-        if (c == null && s != null)
+        if (c == null)
         {
             try
             {
@@ -98,7 +98,7 @@ public class Server extends Thread
         for (int i = 0; i < this.connected_clients.size(); ++i) 
         {
             send = this.connected_clients.get(arr[i]);
-            if (send.isConnected() && !arr[i].equals(mittente)) 
+            if (!arr[i].equals(mittente)) 
             {
                 try
                 {
