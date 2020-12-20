@@ -2,7 +2,10 @@ package src;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.net.Socket;
 import java.io.OutputStreamWriter;
@@ -13,6 +16,9 @@ import java.net.InetSocketAddress;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.Scanner;
 
 public class AppClient {
@@ -29,6 +35,8 @@ public class AppClient {
     public static final int HEIGHT = 480;
     public static final int WIDTH = 853;
 
+    public static ArrayList<ColorUIResource> colors = new ArrayList<>();
+
     public static void main(String[] args) 
     {
         try 
@@ -36,6 +44,14 @@ public class AppClient {
             Socket socket = new Socket();
             InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
             socket.connect(server_address);
+
+            for (int i = 0; i < 256; ++i)
+            {
+                colors.add(new ColorUIResource(
+                    new Random().nextInt(256),
+                    new Random().nextInt(256),
+                    new Random().nextInt(256)));
+            }
 
             Scanner input = new Scanner(System.in);
             System.out.print("Nome utente: ");
@@ -64,6 +80,12 @@ public class AppClient {
                                 break;
                             }
 
+                            String nome = msg.split(":")[0];
+                            if (!chat.getUtenteColore().containsKey(nome))
+                            {
+                                chat.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
+                            }
+
                             chat.aggiungiMessaggio(msg);
                         } 
                         catch (Exception e) 
@@ -82,6 +104,7 @@ public class AppClient {
 
     static class ChatUI 
     {
+        private HashMap<String, Color> utenteColore;
         private OutputStreamWriter writer;
         private Socket socket;
         private JFrame app;
@@ -95,12 +118,23 @@ public class AppClient {
 
         public ChatUI(Socket socket, String nome) throws IOException 
         {
+            this.utenteColore = new HashMap<>();
             this.nome = nome;
             this.app = new JFrame("Chat");
             if (socket != null) {
                 this.socket = socket;
                 this.writer = new OutputStreamWriter(this.socket.getOutputStream(), "ISO-8859-1");
             }
+        }
+
+        public void aggiungiUtenteColore(String nome, Color color)
+        {
+            this.utenteColore.put(nome, color);
+        }
+
+        public HashMap<String, Color> getUtenteColore()
+        {
+            return this.utenteColore;
         }
 
         public void prepareApp() 
@@ -218,9 +252,16 @@ public class AppClient {
         public void aggiungiMessaggio(String msg) {
             try 
             {
-                doc.insertString(doc.getLength(), msg + "\n", null);
+                String nome = msg.split(":")[0];
+                Style style = textArea.addStyle(msg, null);
+                Color c = nome.equals("Tu")
+                    ? Color.BLACK
+                    : utenteColore.get(nome);
+                StyleConstants.setForeground(style, c);
+
+                doc.insertString(doc.getLength(), msg + "\n", style);
             } 
-            catch (Exception e) 
+            catch (Exception e)
             {
                 e.printStackTrace();
             }
