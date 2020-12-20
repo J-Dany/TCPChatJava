@@ -3,6 +3,7 @@ package src;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.DimensionUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -10,7 +11,11 @@ import javax.swing.text.StyledDocument;
 import java.net.Socket;
 import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.time.LocalDate;
@@ -37,20 +42,17 @@ public class AppClient {
 
     public static ArrayList<ColorUIResource> colors = new ArrayList<>();
 
-    public static void main(String[] args) 
-    {
-        try 
-        {
+    public static void main(String[] args) {
+        try {
             Socket socket = new Socket();
             InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
             socket.connect(server_address);
 
-            for (int i = 0; i < 256; ++i)
-            {
+            for (int i = 0; i < 256; ++i) {
                 colors.add(new ColorUIResource(
-                    new Random().nextInt(180),
-                    new Random().nextInt(180),
-                    new Random().nextInt(180)));
+                    new Random().nextInt(180) + 70, 
+                    new Random().nextInt(180) + 70,
+                    new Random().nextInt(180) + 70));
             }
 
             Scanner input = new Scanner(System.in);
@@ -65,31 +67,24 @@ public class AppClient {
 
             Thread read = new Thread(new Runnable() {
                 @Override
-                public void run() 
-                {
-                    while (!Thread.currentThread().isInterrupted()) 
-                    {
-                        try 
-                        {
+                public void run() {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        try {
                             byte[] buffer = new byte[1024];
                             int l = socket.getInputStream().read(buffer);
-                            String msg = new String(buffer, 0, l, "ISO-8859-1");
+                            String msg = new String(buffer, 0, l, "UTF8");
 
-                            if (msg.equals("UTENTE_NON_RICONOSCIUTO")) 
-                            {
+                            if (msg.equals("UTENTE_NON_RICONOSCIUTO")) {
                                 break;
                             }
 
                             String nome = msg.split(":")[0];
-                            if (!chat.getUtenteColore().containsKey(nome))
-                            {
+                            if (!chat.getUtenteColore().containsKey(nome)) {
                                 chat.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
                             }
 
                             chat.aggiungiMessaggio(msg);
-                        } 
-                        catch (Exception e) 
-                        {
+                        } catch (Exception e) {
                             e.printStackTrace();
                             break;
                         }
@@ -102,8 +97,7 @@ public class AppClient {
         }
     }
 
-    static class ChatUI 
-    {
+    static class ChatUI {
         private HashMap<String, Color> utenteColore;
         private OutputStreamWriter writer;
         private Socket socket;
@@ -116,29 +110,25 @@ public class AppClient {
         private StyledDocument doc;
         private String nome;
 
-        public ChatUI(Socket socket, String nome) throws IOException 
-        {
+        public ChatUI(Socket socket, String nome) throws IOException {
             this.utenteColore = new HashMap<>();
             this.nome = nome;
             this.app = new JFrame("Chat");
             if (socket != null) {
                 this.socket = socket;
-                this.writer = new OutputStreamWriter(this.socket.getOutputStream(), "ISO-8859-1");
+                this.writer = new OutputStreamWriter(this.socket.getOutputStream(), "UTF8");
             }
         }
 
-        public void aggiungiUtenteColore(String nome, Color color)
-        {
+        public void aggiungiUtenteColore(String nome, Color color) {
             this.utenteColore.put(nome, color);
         }
 
-        public HashMap<String, Color> getUtenteColore()
-        {
+        public HashMap<String, Color> getUtenteColore() {
             return this.utenteColore;
         }
 
-        public void prepareApp() 
-        {
+        public void prepareApp() {
             this.app.setSize(WIDTH, HEIGHT);
             this.app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -146,95 +136,172 @@ public class AppClient {
             JMenu file = new JMenu("File");
             file.setFont(font);
             JMenuItem quit = new JMenuItem("Quit");
+            quit.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    try {
+                        writer.write("close");
+                        writer.flush();
+                        System.exit(0);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
             quit.setFont(font);
             file.add(quit);
             JMenu info = new JMenu("Info");
             info.setFont(font);
             JMenuItem about = new JMenuItem("About");
             about.setFont(font);
+            about.addActionListener(new ActionListener()
+            {
+
+				@Override
+                public void actionPerformed(ActionEvent arg0) 
+                {
+                    JDialog dialog = new JDialog(app, "Info");
+                    dialog.setLayout(new GridLayout(2, 1));
+
+                    JLabel labelCreatore = new JLabel("Creatore: Daniele Castiglia");
+                    labelCreatore.setFont(fontInviaMessaggio);
+                    dialog.add(labelCreatore);
+
+                    JLabel labelLinkGithub = new JLabel("https://github.com/J-Dany/TCPChatJava");
+                    labelLinkGithub.setFont(fontInviaMessaggio);
+                    dialog.add(labelLinkGithub);
+
+                    dialog.setSize(400, 200);
+                    dialog.setVisible(true);
+                }
+            });
             menuBar.add(file);
             menuBar.add(info);
             info.add(about);
             this.app.setJMenuBar(menuBar);
 
+            this.app.addWindowListener(new WindowListener() {
+
+                @Override
+                public void windowActivated(WindowEvent arg0) {
+                }
+
+                @Override
+                public void windowClosed(WindowEvent arg0) {
+                }
+
+                @Override
+                public void windowClosing(WindowEvent arg0) {
+                    try {
+                        writer.write("close");
+                        writer.flush();
+                        writer.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void windowDeactivated(WindowEvent arg0) {
+                }
+
+                @Override
+                public void windowDeiconified(WindowEvent arg0) {
+                }
+
+                @Override
+                public void windowIconified(WindowEvent arg0) {
+                }
+
+                @Override
+                public void windowOpened(WindowEvent arg0) {
+                }
+
+            });
+
             JPanel panel = new JPanel();
-            BoxLayout layout = new BoxLayout(panel, BoxLayout.PAGE_AXIS);
+            LayoutManager layout = new BoxLayout(panel, BoxLayout.PAGE_AXIS);
             panel.setLayout(layout);
             this.app.setContentPane(panel);
 
             this.textArea = new JTextPane();
             this.textArea.setFont(fontTextArea);
-            this.textArea.setPreferredSize(new Dimension(WIDTH, 400));
+            DimensionUIResource dimension = new DimensionUIResource(WIDTH, 400);
+            this.textArea.setPreferredSize(dimension);
             this.textArea.setEditable(false);
             panel.add(this.textArea);
+
+            this.app.getContentPane().add(new JScrollPane(this.textArea));
 
             JPanel panelInput = new JPanel();
             panelInput.setBackground(Color.WHITE);
             BoxLayout layoutInput = new BoxLayout(panelInput, BoxLayout.LINE_AXIS);
             panelInput.setLayout(layoutInput);
 
-            input = new JTextField();
-            input.setFont(fontInviaMessaggio);
+            this.input = new JTextField();
+            this.input.setFont(fontInviaMessaggio);
             panelInput.add(input);
 
             JButton buttonInviaMessaggio = new JButton("Invia");
-            buttonInviaMessaggio.setPreferredSize(new Dimension(100, 40));
+            buttonInviaMessaggio.setPreferredSize(new Dimension(75, 40));
             buttonInviaMessaggio.setFont(fontInviaMessaggio);
-            buttonInviaMessaggio.addActionListener(new Action()
+            buttonInviaMessaggio.addActionListener(new ActionListener()
             {
-				@Override
+                @Override
                 public void actionPerformed(ActionEvent arg0) 
                 {
                     try
                     {
+                        String msg = input.getText();
+                        if (msg.length() > 256)
+                        {
+                            JOptionPane.showMessageDialog(app, "Il messaggio non deve superare i 256 caratteri", "Messaggio troppo lungo", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        else if (msg.length() == 0)
+                        {
+                            return;
+                        }
+
                         String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
                         String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-                        
-                        String msg = input.getText();
+                         
                         aggiungiMessaggio("Tu: " + msg);
-                        writer.write(data + " " + time + "|" + nome + "|" + msg);
+                        writer.write(data + " " + time + "|" + nome + "|" + msg); 
                         writer.flush();
-                        input.setText("");
+
+                        input.setText(""); 
                     }
                     catch (Exception e)
                     {
                         e.printStackTrace();
                     }
-				}
-
-				@Override
-                public void addPropertyChangeListener(PropertyChangeListener arg0) 
-                {					
-				}
-
-				@Override
-                public Object getValue(String arg0) 
-                {
-					return null;
-				}
-
-				@Override
-                public boolean isEnabled() 
-                {
-					return true;
-				}
-
-				@Override
-                public void putValue(String arg0, Object arg1) 
-                {					
-				}
-
-				@Override
-                public void removePropertyChangeListener(PropertyChangeListener arg0) 
-                {					
-				}
-
-				@Override
-                public void setEnabled(boolean arg0) 
-                {					
-                }                
+                }
             });
             buttonInviaMessaggio.setBorder(null);
+
+            this.input.addKeyListener(new KeyListener() {
+
+                @Override
+                public void keyPressed(KeyEvent arg0) 
+                {
+                    if (arg0.getKeyCode() == KeyEvent.VK_ENTER)
+                    {
+                        buttonInviaMessaggio.doClick();
+                    }
+                }
+
+                @Override
+                public void keyReleased(KeyEvent arg0) 
+                {
+                }
+
+                @Override
+                public void keyTyped(KeyEvent arg0) 
+                {
+                }
+                
+            });
 
             panelInput.add(buttonInviaMessaggio);
 
