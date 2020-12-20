@@ -95,6 +95,7 @@ public class Server extends Thread
         }
         Client mittente = c;
         Socket send;
+        arr = this.connected_clients.keySet().toArray();
         for (int i = 0; i < this.connected_clients.size(); ++i) 
         {
             send = this.connected_clients.get(arr[i]);
@@ -163,7 +164,6 @@ public class Server extends Thread
 
                 // Scalo le richieste che puo' fare al minuto
                 Socket client_socket = null;
-                Object[] arr = null;
                 synchronized (this)
                 {
                     arr = this.connected_clients.keySet().toArray();
@@ -176,8 +176,6 @@ public class Server extends Thread
                     }
                     c.clientConnected();
                 }
-
-                this.arr = arr;
 
                 this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
                 if (this.banned.contains(c.getAddress()) || c.getCounter() == 0)
