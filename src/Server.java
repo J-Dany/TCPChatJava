@@ -75,6 +75,11 @@ public class Server extends Thread
         this.connected_clients.remove(c);
     }
 
+    public int getNumeroUtentiConnessi()
+    {
+        return this.connected_clients.size();
+    }
+
     public void mandaMessaggio(String msg, Client c, Socket s)
     {
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
@@ -82,7 +87,7 @@ public class Server extends Thread
         {
             try
             {
-                OutputStreamWriter out = new OutputStreamWriter(s.getOutputStream(), "ISO-8859-1");
+                OutputStreamWriter out = new OutputStreamWriter(s.getOutputStream(), "UTF8");
                 out.write(msg);
                 out.flush();
             }
@@ -103,7 +108,7 @@ public class Server extends Thread
             {
                 try
                 {
-                    OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "ISO-8859-1");
+                    OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "UTF8");
                     out.write(msg);
                     out.flush();
                 }
@@ -114,6 +119,28 @@ public class Server extends Thread
             }
         }
         this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " messaggio inoltrato");
+    }
+
+    public void messaggioBroadcast(String msg)
+    {
+        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mando messaggio in broadcast: " + msg);
+        arr = this.connected_clients.keySet().toArray();
+        for (int i = 0; i < this.connected_clients.size(); ++i)
+        {
+            Socket s = this.connected_clients.get(arr[i]);
+
+            try
+            {
+                OutputStreamWriter writer = new OutputStreamWriter(s.getOutputStream());
+                writer.write(msg);
+                writer.flush();
+            }
+            catch (Exception e)
+            {
+                this.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+            }
+        }
+        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mandato messaggio broadcast");
     }
 
     @Override
@@ -130,9 +157,10 @@ public class Server extends Thread
                 // Sta in ascolto per le connessioni in entrata
                 this.logger.add_msg("[ OK  ] - " + this.getName() + " sta in ascolto per i client");
                 Socket sclient = null;
-                try {
+                try 
+                {
                     sclient = this.socket.accept();
-                    this.logger.add_msg("[ OK  ] - Connessione accettata per " + sclient.getInetAddress());
+                    this.logger.add_msg("[ OK  ] - Connessione accettata per " + sclient.getInetAddress());                    
                 } 
                 catch (SocketException e) 
                 {
@@ -176,6 +204,9 @@ public class Server extends Thread
                     }
                     c.clientConnected();
                 }
+
+                this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + "Aggiorno numero utenti connessi per client");
+                this.messaggioBroadcast("!!:" + this.getNumeroUtentiConnessi());
 
                 this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
                 if (this.banned.contains(c.getAddress()) || c.getCounter() == 0)

@@ -10,6 +10,7 @@ public class ConnectionClient implements Runnable
 {
     private Socket socket;
     private Client client;
+    private String nome;
 
     public ConnectionClient(Socket socket, Client client)
     {
@@ -33,6 +34,7 @@ public class ConnectionClient implements Runnable
                 if (msg.contains("%%!"))
                 {
                     String nomeUtente = msg.split("%%!")[0];
+                    this.nome = nomeUtente;
                     Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " nuovo client: " + nomeUtente);
 
                     try
@@ -88,5 +90,8 @@ public class ConnectionClient implements Runnable
 
         try { this.socket.close(); } catch (Exception e) { Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e); }
         Server.getServer().rimuoviClient(this.client);
+
+        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " " + this.nome + " si e' disconnesso, aggiorno il numero degli utenti connessi al client");
+        Server.getServer().messaggioBroadcast("!!:" + Server.getServer().getNumeroUtentiConnessi());
     }
 }
