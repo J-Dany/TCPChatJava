@@ -85,6 +85,7 @@ public class AppClient
                             else if (msg.contains("!!:"))
                             {
                                 chat.setNumeroUtentiConnessi(Integer.parseInt(msg.split("!!:")[1]));
+                                continue;
                             }
 
                             String nome = msg.split(":")[0];

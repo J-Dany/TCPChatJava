@@ -205,14 +205,14 @@ public class Server extends Thread
                     c.clientConnected();
                 }
 
-                this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + "Aggiorno numero utenti connessi per client");
-                this.messaggioBroadcast("!!:" + this.getNumeroUtentiConnessi());
-
                 this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
                 if (this.banned.contains(c.getAddress()) || c.getCounter() == 0)
                 {
                     continue;
                 }
+
+                this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + "Aggiorno numero utenti connessi per client");
+                this.messaggioBroadcast("!!:" + this.getNumeroUtentiConnessi());
 
                 this.logger.add_msg("[ OK  ] - Sto in ascolto per i messaggi di questo client.");
 
