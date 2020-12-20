@@ -86,9 +86,9 @@ public class AppClient {
         private Socket socket;
         private JFrame app;
         private JTextField input;
-        private Font font = new FontUIResource("Noto Sans", Font.PLAIN, 14);
+        private Font font = new FontUIResource("Arial", Font.PLAIN, 14);
         private Font fontTextArea = new FontUIResource("Caladea", Font.PLAIN, 18);
-        private Font fontNomeUtente = new FontUIResource("Noto Sans", Font.PLAIN, 18);
+        private Font fontInviaMessaggio = new FontUIResource("Arial", Font.PLAIN, 18);
         private JTextPane textArea;
         private StyledDocument doc;
         private String nome;
@@ -140,12 +140,12 @@ public class AppClient {
             panelInput.setLayout(layoutInput);
 
             input = new JTextField();
-            input.setFont(fontNomeUtente);
+            input.setFont(fontInviaMessaggio);
             panelInput.add(input);
 
             JButton buttonInviaMessaggio = new JButton("Invia");
             buttonInviaMessaggio.setPreferredSize(new Dimension(100, 40));
-            buttonInviaMessaggio.setFont(fontNomeUtente);
+            buttonInviaMessaggio.setFont(fontInviaMessaggio);
             buttonInviaMessaggio.addActionListener(new Action()
             {
 				@Override
