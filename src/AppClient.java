@@ -368,7 +368,14 @@ public class AppClient
         {
             try
             {
-                utentiConnessi.setText(numero + " utenti connessi!");
+                if (numero == 1)
+                {
+                    utentiConnessi.setText("Solo te sei connesso!");
+                }
+                else 
+                {
+                    utentiConnessi.setText(numero + " utenti connessi!");
+                }
             }
             catch (Exception e)
             {
