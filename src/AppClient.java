@@ -48,9 +48,9 @@ public class AppClient {
             for (int i = 0; i < 256; ++i)
             {
                 colors.add(new ColorUIResource(
-                    new Random().nextInt(256),
-                    new Random().nextInt(256),
-                    new Random().nextInt(256)));
+                    new Random().nextInt(180),
+                    new Random().nextInt(180),
+                    new Random().nextInt(180)));
             }
 
             Scanner input = new Scanner(System.in);
