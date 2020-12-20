@@ -1,3 +1,3 @@
 #!/bin/bash
 cd out
-java --module-path ./out/lib src.AppClient $1 $2
+java -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true src.AppClient $1 $2
