@@ -7,7 +7,7 @@ public class Client
     /**
      * L'utente può fare solo 16 richieste al minuto
      */
-    private final int MAX_REQUEST = 16;
+    private final int MAX_REQUEST = 64;
 
     private InetAddress address;
     private int counter;

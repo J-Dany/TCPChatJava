@@ -31,6 +31,12 @@ public class ConnectionClient implements Runnable
                 int l = this.socket.getInputStream().read(buffer);
                 msg = new String(buffer, 0, l, "ISO-8859-1");
 
+                Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
+                if (Server.getServer().banned.contains(this.client.getAddress()) || this.client.getCounter() == 0)
+                {
+                    continue;
+                }
+
                 if (msg.contains("%%!"))
                 {
                     String nomeUtente = msg.split("%%!")[0];
