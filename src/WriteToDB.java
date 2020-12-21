@@ -11,12 +11,20 @@ public class WriteToDB extends Thread
      */
     private Queue<String> msgs;
 
-    public WriteToDB(String name) throws SQLException
+    /**
+     * Costruttore di WriteToDB
+     * @param name, il nome del thread
+     */
+    public WriteToDB(String name)
     {
         super(name);
         this.msgs = new LinkedList<>();
     }
 
+    /**
+     * Ritorna la connessione al Database
+     * @throws SQLException, nel caso non può connettersi al database
+     */
     private Connection getConnection() throws SQLException
     {
         try
@@ -30,6 +38,13 @@ public class WriteToDB extends Thread
         return DriverManager.getConnection(Config.URL, Config.USER, Config.PASSWD);
     }
 
+    /**
+     * Aggiunge il messaggio alla coda dei messaggi
+     * da inserire nel database. Solo un thread alla volta
+     * può accedere qua dentro
+     * 
+     * @param msg, messaggio arrivato (struttura: "data tempo|nomeUtente|messaggio")
+     */
     public synchronized void addMsg(String msg)
     {
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " arrivato nuovo messaggio");
@@ -69,6 +84,12 @@ public class WriteToDB extends Thread
         }
     }
 
+    /**
+     * Inserisce il messaggio all'interno del Database
+     * @param user, identifica il nome utente, colui che ha mandato il messaggio
+     * @param datetime, stringa che rappresenta data e tempo, quando il messaggio è stato inviato
+     * @param msg, messaggio mandato dall'utente
+     */
     public boolean insertMessage(String user, String datetime, String msg)
     {
         Connection c = null;

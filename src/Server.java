@@ -1,7 +1,6 @@
 package src;
 
 import java.net.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -13,11 +12,6 @@ import java.io.OutputStreamWriter;
 
 public class Server extends Thread 
 {
-    /**
-     * Rappresenta la coda dei comandi dati al server
-     */
-    private static Stack<String> history = new Stack<>();
-
     /**
      * Rappresenta il server.
      * Server per la classe Client per interagire
@@ -47,6 +41,12 @@ public class Server extends Thread
     private HashMap<Client, Socket> connected_clients;
 
     /**
+     * Rappresenta la Thread Pool per gestire
+     * i client
+     */
+    private ExecutorService threadPoolClient;
+
+    /**
      * Una lista di indirizzi bannati
      */
     public ArrayList<InetAddress> banned;
@@ -56,7 +56,14 @@ public class Server extends Thread
      */
     private Object[] arr;
 
-    public Server(String name, int port) throws IOException, SQLException
+    /**
+     * Costruttore del Server
+     * 
+     * @param name, rappresenta il nome del thread Server
+     * @param port, la porta in cui il Socket del Server resterà in ascolto
+     * @throws IOException, errore con il Socket
+     */
+    public Server(String name, int port) throws IOException
     {
         super(name);
         this.socket = new ServerSocket(port);
@@ -65,21 +72,50 @@ public class Server extends Thread
         this.writer = new WriteToDB("WriterDB");
     }
 
+    /**
+     * Banna l'IP passato come parametro
+     */
     public void ban(InetAddress address)
     {
         this.banned.add(address);
     }
 
+    /**
+     * Quando un client si disconnette
+     * viene chiamato questo metodo che rimuove
+     * il client dall'HashMap dei client connessi
+     * 
+     * @param c, il puntatore al client da rimuovere
+     */
     public void rimuoviClient(Client c)
     {
         this.connected_clients.remove(c);
     }
 
+    /**
+     * Ritorna il numero degli utenti connessi.
+     * Viene richiamato solo quando un nuovo client
+     * si connette o uno già connesso di disconnette
+     * per aggiornare il numero dei client connessi
+     * nell'app del client
+     * @return int, numero utenti connessi
+     */
     public int getNumeroUtentiConnessi()
     {
         return this.connected_clients.size();
     }
 
+    /**
+     * Manda messaggio a tutti tranne che
+     * al client che ha mandato il messaggio. Se
+     * il client è null vuol dire mandare il messaggio
+     * viene mandato a lui tramite il socket passato, solo
+     * e soltanto a lui
+     * 
+     * @param msg, messaggio da inviare
+     * @param c, rappresenta il mittente (o destinatario)
+     * @param s, rappresenta il socket del client
+     */
     public void mandaMessaggio(String msg, Client c, Socket s)
     {
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
@@ -121,6 +157,13 @@ public class Server extends Thread
         this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " messaggio inoltrato");
     }
 
+    /**
+     * Manda un messaggio a tutti i client.
+     * Principalmente usato per aggiornare il numero
+     * dei client connessi nell'app del client.
+     * 
+     * @param msg, messaggio da inviare a tutti
+     */
     public void messaggioBroadcast(String msg)
     {
         this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mando messaggio in broadcast: " + msg);
@@ -146,7 +189,7 @@ public class Server extends Thread
     @Override
     public void run() 
     {
-        ExecutorService exec = Executors.newScheduledThreadPool(32);
+        this.threadPoolClient = Executors.newScheduledThreadPool(32);
         
         this.logger.add_msg("[ OK  ] - Server partito");
         try 
@@ -161,7 +204,7 @@ public class Server extends Thread
                 {
                     sclient = this.socket.accept();
                     this.logger.add_msg("[ OK  ] - Connessione accettata per " + sclient.getInetAddress());                    
-                } 
+                }
                 catch (SocketException e) 
                 {
                     this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " + e);
@@ -211,7 +254,7 @@ public class Server extends Thread
                 this.logger.add_msg("[ OK  ] - Sto in ascolto per i messaggi di questo client.");
 
                 // Buffer per il messaggio ricevuto
-                exec.submit(new ConnectionClient(client_socket, c));
+                this.threadPoolClient.submit(new ConnectionClient(client_socket, c));
             }
         } 
         catch (Exception e) 
@@ -219,20 +262,35 @@ public class Server extends Thread
             this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " + e);
         }
 
-        this.logger.add_msg("[ OK  ] - Libero la memoria creata per contenere hashmap");
+        // Libera le risorse allocate
+        this.liberaRisorse();
+    }
+
+    /**
+     * Libera le risorse allocate per il server
+     */
+    private void liberaRisorse()
+    {
+        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Libero la memoria creata per contenere hashmap");
+        
         // Elimino hashmap
         this.connected_clients.clear();
 
-        this.logger.add_msg("[ OK  ] - Libero la memoria creata per contenere arraylist di client bannati");
+        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Libero la memoria creata per contenere arraylist di client bannati");
         // Elimino i client bannati
         this.banned.clear();
 
         this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " spengo la ThreadPool");
-        exec.shutdownNow();
+        this.threadPoolClient.shutdownNow();
 
         this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " chiuso.");
     }
 
+    /**
+     * Restituisce l'oggetto Server creato nel main
+     * per richiamare i metodi del Server tipo "ban" o
+     * "mandaMessaggio" o "messaggioBroadcast"
+     */
     public static Server getServer()
     {
         return server;
@@ -240,6 +298,7 @@ public class Server extends Thread
 
     public static void main(String[] args)
     {
+        Stack<String> history = new Stack<>();
         Server s = null;
 
         try
@@ -348,7 +407,7 @@ public class Server extends Thread
 
             s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " thread WriterToDB interrotto");
         }
-        catch (IOException | InterruptedException | SQLException e)
+        catch (IOException | InterruptedException e)
         {
             if (s == null)
             {
