@@ -34,6 +34,7 @@ public class AppClient
     public static final int CONNESSIONE_RIFIUTATA = 1;
     public static final int IO_EXCEPTION = 2;
     public static final int OUTPUT_STREAM_NON_ISTANZIATO = 3;
+    public static final int UTENTE_NON_RICONOSCIUTO = 4;
 
     /**
      * Grandezza dell'applicazione
@@ -80,6 +81,7 @@ public class AppClient
 
                             if (msg.equals("UTENTE_NON_RICONOSCIUTO")) 
                             {
+                                System.exit(UTENTE_NON_RICONOSCIUTO);
                                 break;
                             }
                             else if (msg.contains("!!:"))

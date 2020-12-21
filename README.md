@@ -41,6 +41,8 @@ Per avviare il client è sufficiente digitare:
 cd out
 java src.AppClient {indirizzo} {porta}
 ```
+**N.B.**: ogni utente che vuole usare la chat deve essere prima inserito nel database
+e dovrà usare quel nome per collegarsi altrimenti non riceverà nessun messaggio
 
 ## Codice di errore Client
 Se non riesci a connetterti con il client al server, puoi controllare
@@ -53,5 +55,6 @@ Ecco una tabella dei codici di errore:
 - 1 => **Connessione rifiutata**, il server potrebbe essere spento
 - 2 => **IO Exception**, c'è stato un errore con il socket
 - 3 => **Stream di output non inizializzato**, non è stato possibile inizializzare lo stream di output per mandare i messaggi
+- 4 => **Utente non riconosciuto**, probabilmente nel Server non sei stato aggiunto nel database
 
 #### Thanks to: Daniele Castiglia
