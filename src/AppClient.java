@@ -111,6 +111,7 @@ public class AppClient
                                     {
                                         System.exit(UTENTE_NON_RICONOSCIUTO);
                                     }
+                                    chat.setNumeroUtentiConnessi(risposta.getInt("Numero-Client-Connessi"));
                                 break;
                                 case "Utente-Connesso":
                                     String n = risposta.getString("Nome");
