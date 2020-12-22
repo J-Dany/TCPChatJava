@@ -253,7 +253,6 @@ public class Server extends Thread
 
                 this.logger.add_msg("[ OK  ] - Sto in ascolto per i messaggi di questo client.");
 
-                // Buffer per il messaggio ricevuto
                 this.threadPoolClient.submit(new ConnectionClient(client_socket, c));
             }
         } 
