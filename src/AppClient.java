@@ -123,7 +123,8 @@ public class AppClient
                                         nuovoMessaggio.put("Time", time);
 
                                         write.write(nuovoMessaggio.toString());
-                                        
+                                        write.flush();
+
                                         chat = new ChatUI(socket, new String(nome));
                                         chat.prepareApp();
                                         chat.show();
