@@ -53,6 +53,8 @@ public class ConnectionClient implements Runnable
                             JSONObject messaggioDiConnessione = new JSONObject();
                             messaggioDiConnessione.put("Tipo-Richiesta", "Utente-Connesso");
                             messaggioDiConnessione.put("Nome", this.nome);
+
+                            Server.getServer().mandaMessaggio(messaggioDiConnessione.toString(), null, null);
                         }
                         else
                         {

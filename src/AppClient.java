@@ -96,13 +96,15 @@ public class AppClient
                                         System.exit(UTENTE_NON_RICONOSCIUTO);
                                     }
                                 break;
-                                case "Nuovo-Messaggio":
-                                    String nome = risposta.getString("Nome");
+                                case "Utente-Connesso":
                                     if (!chat.getUtenteColore().containsKey(nome)) 
                                     {
                                         chat.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
                                     }
-                                    chat.aggiungiMessaggio(msg);
+                                break;
+                                case "Nuovo-Messaggio":
+                                    String nome = risposta.getString("Nome");
+                                    chat.aggiungiMessaggio(nome + ": " + risposta.getString("Messaggio"));
                                 break;
                                 case "Numero-Utenti":
                                     chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
