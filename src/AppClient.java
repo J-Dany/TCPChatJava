@@ -52,7 +52,8 @@ public class AppClient
             InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
             socket.connect(server_address);
 
-            for (int i = 0; i < 256; ++i) {
+            for (int i = 0; i < 256; ++i) 
+            {
                 colors.add(new ColorUIResource(
                     new Random().nextInt(180) + 70, 
                     new Random().nextInt(180) + 70,
@@ -119,12 +120,12 @@ public class AppClient
         private OutputStreamWriter writer;
         private Socket socket;
         private JFrame app;
-        private JTextField input, utentiConnessi;
+        private JTextField input;
         private Font font = new FontUIResource("Noto Sans", Font.PLAIN, 14);
         private Font fontTextArea = new FontUIResource("Caladea", Font.PLAIN, 18);
         private Font fontInviaMessaggio = new FontUIResource("Noto Sans", Font.PLAIN, 18);
-        private JTextPane textArea;
-        private StyledDocument doc;
+        private JTextPane textArea, utentiConnessi;
+        private StyledDocument doc, docUtentiConnessi;
         private String nome;
 
         public ChatUI(Socket socket, String nome) throws IOException 
@@ -209,38 +210,48 @@ public class AppClient
             this.app.addWindowListener(new WindowListener() {
 
                 @Override
-                public void windowActivated(WindowEvent arg0) {
+                public void windowActivated(WindowEvent arg0) 
+                {
                 }
 
                 @Override
-                public void windowClosed(WindowEvent arg0) {
+                public void windowClosed(WindowEvent arg0) 
+                {
                 }
 
                 @Override
-                public void windowClosing(WindowEvent arg0) {
-                    try {
+                public void windowClosing(WindowEvent arg0) 
+                {
+                    try 
+                    {
                         writer.write("close");
                         writer.flush();
                         writer.close();
-                    } catch (Exception e) {
+                    } 
+                    catch (Exception e) 
+                    {
                         e.printStackTrace();
                     }
                 }
 
                 @Override
-                public void windowDeactivated(WindowEvent arg0) {
+                public void windowDeactivated(WindowEvent arg0) 
+                {
                 }
 
                 @Override
-                public void windowDeiconified(WindowEvent arg0) {
+                public void windowDeiconified(WindowEvent arg0) 
+                {
                 }
 
                 @Override
-                public void windowIconified(WindowEvent arg0) {
+                public void windowIconified(WindowEvent arg0) 
+                {
                 }
 
                 @Override
-                public void windowOpened(WindowEvent arg0) {
+                public void windowOpened(WindowEvent arg0) 
+                {
                 }
 
             });
@@ -250,7 +261,7 @@ public class AppClient
             panel.setLayout(layout);
             this.app.setContentPane(panel);
 
-            utentiConnessi = new JTextField();
+            utentiConnessi = new JTextPane();
             utentiConnessi.setFont(font);
             utentiConnessi.setEditable(false);
             panel.add(utentiConnessi);
@@ -331,12 +342,12 @@ public class AppClient
                 public void keyTyped(KeyEvent arg0) 
                 {
                 }
-                
             });
 
             panelInput.add(buttonInviaMessaggio);
 
             this.doc = this.textArea.getStyledDocument();
+            this.docUtentiConnessi = this.utentiConnessi.getStyledDocument();
 
             panel.add(panelInput);
         }
@@ -372,11 +383,17 @@ public class AppClient
             {
                 if (numero == 1)
                 {
-                    utentiConnessi.setText("Solo te sei connesso!");
+                    Style style = this.docUtentiConnessi.addStyle("Solo te sei connesso!", null);
+                    StyleConstants.setForeground(style, Color.BLUE);
+
+                    this.docUtentiConnessi.insertString(0, "Solo te sei connesso!", style);
                 }
                 else 
                 {
-                    utentiConnessi.setText(numero + " utenti connessi!");
+                    Style style = this.docUtentiConnessi.addStyle(numero + " utenti connessi!", null);
+                    StyleConstants.setForeground(style, Color.BLUE);
+
+                    this.docUtentiConnessi.insertString(0, numero + " utenti connessi!", style);
                 }
             }
             catch (Exception e)
