@@ -4,6 +4,7 @@ Piccolo progetto per una chat in java criptata.
 ## Dipendenze
 - make
 - mysql
+- openjdk 11
 - driver java per connettere il programma con mysql (su Linux: libmysql-java)
 
 ## Aggiungere il database
@@ -18,6 +19,8 @@ Date i seguenti comandi nella directory del progetto:
 make compile
 make run-server
 ```
+
+Su **Windows** ci sono i file .bat per compilare/eseguire client e server
 
 ## Console del programma Server
 Quando avviate un server, nella console apparirà:
