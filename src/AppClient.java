@@ -78,6 +78,7 @@ public class AppClient
                         jsonAutenticazione.put("Tipo-Richiesta", "Autenticazione");
                         jsonAutenticazione.put("Nome", nome);
                         socket.getOutputStream().write(jsonAutenticazione.toString().getBytes());
+                        socket.getOutputStream().flush();
 
                         byte[] buffer = new byte[1024];
                         int l = socket.getInputStream().read(buffer);
