@@ -120,12 +120,12 @@ public class AppClient
         private OutputStreamWriter writer;
         private Socket socket;
         private JFrame app;
-        private JTextField input;
+        private JTextField input, utentiConnessi;
         private Font font = new FontUIResource("Noto Sans", Font.PLAIN, 14);
         private Font fontTextArea = new FontUIResource("Caladea", Font.PLAIN, 18);
         private Font fontInviaMessaggio = new FontUIResource("Noto Sans", Font.PLAIN, 18);
-        private JTextPane textArea, utentiConnessi;
-        private StyledDocument doc, docUtentiConnessi;
+        private JTextPane textArea;
+        private StyledDocument doc;
         private String nome;
 
         public ChatUI(Socket socket, String nome) throws IOException 
@@ -261,7 +261,7 @@ public class AppClient
             panel.setLayout(layout);
             this.app.setContentPane(panel);
 
-            utentiConnessi = new JTextPane();
+            utentiConnessi = new JTextField();
             utentiConnessi.setFont(font);
             utentiConnessi.setEditable(false);
             panel.add(utentiConnessi);
@@ -347,7 +347,6 @@ public class AppClient
             panelInput.add(buttonInviaMessaggio);
 
             this.doc = this.textArea.getStyledDocument();
-            this.docUtentiConnessi = this.utentiConnessi.getStyledDocument();
 
             panel.add(panelInput);
         }
@@ -383,17 +382,11 @@ public class AppClient
             {
                 if (numero == 1)
                 {
-                    Style style = this.docUtentiConnessi.addStyle("Solo te sei connesso!", null);
-                    StyleConstants.setForeground(style, Color.BLUE);
-
-                    this.docUtentiConnessi.insertString(0, "Solo te sei connesso!", style);
+                    this.utentiConnessi.setText("Solo te sei connesso!");
                 }
                 else 
                 {
-                    Style style = this.docUtentiConnessi.addStyle(numero + " utenti connessi!", null);
-                    StyleConstants.setForeground(style, Color.BLUE);
-
-                    this.docUtentiConnessi.insertString(0, numero + " utenti connessi!", style);
+                    this.utentiConnessi.setText(numero + " utenti connessi!");
                 }
             }
             catch (Exception e)
