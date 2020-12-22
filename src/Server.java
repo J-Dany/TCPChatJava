@@ -7,9 +7,6 @@ import java.util.Scanner;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
@@ -256,11 +253,11 @@ public class Server extends Thread
 
                 this.logger.add_msg("[ OK  ] - Sto in ascolto per i messaggi di questo client.");
 
-                JSONObject numeroUtentiConnessi = new JSONObject();
+                /*JSONObject numeroUtentiConnessi = new JSONObject();
                 numeroUtentiConnessi.put("Tipo-Richiesta", "Numero-Utenti");
                 numeroUtentiConnessi.put("Numero", Server.getServer().getNumeroUtentiConnessi());
                             
-                Server.getServer().messaggioBroadcast(numeroUtentiConnessi.toString());
+                Server.getServer().messaggioBroadcast(numeroUtentiConnessi.toString());*/
 
                 // Buffer per il messaggio ricevuto
                 this.threadPoolClient.submit(new ConnectionClient(client_socket, c));
