@@ -230,7 +230,6 @@ public class Server extends Thread
                     }
                 }
                 
-                this.logger.add_msg("[ OK  ] - Scalo le richieste che puo' fare al minuto");
                 this.logger.add_msg("[ OK  ] - Creo l'array di client per scalare le richieste per il client giusto");
 
                 // Scalo le richieste che puo' fare al minuto
