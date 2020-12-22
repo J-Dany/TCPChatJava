@@ -64,22 +64,32 @@ public class AppClient
             Scanner input = new Scanner(System.in);
             System.out.print("Nome utente: ");
             String nome = input.nextLine();
-
-            JSONObject jsonAutenticazione = new JSONObject();
-            jsonAutenticazione.put("Tipo-Richiesta", "Autenticazione");
-            jsonAutenticazione.put("Nome", nome);
-            socket.getOutputStream().write(jsonAutenticazione.toString().getBytes());
-            
             input.close();
-
-            ChatUI chat = new ChatUI(socket, new String(nome));
-            chat.prepareApp();
-            chat.show();
 
             Thread read = new Thread(new Runnable() {
                 @Override
-                public void run() {
-                    while (!Thread.currentThread().isInterrupted()) {
+                public void run() 
+                {
+                    ChatUI chat = null;
+
+                    try
+                    {
+                        JSONObject jsonAutenticazione = new JSONObject();
+                        jsonAutenticazione.put("Tipo-Richiesta", "Autenticazione");
+                        jsonAutenticazione.put("Nome", nome);
+                        socket.getOutputStream().write(jsonAutenticazione.toString().getBytes());
+    
+                        chat = new ChatUI(socket, new String(nome));
+                        chat.prepareApp();
+                        chat.show();
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    while (!Thread.currentThread().isInterrupted()) 
+                    {
                         try 
                         {
                             byte[] buffer = new byte[1024];
