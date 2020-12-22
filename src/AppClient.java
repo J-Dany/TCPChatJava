@@ -78,7 +78,17 @@ public class AppClient
                         jsonAutenticazione.put("Tipo-Richiesta", "Autenticazione");
                         jsonAutenticazione.put("Nome", nome);
                         socket.getOutputStream().write(jsonAutenticazione.toString().getBytes());
+
+                        byte[] buffer = new byte[1024];
+                        int l = socket.getInputStream().read(buffer);
+                        String auth = new String(buffer, 0, l, "UTF8");
     
+                        JSONObject r = new JSONObject(auth);
+                        if (!r.getBoolean("Risultato"))
+                        {
+                            System.exit(UTENTE_NON_RICONOSCIUTO);
+                        }
+
                         chat = new ChatUI(socket, new String(nome));
                         chat.prepareApp();
                         chat.show();
@@ -100,12 +110,6 @@ public class AppClient
 
                             switch (risposta.getString("Tipo-Richiesta"))
                             {
-                                case "Autenticazione":
-                                    if (!risposta.getBoolean("Risultato"))
-                                    {
-                                        System.exit(UTENTE_NON_RICONOSCIUTO);
-                                    }
-                                break;
                                 case "Utente-Connesso":
                                     String n = risposta.getString("Nome");
                                     if (!chat.getUtenteColore().containsKey(n)) 

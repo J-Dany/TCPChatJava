@@ -51,6 +51,7 @@ public class ConnectionClient implements Runnable
                             autenticazioneCorretta.put("Risultato", false);
                             
                             Server.getServer().mandaMessaggio(autenticazioneCorretta.toString(), null, this.socket);
+                            msg = null;
                         }
                     break;
                     case "Invio-Messaggio":
