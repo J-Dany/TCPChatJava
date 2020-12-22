@@ -216,6 +216,19 @@ public class AppClient
                 {
                     try 
                     {
+                        String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
+                        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
+
+                        JSONObject inviaAvvenutaDisconnessione = new JSONObject();
+                        inviaAvvenutaDisconnessione.put("Tipo-Richiesta", "Invio-Messaggio");
+                        inviaAvvenutaDisconnessione.put("Nome", nome);
+                        inviaAvvenutaDisconnessione.put("Messaggio", "si è disconnesso!");
+                        inviaAvvenutaDisconnessione.put("Data", data);
+                        inviaAvvenutaDisconnessione.put("Time", time);
+
+                        writer.write(inviaAvvenutaDisconnessione.toString());
+                        writer.flush();
+                        
                         JSONObject closeRequest = new JSONObject();
                         closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
 
@@ -279,13 +292,26 @@ public class AppClient
                 {
                     try 
                     {
+                        String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
+                        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
+
+                        JSONObject inviaAvvenutaDisconnessione = new JSONObject();
+                        inviaAvvenutaDisconnessione.put("Tipo-Richiesta", "Invio-Messaggio");
+                        inviaAvvenutaDisconnessione.put("Nome", nome);
+                        inviaAvvenutaDisconnessione.put("Messaggio", "si è disconnesso!");
+                        inviaAvvenutaDisconnessione.put("Data", data);
+                        inviaAvvenutaDisconnessione.put("Time", time);
+
+                        writer.write(inviaAvvenutaDisconnessione.toString());
+                        writer.flush();
+                        
                         JSONObject closeRequest = new JSONObject();
                         closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
 
                         writer.write(closeRequest.toString());
                         writer.flush();
                         writer.close();
-                    } 
+                    }
                     catch (Exception e) 
                     {
                         e.printStackTrace();
