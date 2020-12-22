@@ -98,7 +98,6 @@ public class AppClient
                             }
 
                             JSONObject risposta = new JSONObject(msg);
-                            System.out.println(risposta);
 
                             switch (risposta.getString("Tipo-Richiesta"))
                             {
