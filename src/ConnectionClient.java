@@ -54,7 +54,7 @@ public class ConnectionClient implements Runnable
                             messaggioDiConnessione.put("Tipo-Richiesta", "Utente-Connesso");
                             messaggioDiConnessione.put("Nome", this.nome);
 
-                            Server.getServer().mandaMessaggio(messaggioDiConnessione.toString(), null, null);
+                            Server.getServer().mandaMessaggio(messaggioDiConnessione.toString(), this.client, null);
                         }
                         else
                         {
@@ -79,7 +79,7 @@ public class ConnectionClient implements Runnable
                         invioMessaggio.put("Nome", this.nome);
                         invioMessaggio.put("Messaggio", richiesta.getString("Messaggio"));
 
-                        Server.getServer().mandaMessaggio(invioMessaggio.toString(), null, null);
+                        Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
                     break;
                     case "Chiudi-Connessione":
                         msg = null;
