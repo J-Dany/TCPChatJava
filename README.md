@@ -19,8 +19,6 @@ make compile
 make run-server
 ```
 
-Su **Windows** ci sono i file .bat per compilare/eseguire client e server
-
 ## Console del programma Server
 Quando avviate un server, nella console apparirà:
 ```bash
