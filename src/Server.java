@@ -248,9 +248,6 @@ public class Server extends Thread
                     c.clientConnected();
                 }
 
-                this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + "Aggiorno numero utenti connessi per client");
-                this.messaggioBroadcast("!!:" + this.getNumeroUtentiConnessi());
-
                 this.logger.add_msg("[ OK  ] - Sto in ascolto per i messaggi di questo client.");
 
                 // Buffer per il messaggio ricevuto

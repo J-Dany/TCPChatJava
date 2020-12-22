@@ -1,10 +1,8 @@
 package src;
 
+import org.json.JSONObject;
 import java.net.Socket;
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 public class ConnectionClient implements Runnable
 {
@@ -37,56 +35,50 @@ public class ConnectionClient implements Runnable
                     continue;
                 }
 
-                if (msg.contains("%%!"))
+                JSONObject richiesta = new JSONObject(msg);
+
+                switch (richiesta.getString("Tipo-Richiesta"))
                 {
-                    String nomeUtente = msg.split("%%!")[0];
-                    this.nome = nomeUtente;
-                    Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " nuovo client: " + nomeUtente);
+                    case "Autenticazione":
+                        if (this.gestisciAutenticazione(richiesta))
+                        {   
+                            JSONObject autenticazioneCorretta = new JSONObject();
+                            autenticazioneCorretta.put("Tipo-Richiesta", "Autenticazione");
+                            autenticazioneCorretta.put("Risultato", true);
+                            
+                            Server.getServer().mandaMessaggio(autenticazioneCorretta.toString(), this.client, null);
+                            
+                            JSONObject numeroUtentiConnessi = new JSONObject();
+                            numeroUtentiConnessi.put("Tipo-Richiesta", "Numero-Utenti");
+                            numeroUtentiConnessi.put("Numero", Server.getServer().getNumeroUtentiConnessi());
+                            
+                            Server.getServer().messaggioBroadcast(numeroUtentiConnessi.toString());
 
-                    try
-                    {
-                        Class.forName("com.mysql.cj.jdbc.Driver");
-
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database e istanzio un oggetto di tipo Statement");
-
-                        Connection c = DriverManager.getConnection(Config.URL, Config.USER, Config.PASSWD);
-                        Statement s = c.createStatement();
-
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " connesso al database e creato oggetto Statement, ora eseguo la query di ricerca utete");
-
-                        ResultSet utenti = s.executeQuery("SELECT COUNT(*) as num_rows FROM utenti WHERE username = '" + nomeUtente + "'");
-
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
-                        
-                        if (utenti.next() && utenti.getInt("num_rows") == 0)
-                        {
-                            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " utente non riconosciuto (" + nomeUtente + ")");
-                            Server.getServer().mandaMessaggio("UTENTE_NON_RICONOSCIUTO", null, this.socket);
-                            throw new Exception("Utente non riconosciuto");
+                            JSONObject messaggioDiConnessione = new JSONObject();
+                            messaggioDiConnessione.put("Tipo-Richiesta", "Utente-Connesso");
+                            messaggioDiConnessione.put("Nome", this.nome);
                         }
+                        else
+                        {
+                            JSONObject autenticazioneCorretta = new JSONObject();
+                            autenticazioneCorretta.put("Tipo-Richiesta", "Autenticazione");
+                            autenticazioneCorretta.put("Risultato", false);
+                            
+                            Server.getServer().mandaMessaggio(autenticazioneCorretta.toString(), null, this.socket);
+                        }
+                    break;
+                    case "Invio-Messaggio":
+                        JSONObject invioMessaggio = new JSONObject();
+                        invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                        invioMessaggio.put("Nome", this.nome);
+                        invioMessaggio.put("Messaggio", richiesta.getString("Messaggio"));
 
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " si e' connesso " + nomeUtente);
-
-                        String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-
-                        msg = data + " " + time + "|" + nomeUtente + "|si e' connesso!";
-                    }
-                    catch (Exception e)
-                    {
-                        Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
-                    }
+                        Server.getServer().mandaMessaggio(invioMessaggio.toString(), null, null);
+                    break;
+                    case "Chiudi-Connessione":
+                        msg = null;
+                    break;
                 }
-                else if (msg.equals("close"))
-                {
-                    Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " si e' disconnesso un utente");
-                    throw new Exception("Close connection by client");
-                }
-                
-                Server.getServer().mandaMessaggio(msg.split("\\|")[1] + ": " + msg.split("\\|")[2], this.client, null);
-
-                Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aggiungo il messaggio al db");
-                Server.getServer().writer.addMsg(msg);
             }
         }
         catch (Exception e)
@@ -98,6 +90,48 @@ public class ConnectionClient implements Runnable
         Server.getServer().rimuoviClient(this.client);
 
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " " + this.nome + " si e' disconnesso, aggiorno il numero degli utenti connessi al client");
-        Server.getServer().messaggioBroadcast("!!:" + Server.getServer().getNumeroUtentiConnessi());
+        JSONObject numeroUtenti = new JSONObject();
+        numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
+        numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi());
+        Server.getServer().messaggioBroadcast(numeroUtenti.toString());
+    }
+
+    private boolean gestisciAutenticazione(JSONObject richiesta)
+    {
+        String nomeUtente = richiesta.getString("Nome");
+        this.nome = nomeUtente;
+        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " nuovo client: " + nomeUtente);
+
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database e istanzio un oggetto di tipo Statement");
+
+            Connection c = DriverManager.getConnection(Config.URL, Config.USER, Config.PASSWD);
+            Statement s = c.createStatement();
+
+            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " connesso al database e creato oggetto Statement, ora eseguo la query di ricerca utete");
+
+            ResultSet utenti = s.executeQuery("SELECT COUNT(*) as num_rows FROM utenti WHERE username = '" + nomeUtente + "'");
+
+            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
+            
+            if (utenti.next() && utenti.getInt("num_rows") == 0)
+            {
+                Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " utente non riconosciuto (" + nomeUtente + ")");
+                throw new Exception("Utente non riconosciuto");
+            }
+
+            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " si e' connesso " + nomeUtente);
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+        }
+
+        return false;
     }
 }

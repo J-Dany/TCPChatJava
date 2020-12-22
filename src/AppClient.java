@@ -8,6 +8,7 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import org.json.JSONObject;
 import java.net.Socket;
 import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
@@ -63,7 +64,12 @@ public class AppClient
             Scanner input = new Scanner(System.in);
             System.out.print("Nome utente: ");
             String nome = input.nextLine();
-            socket.getOutputStream().write((nome + "%%!").getBytes());
+
+            JSONObject jsonAutenticazione = new JSONObject();
+            jsonAutenticazione.put("Tipo-Richiesta", "Autenticazione");
+            jsonAutenticazione.put("Nome", nome);
+            socket.getOutputStream().write(jsonAutenticazione.toString().getBytes());
+            
             input.close();
 
             ChatUI chat = new ChatUI(socket, new String(nome));
@@ -80,23 +86,28 @@ public class AppClient
                             int l = socket.getInputStream().read(buffer);
                             String msg = new String(buffer, 0, l, "UTF8");
 
-                            if (msg.equals("UTENTE_NON_RICONOSCIUTO")) 
+                            JSONObject risposta = new JSONObject(msg);
+
+                            switch (risposta.getString("Tipo-Richiesta"))
                             {
-                                System.exit(UTENTE_NON_RICONOSCIUTO);
+                                case "Autenticazione":
+                                    if (!risposta.getBoolean("Risultato"))
+                                    {
+                                        System.exit(UTENTE_NON_RICONOSCIUTO);
+                                    }
+                                break;
+                                case "Nuovo-Messaggio":
+                                    String nome = risposta.getString("Nome");
+                                    if (!chat.getUtenteColore().containsKey(nome)) 
+                                    {
+                                        chat.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
+                                    }
+                                    chat.aggiungiMessaggio(msg);
+                                break;
+                                case "Numero-Utenti":
+                                    chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
                                 break;
                             }
-                            else if (msg.contains("!!:"))
-                            {
-                                chat.setNumeroUtentiConnessi(Integer.parseInt(msg.split("!!:")[1]));
-                                continue;
-                            }
-
-                            String nome = msg.split(":")[0];
-                            if (!chat.getUtenteColore().containsKey(nome)) {
-                                chat.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
-                            }
-
-                            chat.aggiungiMessaggio(msg);
                         } 
                         catch (Exception e) 
                         {
@@ -166,8 +177,13 @@ public class AppClient
                 {
                     try 
                     {
-                        writer.write("close");
+                        JSONObject closeRequest = new JSONObject();
+                        closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
+
+                        writer.write(closeRequest.toString());
                         writer.flush();
+                        writer.close();
+
                         System.exit(0);
                     } 
                     catch (Exception e) 
@@ -207,8 +223,8 @@ public class AppClient
             info.add(about);
             this.app.setJMenuBar(menuBar);
 
-            this.app.addWindowListener(new WindowListener() {
-
+            this.app.addWindowListener(new WindowListener() 
+            {
                 @Override
                 public void windowActivated(WindowEvent arg0) 
                 {
@@ -224,7 +240,10 @@ public class AppClient
                 {
                     try 
                     {
-                        writer.write("close");
+                        JSONObject closeRequest = new JSONObject();
+                        closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
+
+                        writer.write(closeRequest.toString());
                         writer.flush();
                         writer.close();
                     } 
@@ -309,10 +328,18 @@ public class AppClient
                         String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
                          
                         aggiungiMessaggio("Tu: " + msg);
-                        writer.write(data + " " + time + "|" + nome + "|" + msg); 
+
+                        JSONObject json = new JSONObject();
+                        json.put("Tipo-Richiesta", "Invio-Messaggio");
+                        json.put("Data", data);
+                        json.put("Time", time);
+                        json.put("Nome", nome);
+                        json.put("Messaggio", msg);
+
+                        writer.write(json.toString()); 
                         writer.flush();
 
-                        input.setText(""); 
+                        input.setText("");
                     }
                     catch (Exception e)
                     {
