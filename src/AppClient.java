@@ -79,17 +79,7 @@ public class AppClient
                         jsonAutenticazione.put("Nome", nome);
                         socket.getOutputStream().write(jsonAutenticazione.toString().getBytes());
                         socket.getOutputStream().flush();
-
-                        byte[] buffer = new byte[1024];
-                        int l = socket.getInputStream().read(buffer);
-                        String auth = new String(buffer, 0, l, "UTF8");
     
-                        JSONObject r = new JSONObject(auth);
-                        if (!r.getBoolean("Risultato"))
-                        {
-                            System.exit(UTENTE_NON_RICONOSCIUTO);
-                        }
-
                         chat = new ChatUI(socket, new String(nome));
                         chat.prepareApp();
                         chat.show();
@@ -104,13 +94,24 @@ public class AppClient
                         try 
                         {
                             byte[] buffer = new byte[1024];
-                            int l = socket.getInputStream().read(buffer);
-                            String msg = new String(buffer, 0, l, "UTF8");
+                            String msg = null;
+                            synchronized (socket)
+                            {
+                                int l = socket.getInputStream().read(buffer);
+                                msg = new String(buffer, 0, l, "UTF8");
+                            }
 
                             JSONObject risposta = new JSONObject(msg);
+                            System.out.println(risposta);
 
                             switch (risposta.getString("Tipo-Richiesta"))
                             {
+                                case "Autenticazione":
+                                    if (!risposta.getBoolean("Risultato"))
+                                    {
+                                        System.exit(UTENTE_NON_RICONOSCIUTO);
+                                    }
+                                break;
                                 case "Utente-Connesso":
                                     String n = risposta.getString("Nome");
                                     if (!chat.getUtenteColore().containsKey(n)) 
