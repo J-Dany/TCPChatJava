@@ -7,6 +7,9 @@ import java.util.Scanner;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
@@ -126,8 +129,6 @@ public class Server extends Thread
                 OutputStreamWriter out = new OutputStreamWriter(s.getOutputStream(), "UTF8");
                 out.write(msg);
                 out.flush();
-                out.write("\r\n");
-                out.flush();
             }
             catch (Exception e)
             {
@@ -151,8 +152,6 @@ public class Server extends Thread
                 {
                     OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "UTF8");
                     out.write(msg);
-                    out.flush();
-                    out.write("\r\n");
                     out.flush();
                 }
                 catch (Exception e)
@@ -184,8 +183,6 @@ public class Server extends Thread
             {
                 OutputStreamWriter writer = new OutputStreamWriter(s.getOutputStream());
                 writer.write(msg);
-                writer.flush();
-                writer.write("\r\n");
                 writer.flush();
             }
             catch (Exception e)
@@ -258,6 +255,12 @@ public class Server extends Thread
                 }
 
                 this.logger.add_msg("[ OK  ] - Sto in ascolto per i messaggi di questo client.");
+
+                JSONObject numeroUtentiConnessi = new JSONObject();
+                numeroUtentiConnessi.put("Tipo-Richiesta", "Numero-Utenti");
+                numeroUtentiConnessi.put("Numero", Server.getServer().getNumeroUtentiConnessi());
+                            
+                Server.getServer().messaggioBroadcast(numeroUtentiConnessi.toString());
 
                 // Buffer per il messaggio ricevuto
                 this.threadPoolClient.submit(new ConnectionClient(client_socket, c));
