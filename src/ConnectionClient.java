@@ -40,7 +40,7 @@ public class ConnectionClient implements Runnable
                         {   
                             JSONObject autenticazioneCorretta = new JSONObject();
                             autenticazioneCorretta.put("Tipo-Richiesta", "Autenticazione");
-                            autenticazioneCorretta.put("Numero-Client-Connessi", Server.getServer().getNumeroUtentiConnessi());
+                            autenticazioneCorretta.put("Utenti-Connessi", Server.getServer().getNumeroUtentiConnessi());
                             autenticazioneCorretta.put("Risultato", true);
                             
                             Server.getServer().mandaMessaggio(autenticazioneCorretta.toString(), null, this.socket);

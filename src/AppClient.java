@@ -79,10 +79,6 @@ public class AppClient
                         jsonAutenticazione.put("Nome", nome);
                         socket.getOutputStream().write(jsonAutenticazione.toString().getBytes());
                         socket.getOutputStream().flush();
-    
-                        chat = new ChatUI(socket, new String(nome));
-                        chat.prepareApp();
-                        chat.show();
                     }
                     catch (Exception e)
                     {
@@ -111,7 +107,18 @@ public class AppClient
                                     {
                                         System.exit(UTENTE_NON_RICONOSCIUTO);
                                     }
-                                    chat.setNumeroUtentiConnessi(risposta.getInt("Numero-Client-Connessi"));
+
+                                    try
+                                    {
+                                        chat = new ChatUI(socket, new String(nome));
+                                        chat.prepareApp();
+                                        chat.show();
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                    chat.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
                                 break;
                                 case "Utente-Connesso":
                                     String n = risposta.getString("Nome");
