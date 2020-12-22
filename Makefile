@@ -8,4 +8,4 @@ db:
 run-server:
 	echo "<< You need to run this with sudo >>"
 	cd out; \
-	sudo java -classpath .:out/lib/lib/json-20201115.jar src.Server
+	sudo java -classpath .:lib/json-20201115.jar src.Server

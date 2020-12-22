@@ -27,10 +27,11 @@ public class ConnectionClient implements Runnable
             {
                 byte[] buffer = new byte[1024];
                 int l = this.socket.getInputStream().read(buffer);
-                msg = new String(buffer, 0, l, "ISO-8859-1");
+                msg = new String(buffer, 0, l, "UTF8");
 
                 JSONObject richiesta = new JSONObject(msg);
 
+                Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " gestisco tipo richiesta");
                 switch (richiesta.getString("Tipo-Richiesta"))
                 {
                     case "Autenticazione":
