@@ -87,6 +87,13 @@ public class ConnectionClient implements Runnable
                         invioMessaggio.put("Messaggio", richiesta.getString("Messaggio"));
 
                         Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
+                        Server.getServer().writer.addMsg(
+                            richiesta.getString("Data") + " " + richiesta.getString("Time")
+                            + "|" +
+                            richiesta.getString("Nome")
+                            + "|" +
+                            richiesta.getString("Messaggio")
+                        );
                     break;
                     case "Chiudi-Connessione":
                         msg = null;
