@@ -4,7 +4,6 @@ Piccolo progetto per una chat in java criptata.
 ## Dipendenze
 - make
 - mysql
-- openjdk 11
 - driver java per connettere il programma con mysql (su Linux: libmysql-java)
 
 ## Aggiungere il database
