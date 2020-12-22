@@ -97,14 +97,19 @@ public class AppClient
                                     }
                                 break;
                                 case "Utente-Connesso":
-                                    if (!chat.getUtenteColore().containsKey(nome)) 
+                                    String n = risposta.getString("Nome");
+                                    if (!chat.getUtenteColore().containsKey(n)) 
                                     {
-                                        chat.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
+                                        chat.aggiungiUtenteColore(n, colors.get(new Random().nextInt(colors.size())));
                                     }
                                 break;
                                 case "Nuovo-Messaggio":
                                     String nome = risposta.getString("Nome");
-                                    chat.aggiungiMessaggio(nome + ": " + risposta.getString("Messaggio"));
+                                    if (!chat.getUtenteColore().containsKey(nome))
+                                    {
+                                        chat.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
+                                    }
+                                    chat.aggiungiMessaggio(nome ,risposta.getString("Messaggio"));
                                 break;
                                 case "Numero-Utenti":
                                     chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
@@ -329,7 +334,7 @@ public class AppClient
                         String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
                         String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
                          
-                        aggiungiMessaggio("Tu: " + msg);
+                        aggiungiMessaggio("Tu", msg);
 
                         JSONObject json = new JSONObject();
                         json.put("Tipo-Richiesta", "Invio-Messaggio");
@@ -386,18 +391,18 @@ public class AppClient
             this.app.setVisible(true);
         }
 
-        public void aggiungiMessaggio(String msg) 
+        public void aggiungiMessaggio(String nome, String msg) 
         {
             try 
             {
-                String nome = msg.split(":")[0];
                 Style style = textArea.addStyle(msg, null);
                 Color c = nome.equals("Tu")
                     ? Color.BLACK
                     : utenteColore.get(nome);
+                
                 StyleConstants.setForeground(style, c);
 
-                doc.insertString(doc.getLength(), msg + "\n", style);
+                doc.insertString(doc.getLength(), nome + ": " + msg + "\n", style);
             } 
             catch (Exception e)
             {
