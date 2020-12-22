@@ -93,8 +93,16 @@ public class AppClient
                             String msg = null;
                             synchronized (socket)
                             {
-                                int l = socket.getInputStream().read(buffer);
-                                msg = new String(buffer, 0, l, "UTF8");
+                                try
+                                {
+                                    int l = socket.getInputStream().read(buffer);
+                                    msg = new String(buffer, 0, l, "UTF8");
+                                }
+                                catch (Exception e)
+                                {
+                                    Thread.currentThread().interrupt();
+                                    continue;
+                                }
                             }
 
                             JSONObject risposta = new JSONObject(msg);
@@ -269,8 +277,11 @@ public class AppClient
                     dialog.setVisible(true);
                 }
             });
+            JMenu n = new JMenu("Sei loggato come: " + nome);
+            n.setFont(font);
             menuBar.add(file);
             menuBar.add(info);
+            menuBar.add(n);
             info.add(about);
             this.app.setJMenuBar(menuBar);
 
@@ -353,6 +364,7 @@ public class AppClient
             this.textArea.setFont(fontTextArea);
             DimensionUIResource dimension = new DimensionUIResource(WIDTH, 400);
             this.textArea.setPreferredSize(dimension);
+            this.textArea.setAutoscrolls(true);
             this.textArea.setEditable(false);
             panel.add(this.textArea);
 
