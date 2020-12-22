@@ -43,25 +43,12 @@ public class ConnectionClient implements Runnable
                             autenticazioneCorretta.put("Risultato", true);
                             
                             Server.getServer().mandaMessaggio(autenticazioneCorretta.toString(), null, this.socket);
-                            
+
                             JSONObject numeroUtentiConnessi = new JSONObject();
                             numeroUtentiConnessi.put("Tipo-Richiesta", "Numero-Utenti");
                             numeroUtentiConnessi.put("Numero", Server.getServer().getNumeroUtentiConnessi());
                             
                             Server.getServer().messaggioBroadcast(numeroUtentiConnessi.toString());
-
-                            JSONObject messaggioDiConnessione = new JSONObject();
-                            messaggioDiConnessione.put("Tipo-Richiesta", "Utente-Connesso");
-                            messaggioDiConnessione.put("Nome", this.nome);
-
-                            Server.getServer().mandaMessaggio(messaggioDiConnessione.toString(), this.client, null);
-
-                            JSONObject messaggioUtenteConnesso = new JSONObject();
-                            messaggioUtenteConnesso.put("Tipo-Richiesta", "Nuovo-Messaggio");
-                            messaggioUtenteConnesso.put("Nome", this.nome);
-                            messaggioUtenteConnesso.put("Messaggio", "si è connesso!");
-
-                            Server.getServer().mandaMessaggio(messaggioUtenteConnesso.toString(), this.client, null);
                         }
                         else
                         {

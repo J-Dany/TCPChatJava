@@ -87,7 +87,7 @@ public class Server extends Thread
      * 
      * @param c, il puntatore al client da rimuovere
      */
-    public void rimuoviClient(Client c)
+    public synchronized void rimuoviClient(Client c)
     {
         this.connected_clients.remove(c);
     }
@@ -100,7 +100,7 @@ public class Server extends Thread
      * nell'app del client
      * @return int, numero utenti connessi
      */
-    public int getNumeroUtentiConnessi()
+    public synchronized int getNumeroUtentiConnessi()
     {
         return this.connected_clients.size();
     }
@@ -116,7 +116,7 @@ public class Server extends Thread
      * @param c, rappresenta il mittente (o destinatario)
      * @param s, rappresenta il socket del client
      */
-    public void mandaMessaggio(String msg, Client c, Socket s)
+    public synchronized void mandaMessaggio(String msg, Client c, Socket s)
     {
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
         if (c == null)
@@ -126,17 +126,22 @@ public class Server extends Thread
                 OutputStreamWriter out = new OutputStreamWriter(s.getOutputStream(), "UTF8");
                 out.write(msg);
                 out.flush();
+                out.write("\r\n");
+                out.flush();
             }
             catch (Exception e)
             {
                 this.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
             }
 
+            this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " messaggio inoltrato");
             return;
         }
+
         Client mittente = c;
         Socket send;
         arr = this.connected_clients.keySet().toArray();
+
         for (int i = 0; i < this.connected_clients.size(); ++i) 
         {
             send = this.connected_clients.get(arr[i]);
@@ -147,6 +152,8 @@ public class Server extends Thread
                     OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "UTF8");
                     out.write(msg);
                     out.flush();
+                    out.write("\r\n");
+                    out.flush();
                 }
                 catch (Exception e)
                 {
@@ -154,6 +161,7 @@ public class Server extends Thread
                 }
             }
         }
+
         this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " messaggio inoltrato");
     }
 
@@ -164,7 +172,7 @@ public class Server extends Thread
      * 
      * @param msg, messaggio da inviare a tutti
      */
-    public void messaggioBroadcast(String msg)
+    public synchronized void messaggioBroadcast(String msg)
     {
         this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mando messaggio in broadcast: " + msg);
         arr = this.connected_clients.keySet().toArray();
@@ -176,6 +184,8 @@ public class Server extends Thread
             {
                 OutputStreamWriter writer = new OutputStreamWriter(s.getOutputStream());
                 writer.write(msg);
+                writer.flush();
+                writer.write("\r\n");
                 writer.flush();
             }
             catch (Exception e)
