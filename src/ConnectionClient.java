@@ -55,6 +55,13 @@ public class ConnectionClient implements Runnable
                             messaggioDiConnessione.put("Nome", this.nome);
 
                             Server.getServer().mandaMessaggio(messaggioDiConnessione.toString(), this.client, null);
+
+                            JSONObject messaggioUtenteConnesso = new JSONObject();
+                            messaggioUtenteConnesso.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                            messaggioUtenteConnesso.put("Nome", this.nome);
+                            messaggioUtenteConnesso.put("Messaggio", "si è connesso!");
+
+                            Server.getServer().mandaMessaggio(messaggioUtenteConnesso.toString(), this.client, null);
                         }
                         else
                         {
