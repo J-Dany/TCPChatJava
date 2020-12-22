@@ -110,6 +110,20 @@ public class AppClient
 
                                     try
                                     {
+                                        OutputStreamWriter write = new OutputStreamWriter(socket.getOutputStream(), "UTF8");
+                                        
+                                        String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
+                                        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
+                                        
+                                        JSONObject nuovoMessaggio = new JSONObject();
+                                        nuovoMessaggio.put("Tipo-Richiesta", "Invio-Messaggio");
+                                        nuovoMessaggio.put("Messaggio", "si è connesso!");
+                                        nuovoMessaggio.put("Nome", nome);
+                                        nuovoMessaggio.put("Data", data);
+                                        nuovoMessaggio.put("Time", time);
+
+                                        write.write(nuovoMessaggio.toString());
+                                        
                                         chat = new ChatUI(socket, new String(nome));
                                         chat.prepareApp();
                                         chat.show();
@@ -119,13 +133,6 @@ public class AppClient
                                         e.printStackTrace();
                                     }
                                     chat.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
-                                break;
-                                case "Utente-Connesso":
-                                    String n = risposta.getString("Nome");
-                                    if (!chat.getUtenteColore().containsKey(n)) 
-                                    {
-                                        chat.aggiungiUtenteColore(n, colors.get(new Random().nextInt(colors.size())));
-                                    }
                                 break;
                                 case "Nuovo-Messaggio":
                                     String nome = risposta.getString("Nome");
