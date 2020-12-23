@@ -24,7 +24,7 @@ public class WriteToDB extends Thread
     /**
      * Ritorna la connessione al Database
      * @throws SQLException, nel caso non può connettersi al database
-     */
+     
     private Connection getConnection() throws SQLException
     {
         try
@@ -36,7 +36,7 @@ public class WriteToDB extends Thread
             Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
         }
         return DriverManager.getConnection(Config.URL, Config.USER, Config.PASSWD);
-    }
+    }*/
 
     /**
      * Aggiunge il messaggio alla coda dei messaggi
@@ -100,7 +100,7 @@ public class WriteToDB extends Thread
             String time = objs[1];
 
             Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Stabilisco la connessione con il db");
-                c = this.getConnection();
+                c = DatabaseConnection.getConnection();
             Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Connessione al db stabilita");
 
             c.setAutoCommit(false);

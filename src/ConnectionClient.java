@@ -116,7 +116,7 @@ public class ConnectionClient implements Runnable
 
             Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database e istanzio un oggetto di tipo Statement");
 
-            Connection c = DriverManager.getConnection(Config.URL, Config.USER, Config.PASSWD);
+            Connection c = DatabaseConnection.getConnection();
             Statement s = c.createStatement();
 
             Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " connesso al database e creato oggetto Statement, ora eseguo la query di ricerca utete");

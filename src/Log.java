@@ -76,7 +76,7 @@ public class Log extends Thread
 
     public void shutdown ()
     {
-        if (this.coda.size() > 0)
+        if (this.coda != null && this.coda.size() > 0)
         {
             try
             {

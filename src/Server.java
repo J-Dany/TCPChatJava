@@ -1,6 +1,9 @@
 package src;
 
 import java.net.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -391,7 +394,46 @@ public class Server extends Thread
                         }
                         catch (Exception e)
                         {
-                            s.logger.add_msg("[ ERR ] - Main exception: " + e);
+                            s.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                        }
+                    break;
+                    case "n-message-by":
+                    case "n-msg-by":
+                    case "nmb":
+                        String n = arguments[1];
+                        
+                        try
+                        {
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
+                                Connection connection = DatabaseConnection.getConnection();
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
+                            
+                            String query = "SELECT COUNT(*) as numero_messaggi "
+                                + "FROM messaggi "
+                                + "WHERE user = '" + n + "' AND "
+                                + "date = CURRENT_DATE()";
+
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " creo un oggetto di tipo Statement");
+                                Statement stmt = connection.createStatement();
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " oggetto creato");
+
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " eseguo la query per sapere quanti messaggi " + n + " ha mandato oggi");
+                                ResultSet result = stmt.executeQuery(query);
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
+                        
+                            int nMsg = 0;
+                            if (result.next() && (nMsg = result.getInt("numero_messaggi")) != 0)
+                            {
+                                System.out.println("Oggi " + n + " ha mandato " + nMsg + " messaggi");
+                            }
+                            else
+                            {
+                                System.out.println("Oggi " + n + " non ha mandato nessun messaggio");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            s.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
                         }
                     break;
                     default:
