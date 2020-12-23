@@ -397,6 +397,32 @@ public class Server extends Thread
                             s.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
                         }
                     break;
+                    case "aggiungi-utente":
+                    case "a-utente":
+                    case "au":
+                        try
+                        {
+                            String n = arguments[1];
+
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
+                                Connection connection = DatabaseConnection.getConnection();
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
+                        
+                            String query = "INSERT INTO utenti VALUES('" + n + "')";
+
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " creo un oggetto di tipo Statement");
+                                Statement stmt = connection.createStatement();
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " oggetto creato");
+
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " eseguo la query per inserire un nuovo utente nel database");
+                                stmt.executeUpdate(query);
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
+                        }
+                        catch (Exception e)
+                        {
+                            s.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                        }
+                    break;
                     case "n-message-by":
                     case "n-msg-by":
                     case "nmb":
