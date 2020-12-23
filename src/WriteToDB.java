@@ -22,23 +22,6 @@ public class WriteToDB extends Thread
     }
 
     /**
-     * Ritorna la connessione al Database
-     * @throws SQLException, nel caso non può connettersi al database
-     
-    private Connection getConnection() throws SQLException
-    {
-        try
-        {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        }
-        catch (Exception e)
-        {
-            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
-        }
-        return DriverManager.getConnection(Config.URL, Config.USER, Config.PASSWD);
-    }*/
-
-    /**
      * Aggiunge il messaggio alla coda dei messaggi
      * da inserire nel database. Solo un thread alla volta
      * può accedere qua dentro
