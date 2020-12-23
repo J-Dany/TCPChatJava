@@ -8,7 +8,6 @@ public class ConnectionClient implements Runnable
 {
     private Socket socket;
     private Client client;
-    private String nome;
 
     public ConnectionClient(Socket socket, Client client)
     {
@@ -72,7 +71,7 @@ public class ConnectionClient implements Runnable
 
                         JSONObject invioMessaggio = new JSONObject();
                         invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
-                        invioMessaggio.put("Nome", this.nome);
+                        invioMessaggio.put("Nome", this.client.getNome());
                         invioMessaggio.put("Messaggio", richiesta.getString("Messaggio"));
 
                         Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
@@ -98,7 +97,7 @@ public class ConnectionClient implements Runnable
         try { this.socket.close(); } catch (Exception e) { Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e); }
         Server.getServer().rimuoviClient(this.client);
 
-        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " " + this.nome + " si e' disconnesso, aggiorno il numero degli utenti connessi al client");
+        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " " + this.client.getNome() + " si e' disconnesso, aggiorno il numero degli utenti connessi al client");
         JSONObject numeroUtenti = new JSONObject();
         numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
         numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi());
@@ -108,7 +107,7 @@ public class ConnectionClient implements Runnable
     private boolean gestisciAutenticazione(JSONObject richiesta)
     {
         String nomeUtente = richiesta.getString("Nome");
-        this.nome = nomeUtente;
+        this.client.setNome(nomeUtente);
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " nuovo client: " + nomeUtente);
 
         try

@@ -270,6 +270,20 @@ public class Server extends Thread
      */
     private void liberaRisorse()
     {
+        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Chiudo tutti i socket dei client");
+        for (Socket s : this.connected_clients.values())
+        {
+            try
+            {
+                s.close();
+            }
+            catch (Exception e)
+            {
+                this.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+            }
+        }
+        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Chiusi tutti i socket dei client");
+
         this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Libero la memoria creata per contenere hashmap");
         
         // Elimino hashmap
@@ -368,9 +382,11 @@ public class Server extends Thread
                     case "scc":
                         try
                         {
-                            for (Socket c : s.connected_clients.values())
+                            Object[] clients = s.connected_clients.keySet().toArray();
+                            for (int j = 0; j < clients.length; ++j)
                             {
-                                System.out.println(c.getInetAddress());
+                                Client c = (Client)clients[j];
+                                System.out.println("> " + c.getAddress() + " => " + c.getNome());
                             }
                         }
                         catch (Exception e)

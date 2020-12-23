@@ -13,6 +13,7 @@ public class Client
     private int counter;
     private long time;
     private int max_request_before_ban;
+    private String nome;
     
     public Client (InetAddress address)
     {
@@ -20,6 +21,16 @@ public class Client
         this.counter = this.MAX_REQUEST; 
         this.max_request_before_ban = this.MAX_REQUEST;
         this.time = System.currentTimeMillis() / 1000;
+    }
+
+    public void setNome(String nome)
+    {
+        this.nome = nome;
+    }
+
+    public String getNome()
+    {
+        return this.nome != null ? nome : "No-Name";
     }
 
     public int getCounter()

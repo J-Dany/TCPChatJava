@@ -7,4 +7,5 @@ db:
 
 run-server:
 	echo "<< You need to run this with sudo >>"
-	sudo java -Xmx2G -classpath out src.Server
+	cd out; \
+	sudo java -Xmx2G -classpath .:lib/* src.Server
