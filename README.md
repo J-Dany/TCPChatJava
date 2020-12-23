@@ -34,6 +34,8 @@ I comandi per ora disponibili, con alias, sono:
     - Stampa la lista dei comandi dati al server
 - **ban** {ip}
     - Banna l'indirizzo IP passato
+- **n-message-by** {nomeClient} (v. corta: *n-msg-by*, *nmb*)
+    - Stampa il numero dei messaggi che {nomeClient} ha mandato oggi
 
 ## Come avviare il Client
 Per avviare il client è sufficiente digitare:
