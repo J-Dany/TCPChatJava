@@ -153,6 +153,10 @@ public class AppClient
                                 case "Numero-Utenti":
                                     chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
                                 break;
+                                case "Chiudi-Connessione":
+                                    JOptionPane.showMessageDialog(chat.app, "Il server ha mandato una richiesta di disconnessione perché si sta chiudendo. Chiudo l'applicazione", "Server chiuso", JOptionPane.ERROR_MESSAGE);
+                                    System.exit(0);    
+                                break;
                             }
                         }
                         catch (Exception e) 
@@ -176,7 +180,7 @@ public class AppClient
         private HashMap<String, Color> utenteColore;
         private OutputStreamWriter writer;
         private Socket socket;
-        private JFrame app;
+        public JFrame app;
         private JTextField input, utentiConnessi;
         private Font font = new FontUIResource("Noto Sans", Font.PLAIN, 14);
         private Font fontTextArea = new FontUIResource("Caladea", Font.PLAIN, 18);
@@ -323,6 +327,10 @@ public class AppClient
                         writer.write(closeRequest.toString());
                         writer.flush();
                         writer.close();
+                    }
+                    catch (IOException e)
+                    {
+                        System.exit(IO_EXCEPTION);
                     }
                     catch (Exception e) 
                     {

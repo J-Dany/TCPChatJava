@@ -264,6 +264,12 @@ public class Server extends Thread
         {
             try
             {
+                JSONObject chiudiConnessione = new JSONObject();
+                chiudiConnessione.put("Tipo-Richiesta", "Chiudi-Connessione");
+
+                s.getOutputStream().write(chiudiConnessione.toString().getBytes());
+                s.getOutputStream().flush();
+                
                 s.close();
             }
             catch (Exception e)
