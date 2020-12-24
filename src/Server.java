@@ -232,34 +232,17 @@ public class Server extends Thread
 
                 // Controllo se è un client che gia' si era connesso in precedenza, altrimenti
                 // lo aggiungo
-                synchronized (this)
+                synchronized (this.connected_clients)
                 {
                     if (!this.connected_clients.containsKey(c)) 
                     {
                         this.connected_clients.put(c, sclient);
                     }
                 }
-                
-                this.logger.add_msg("[ OK  ] - Creo l'array di client per scalare le richieste per il client giusto");
-
-                // Scalo le richieste che puo' fare al minuto
-                Socket client_socket = null;
-                synchronized (this)
-                {
-                    arr = this.connected_clients.keySet().toArray();
-                    for (int i = 0; i < arr.length; ++i) {
-                        if (arr[i].equals(c)) {
-                            client_socket = this.connected_clients.get(arr[i]);
-                            c = (Client)arr[i];
-                            break;
-                        }
-                    }
-                    c.clientConnected();
-                }
 
                 this.logger.add_msg("[ OK  ] - Sto in ascolto per i messaggi di questo client.");
 
-                this.threadPoolClient.submit(new ConnectionClient(client_socket, c));
+                this.threadPoolClient.submit(new ConnectionClient(sclient, c));
             }
         } 
         catch (Exception e) 
@@ -383,12 +366,47 @@ public class Server extends Thread
                         s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " banna: " + ip);
                         s.ban(InetAddress.getByName(ip));
                     break;
+                    case "svuota-db-messaggi":
+                    case "svuota-db-msg":
+                    case "sdbm":
+                        try
+                        {
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
+                                Connection connection = DatabaseConnection.getConnection();
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
+                        
+                            String query = "TRUNCATE TABLE messaggi";
+
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " creo un oggetto di tipo Statement");
+                                Statement stmt = connection.createStatement();
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " oggetto creato");
+
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " eseguo la query per eliminare tutti i messaggi dal database");
+                                stmt.executeUpdate(query);
+                            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
+                        }
+                        catch (Exception e)
+                        {
+                            s.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                        }
+                    break;
                     case "show-connected-client":
                     case "showcc":
                     case "scc":
                         try
                         {
                             Object[] clients = s.connected_clients.keySet().toArray();
+                            if (clients.length == 1)
+                            {
+                                System.out.println("C'e' un solo client connesso");
+                            }
+                            else
+                            {
+                                System.out.println("Ci sono " + clients.length + " client connessi");
+                            }
+
+                            System.out.println("******************************************************");
+
                             for (int j = 0; j < clients.length; ++j)
                             {
                                 Client c = (Client)clients[j];
