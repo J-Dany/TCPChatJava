@@ -153,6 +153,9 @@ public class AppClient
                                 case "Numero-Utenti":
                                     chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
                                 break;
+                                case "Non-Puoi-Inviare-Messaggi":
+                                    JOptionPane.showMessageDialog(chat.app, risposta.getString("Motivo"), "Non puoi inviare messaggi", JOptionPane.ERROR_MESSAGE);                                   
+                                break;
                                 case "Chiudi-Connessione":
                                     JOptionPane.showMessageDialog(chat.app, "Il server ha mandato una richiesta di disconnessione perché si sta chiudendo. Chiudo l'applicazione", "Server chiuso", JOptionPane.ERROR_MESSAGE);
                                     System.exit(0);    

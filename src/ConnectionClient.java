@@ -64,8 +64,24 @@ public class ConnectionClient implements Runnable
                         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " tipo richiesta: Invio-Messaggio");
 
                         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
-                        if (Server.getServer().banned.contains(this.client.getAddress()) || this.client.getCounter() == 0)
+                        if (Server.getServer().banned.contains(this.client.getAddress()))
                         {
+                            JSONObject bannato = new JSONObject();
+                            bannato.put("Tipo-Richiesta", "Non-Puoi-Inviare-Messaggi");
+                            bannato.put("Motivo", "Sei stato bannato");
+
+                            Server.getServer().mandaMessaggio(bannato.toString(), null, this.socket);
+
+                            break;
+                        }
+                        else if (this.client.getCounter() == 0)
+                        {
+                            JSONObject mutato = new JSONObject();
+                            mutato.put("Tipo-Richiesta", "Non-Puoi-Inviare-Messaggi");
+                            mutato.put("Motivo", "Sei stato mutato per 1 minuto per aver mandato troppi messaggi");
+
+                            Server.getServer().mandaMessaggio(mutato.toString(), null, this.socket);
+
                             break;
                         }
 
