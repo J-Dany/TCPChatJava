@@ -57,7 +57,7 @@ public class AppClient
             {
                 colors.add(new ColorUIResource(
                     new Random().nextInt(180) + 70, 
-                    new Random().nextInt(180) + 70,
+                    new Random().nextInt(100),
                     new Random().nextInt(180) + 70));
             }
 
@@ -154,7 +154,7 @@ public class AppClient
                                     chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
                                 break;
                             }
-                        } 
+                        }
                         catch (Exception e) 
                         {
                             e.printStackTrace();
