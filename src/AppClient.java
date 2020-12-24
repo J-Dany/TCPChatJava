@@ -185,6 +185,7 @@ public class AppClient
         private StyledDocument doc;
         private String nome;
         private JScrollPane scrollPaneTextArea;
+        private JScrollBar s;
 
         public ChatUI(Socket socket, String nome) throws IOException 
         {
@@ -452,6 +453,7 @@ public class AppClient
             panelInput.add(buttonInviaMessaggio);
 
             this.doc = this.textArea.getStyledDocument();
+            this.s = scrollPaneTextArea.getVerticalScrollBar();
 
             panel.add(panelInput);
         }
@@ -474,8 +476,7 @@ public class AppClient
                 StyleConstants.setForeground(style, c);
 
                 doc.insertString(doc.getLength(), nome + ": " + msg + "\n", style);
-                JScrollBar s = scrollPaneTextArea.getVerticalScrollBar();
-                s.setValue(s.getMaximum());
+                this.s.setValue(this.s.getMaximum());
             } 
             catch (Exception e)
             {
