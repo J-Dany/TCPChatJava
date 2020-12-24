@@ -10,6 +10,9 @@ import java.util.Scanner;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
@@ -421,6 +424,32 @@ public class Server extends Thread
                         catch (Exception e)
                         {
                             s.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                        }
+                    break;
+                    case "manda-msg":
+                    case "send-msg":
+                        String msg = "";
+
+                        for (int j = 1; j < arguments.length; ++j)
+                        {
+                            msg += arguments[j] + " ";
+                        }
+
+                        if (msg.length() >= 256)
+                        {
+                            System.out.println("Messaggio troppo lungo (max. 256 caratteri).");
+                            System.out.println("Il messaggio non verra' inviato.");
+                            break;
+                        }
+
+                        if (msg != null && msg.length() != 0)
+                        {
+                            JSONObject json = new JSONObject();
+                            json.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                            json.put("Nome", "SERVER");
+                            json.put("Messaggio", msg);
+
+                            s.messaggioBroadcast(json.toString());
                         }
                     break;
                     case "n-message-by":
