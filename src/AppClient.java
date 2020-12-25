@@ -43,8 +43,6 @@ public class AppClient
     public static final int HEIGHT = 480;
     public static final int WIDTH = 853;
 
-    public static ArrayList<ColorUIResource> colors = new ArrayList<>();
-
     public static void main(String[] args) 
     {
         try 
@@ -53,124 +51,92 @@ public class AppClient
             InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
             socket.connect(server_address);
 
-            for (int i = 0; i < 256; ++i) 
-            {
-                colors.add(new ColorUIResource(
-                    new Random().nextInt(180) + 70, 
-                    new Random().nextInt(100),
-                    new Random().nextInt(180) + 70));
-            }
-
             Scanner input = new Scanner(System.in);
             System.out.print("Nome utente: ");
             String nome = input.nextLine();
             input.close();
 
-            Thread read = new Thread(new Runnable() {
-                @Override
-                public void run() 
-                {
-                    ChatUI chat = null;
+            JSONObject auth = new JSONObject();
+            auth.put("Tipo-Richiesta", "Autenticazione");
+            auth.put("Nome", nome);
 
+            socket.getOutputStream().write(auth.toString().getBytes());
+            socket.getOutputStream().flush();
+
+            ChatUI chat = null;
+
+            while (true)
+            {
+                byte[] buffer = new byte[1024];
+                String msg = null;
+
+                synchronized (socket)
+                {
                     try
                     {
-                        JSONObject jsonAutenticazione = new JSONObject();
-                        jsonAutenticazione.put("Tipo-Richiesta", "Autenticazione");
-                        jsonAutenticazione.put("Nome", nome);
-                        socket.getOutputStream().write(jsonAutenticazione.toString().getBytes());
-                        socket.getOutputStream().flush();
+                        int l = socket.getInputStream().read(buffer);
+                        msg = new String(buffer, 0, l, "UTF8");
                     }
                     catch (Exception e)
                     {
                         e.printStackTrace();
                     }
+                }
 
-                    while (!Thread.currentThread().isInterrupted()) 
-                    {
-                        try 
+                JSONObject risposta = new JSONObject(msg);
+
+                switch (risposta.getString("Tipo-Richiesta"))
+                {
+                    case "Autenticazione":
+                        if (!risposta.getBoolean("Risultato"))
                         {
-                            byte[] buffer = new byte[1024];
-                            String msg = null;
-                            synchronized (socket)
-                            {
-                                try
-                                {
-                                    int l = socket.getInputStream().read(buffer);
-                                    msg = new String(buffer, 0, l, "UTF8");
-                                }
-                                catch (Exception e)
-                                {
-                                    Thread.currentThread().interrupt();
-                                    continue;
-                                }
-                            }
-
-                            JSONObject risposta = new JSONObject(msg);
-
-                            switch (risposta.getString("Tipo-Richiesta"))
-                            {
-                                case "Autenticazione":
-                                    if (!risposta.getBoolean("Risultato"))
-                                    {
-                                        System.exit(UTENTE_NON_RICONOSCIUTO);
-                                    }
-
-                                    try
-                                    {
-                                        OutputStreamWriter write = new OutputStreamWriter(socket.getOutputStream(), "UTF8");
-                                        
-                                        String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
-                                        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-                                        
-                                        JSONObject nuovoMessaggio = new JSONObject();
-                                        nuovoMessaggio.put("Tipo-Richiesta", "Invio-Messaggio");
-                                        nuovoMessaggio.put("Messaggio", "si è connesso!");
-                                        nuovoMessaggio.put("Nome", nome);
-                                        nuovoMessaggio.put("Data", data);
-                                        nuovoMessaggio.put("Time", time);
-
-                                        write.write(nuovoMessaggio.toString());
-                                        write.flush();
-
-                                        chat = new ChatUI(socket, new String(nome));
-                                        chat.prepareApp();
-                                        chat.show();
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        e.printStackTrace();
-                                    }
-                                    chat.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
-                                break;
-                                case "Nuovo-Messaggio":
-                                    String nome = risposta.getString("Nome");
-                                    if (!chat.getUtenteColore().containsKey(nome))
-                                    {
-                                        chat.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
-                                    }
-                                    chat.aggiungiMessaggio(nome ,risposta.getString("Messaggio"));
-                                break;
-                                case "Numero-Utenti":
-                                    chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
-                                break;
-                                case "Non-Puoi-Inviare-Messaggi":
-                                    JOptionPane.showMessageDialog(chat.app, risposta.getString("Motivo"), "Non puoi inviare messaggi", JOptionPane.ERROR_MESSAGE);                                   
-                                break;
-                                case "Chiudi-Connessione":
-                                    JOptionPane.showMessageDialog(chat.app, "Il server ha mandato una richiesta di disconnessione perché si sta chiudendo. Chiudo l'applicazione", "Server chiuso", JOptionPane.ERROR_MESSAGE);
-                                    System.exit(0);    
-                                break;
-                            }
+                            System.out.println("Utente non riconosciuto.");
+                            System.exit(UTENTE_NON_RICONOSCIUTO);
                         }
-                        catch (Exception e) 
+
+                        try
+                        {
+                            OutputStreamWriter write = new OutputStreamWriter(socket.getOutputStream(), "UTF8");
+                            
+                            String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
+                            String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
+                            
+                            JSONObject nuovoMessaggio = new JSONObject();
+                            nuovoMessaggio.put("Tipo-Richiesta", "Invio-Messaggio");
+                            nuovoMessaggio.put("Messaggio", "si è connesso!");
+                            nuovoMessaggio.put("Nome", nome);
+                            nuovoMessaggio.put("Data", data);
+                            nuovoMessaggio.put("Time", time);
+
+                            write.write(nuovoMessaggio.toString());
+                            write.flush();
+
+                            chat = new ChatUI(socket, new String(nome));
+                            chat.prepareApp();
+                            chat.show();
+                            chat.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
+                        }
+                        catch (Exception e)
                         {
                             e.printStackTrace();
-                            break;
                         }
-                    }
+                    break;
+                    case "Nuovo-Messaggio":
+                        String nomeClient = risposta.getString("Nome");
+                        chat.aggiungiMessaggio(nomeClient, risposta.getString("Messaggio"));
+                    break;
+                    case "Numero-Utenti":
+                        chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
+                    break;
+                    case "Non-Puoi-Inviare-Messaggi":
+                        JOptionPane.showMessageDialog(chat.app, risposta.getString("Motivo"), "Non puoi inviare messaggi", JOptionPane.ERROR_MESSAGE);                                   
+                    break;
+                    case "Chiudi-Connessione":
+                        JOptionPane.showMessageDialog(chat.app, "Il server ha mandato una richiesta di disconnessione perché si sta chiudendo. Chiudo l'applicazione", "Server chiuso", JOptionPane.ERROR_MESSAGE);
+                        System.exit(0);    
+                    break;
                 }
-            });
-            read.start();
+            }
         } 
         catch (Exception e) 
         {
@@ -193,6 +159,7 @@ public class AppClient
         private String nome;
         private JScrollPane scrollPaneTextArea;
         private JScrollBar s;
+        private ArrayList<ColorUIResource> colors = new ArrayList<>();
 
         public ChatUI(Socket socket, String nome) throws IOException 
         {
@@ -203,6 +170,14 @@ public class AppClient
             {
                 this.socket = socket;
                 this.writer = new OutputStreamWriter(this.socket.getOutputStream(), "UTF8");
+            }
+
+            for (int i = 0; i < 256; ++i) 
+            {
+                this.colors.add(new ColorUIResource(
+                    new Random().nextInt(180) + 70, 
+                    new Random().nextInt(100),
+                    new Random().nextInt(180) + 70));
             }
         }
 
@@ -479,6 +454,11 @@ public class AppClient
         {
             try 
             {
+                if (!this.utenteColore.containsKey(nome))
+                {
+                    this.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
+                }
+
                 Style style = textArea.addStyle(msg, null);
                 Color c = nome.equals("Tu")
                     ? Color.BLACK
