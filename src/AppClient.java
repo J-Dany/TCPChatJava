@@ -37,12 +37,6 @@ public class AppClient
     public static final int OUTPUT_STREAM_NON_ISTANZIATO = 3;
     public static final int UTENTE_NON_RICONOSCIUTO = 4;
 
-    /**
-     * Grandezza dell'applicazione
-     */
-    public static final int HEIGHT = 480;
-    public static final int WIDTH = 853;
-
     public static void main(String[] args) 
     {
         try 
@@ -133,6 +127,7 @@ public class AppClient
                     break;
                     case "Chiudi-Connessione":
                         JOptionPane.showMessageDialog(chat.app, "Il server ha mandato una richiesta di disconnessione perché si sta chiudendo. Chiudo l'applicazione", "Server chiuso", JOptionPane.ERROR_MESSAGE);
+                        socket.close();
                         System.exit(0);    
                     break;
                 }
@@ -146,6 +141,12 @@ public class AppClient
 
     static class ChatUI 
     {
+        /**
+         * Grandezza dell'applicazione
+         */
+        public final int HEIGHT = 480;
+        public final int WIDTH = 853;
+
         private HashMap<String, Color> utenteColore;
         private OutputStreamWriter writer;
         private Socket socket;
@@ -168,8 +169,11 @@ public class AppClient
             this.app = new JFrame("Chat");
             if (socket != null) 
             {
-                this.socket = socket;
-                this.writer = new OutputStreamWriter(this.socket.getOutputStream(), "UTF8");
+                synchronized (this.socket)
+                {
+                    this.socket = socket;
+                    this.writer = new OutputStreamWriter(this.socket.getOutputStream(), "UTF8");
+                }
             }
 
             for (int i = 0; i < 256; ++i) 
@@ -217,15 +221,21 @@ public class AppClient
                         inviaAvvenutaDisconnessione.put("Data", data);
                         inviaAvvenutaDisconnessione.put("Time", time);
 
-                        writer.write(inviaAvvenutaDisconnessione.toString());
-                        writer.flush();
+                        synchronized (writer)
+                        {
+                            writer.write(inviaAvvenutaDisconnessione.toString());
+                            writer.flush();
+                        }
                         
                         JSONObject closeRequest = new JSONObject();
                         closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
 
-                        writer.write(closeRequest.toString());
-                        writer.flush();
-                        writer.close();
+                        synchronized (writer)
+                        {
+                            writer.write(closeRequest.toString());
+                            writer.flush();
+                            writer.close();
+                        }
 
                         System.exit(0);
                     } 
@@ -296,15 +306,21 @@ public class AppClient
                         inviaAvvenutaDisconnessione.put("Data", data);
                         inviaAvvenutaDisconnessione.put("Time", time);
 
-                        writer.write(inviaAvvenutaDisconnessione.toString());
-                        writer.flush();
+                        synchronized (writer)
+                        {
+                            writer.write(inviaAvvenutaDisconnessione.toString());
+                            writer.flush();
+                        }
                         
                         JSONObject closeRequest = new JSONObject();
                         closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
 
-                        writer.write(closeRequest.toString());
-                        writer.flush();
-                        writer.close();
+                        synchronized (writer)
+                        {
+                            writer.write(closeRequest.toString());
+                            writer.flush();
+                            writer.close();
+                        }
                     }
                     catch (IOException e)
                     {
@@ -401,8 +417,11 @@ public class AppClient
                         json.put("Nome", nome);
                         json.put("Messaggio", msg);
 
-                        writer.write(json.toString()); 
-                        writer.flush();
+                        synchronized (writer)
+                        {
+                            writer.write(json.toString()); 
+                            writer.flush();
+                        }
 
                         input.setText("");
                     }
