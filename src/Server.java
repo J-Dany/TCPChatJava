@@ -306,6 +306,7 @@ public class Server extends Thread
 
     public static void main(String[] args)
     {
+        Thread.currentThread().setName("Console");
         Stack<String> history = new Stack<>();
         Server s = null;
 
@@ -368,7 +369,7 @@ public class Server extends Thread
                         command = null;
                     break;
                     case "ban":
-                        String ip = arguments[1];
+                        String ip = arguments[1].split("\\/")[0];
                         s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " banna: " + ip);
                         s.ban(InetAddress.getByName(ip));
                     break;

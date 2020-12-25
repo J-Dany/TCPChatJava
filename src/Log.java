@@ -12,11 +12,22 @@ public class Log extends Thread
 {
     private Queue<String> coda;
     private String filename;
+    private FileWriter fw;
+    private Formatter writer;
     
     public Log(String filename)
     {
         this.filename = "../lop/" + filename;
         this.coda = new LinkedList<>();
+        try
+        {
+            this.fw = new FileWriter(this.filename, true);
+            this.writer = new Formatter(this.fw);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public synchronized void add_msg(String msg)
@@ -31,20 +42,15 @@ public class Log extends Thread
     {
         try
         {
-            FileWriter f = new FileWriter(this.filename, true);
-            Formatter write = new Formatter(f);
-
             LocalDateTime myDateObj = LocalDateTime.now();
             DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
             String formattedDate = myDateObj.format(myFormatObj);
 
             if (msg != null)
             {
-                write.format("[ %s ] -- %s\n", formattedDate, msg);
-                write.flush();
+                this.writer.format("[ %s ] -- %s\n", formattedDate, msg);
+                this.writer.flush();
             }
-
-            write.close();
         }
         catch (Exception e)
         {
@@ -84,6 +90,8 @@ public class Log extends Thread
                 {
                     this.writeToFile(msg);
                 }
+
+                this.writer.close();
             }
             catch (Exception e)
             {
