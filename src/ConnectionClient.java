@@ -9,6 +9,8 @@ public class ConnectionClient implements Runnable
     private Socket socket;
     private Client client;
 
+    private final int GRANDEZZA_BUFFER = 1 << 26; // Max. grandezza immagini = circa 67 MB
+
     public ConnectionClient(Socket socket, Client client)
     {
         this.socket = socket;
@@ -24,7 +26,7 @@ public class ConnectionClient implements Runnable
 
             while (msg != null)
             {
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[GRANDEZZA_BUFFER];
                 int l = this.socket.getInputStream().read(buffer);
                 msg = new String(buffer, 0, l, "UTF8");
 

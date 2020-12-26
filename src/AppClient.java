@@ -36,7 +36,17 @@ public class AppClient
     private static final int OUTPUT_STREAM_NON_ISTANZIATO = 3;
     private static final int UTENTE_NON_RICONOSCIUTO = 4;
 
+    /**
+     * Nome del client
+     */
     private static String nome;
+
+    /**
+     * Grandezza buffer di ricezione.
+     * Possiamo ricevere un'immagine all'incirca
+     * di 67 MB
+     */
+    private static final int GRANDEZZA_BUFFER = 1 << 26;
 
     public static void main(String[] args) 
     {
@@ -102,7 +112,7 @@ public class AppClient
 
             while (true)
             {
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[GRANDEZZA_BUFFER];
                 String msg = null;
 
                 synchronized (socket)
@@ -288,6 +298,20 @@ public class AppClient
             });
             quit.setFont(font);
             file.add(quit);
+            JMenu caricaImmagine = new JMenu("Immagine");
+            caricaImmagine.setFont(font);
+            JMenuItem buttonCaricaImmagine = new JMenuItem("Carica...");
+            buttonCaricaImmagine.setFont(font);
+            buttonCaricaImmagine.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent arg0) 
+                {
+                    JFileChooser fileChooser = new JFileChooser();
+                    fileChooser.showOpenDialog(app);
+                }
+            });
+            caricaImmagine.add(buttonCaricaImmagine);
             JMenu info = new JMenu("Info");
             info.setFont(font);
             JMenuItem about = new JMenuItem("About");
@@ -315,6 +339,7 @@ public class AppClient
             JMenu n = new JMenu("Sei loggato come: " + nome);
             n.setFont(font);
             menuBar.add(file);
+            menuBar.add(caricaImmagine);
             menuBar.add(info);
             menuBar.add(n);
             info.add(about);
