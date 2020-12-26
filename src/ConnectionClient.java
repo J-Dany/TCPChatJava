@@ -33,7 +33,6 @@ public class ConnectionClient implements Runnable
                 int l = this.socket.getInputStream().read(buffer);
                 msg = new String(buffer, 0, l, "UTF8");
 
-                System.out.println(msg.length() + ", " + msg);
                 JSONObject richiesta = new JSONObject(msg);
 
                 Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " gestisco tipo richiesta");

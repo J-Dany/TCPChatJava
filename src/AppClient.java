@@ -378,7 +378,7 @@ public class AppClient
                                     mandaImmagine.put("Time", time);
                                     mandaImmagine.put("Nome", nome);
 
-                                    int lenPerPacketImg = 8192 - mandaImmagine.toString().length() - 15;
+                                    int lenPerPacketImg = 1024;
 
                                     byte[] fragmentImg = new byte[lenPerPacketImg];
                                     for (int j = 0; j < lenPerPacketImg; ++j)
