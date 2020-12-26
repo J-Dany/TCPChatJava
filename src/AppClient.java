@@ -25,17 +25,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.Scanner;
 
 public class AppClient 
 {
     /**
      * Codici di ritorno dell'applicazione
      */
-    public static final int CONNESSIONE_RIFIUTATA = 1;
-    public static final int IO_EXCEPTION = 2;
-    public static final int OUTPUT_STREAM_NON_ISTANZIATO = 3;
-    public static final int UTENTE_NON_RICONOSCIUTO = 4;
+    private static final int CONNESSIONE_RIFIUTATA = 1;
+    private static final int IO_EXCEPTION = 2;
+    private static final int OUTPUT_STREAM_NON_ISTANZIATO = 3;
+    private static final int UTENTE_NON_RICONOSCIUTO = 4;
+
+    private static String nome;
 
     public static void main(String[] args) 
     {
@@ -45,17 +46,57 @@ public class AppClient
             InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
             socket.connect(server_address);
 
-            Scanner input = new Scanner(System.in);
-            System.out.print("Nome utente: ");
-            String nome = input.nextLine();
-            input.close();
+            FontUIResource font = new FontUIResource("Arial", FontUIResource.PLAIN, 16);
+            JDialog dialog = new JDialog();
+            dialog.setModal(true);
+            dialog.setPreferredSize(new Dimension(500, 200));
+            dialog.setLayout(new GridLayout(8, 1));
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.add(Box.createHorizontalGlue());
+            dialog.setTitle("Autenticazione");
+            JLabel labelInfo = new JLabel("Per autenticarti ho bisogno di username e password:");
+            labelInfo.setFont(font);
+            dialog.add(labelInfo);
+            dialog.add(Box.createHorizontalGlue());
+            JTextField nomeUtente = new JTextField();
+            nomeUtente.setFont(font);
+            JPasswordField password = new JPasswordField();
+            dialog.add(nomeUtente);
+            dialog.add(password);
+            JButton buttonLogin = new JButton("Autenticati");
+            buttonLogin.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent arg0) 
+                {
+                    String n = nomeUtente.getText();
+                    String p = new String(password.getPassword());
 
-            JSONObject auth = new JSONObject();
-            auth.put("Tipo-Richiesta", "Autenticazione");
-            auth.put("Nome", nome);
+                    JSONObject auth = new JSONObject();
+                    auth.put("Tipo-Richiesta", "Autenticazione");
+                    auth.put("Nome", n);
+                    auth.put("Password", p);
+                    
+                    nome = n;
 
-            socket.getOutputStream().write(auth.toString().getBytes());
-            socket.getOutputStream().flush();
+                    try
+                    {
+                        socket.getOutputStream().write(auth.toString().getBytes());
+                        socket.getOutputStream().flush();
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                    dialog.dispose();
+                }
+            });
+            buttonLogin.setFont(font);
+            dialog.add(Box.createHorizontalGlue());
+            dialog.add(buttonLogin);
+            dialog.pack();
+            dialog.setVisible(true);
 
             ChatUI chat = null;
 
@@ -105,7 +146,7 @@ public class AppClient
                             write.write(nuovoMessaggio.toString());
                             write.flush();
 
-                            chat = new ChatUI(socket, new String(nome));
+                            chat = new ChatUI(socket, nome);
                             chat.prepareApp();
                             chat.show();
                             chat.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
@@ -132,7 +173,7 @@ public class AppClient
                     break;
                 }
             }
-        } 
+        }
         catch (Exception e) 
         {
             e.printStackTrace();
@@ -169,7 +210,7 @@ public class AppClient
             this.app = new JFrame("Chat");
             if (socket != null) 
             {
-                synchronized (this.socket)
+                synchronized (socket)
                 {
                     this.socket = socket;
                     this.writer = new OutputStreamWriter(this.socket.getOutputStream(), "UTF8");
