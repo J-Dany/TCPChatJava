@@ -115,7 +115,7 @@ public class AppClient
 
             while (true)
             {
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[GRANDEZZA_BUFFER];
                 String msg = null;
 
                 synchronized (socket)
