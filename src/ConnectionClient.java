@@ -90,55 +90,64 @@ public class ConnectionClient implements Runnable
                             break;
                         }
 
-                        if (richiesta.getString("Tipo-Messaggio").equals("Immagine") && !richiesta.getBoolean("Fine"))
+                        switch (richiesta.getString("Tipo-Messaggio"))
                         {
-                            fragmentImg.add(richiesta.getString("Messaggio"));
-                            break;
-                        }
+                            case "Immagine":
+                                if (!richiesta.getBoolean("Fine"))
+                                {
+                                    fragmentImg.add(richiesta.getString("Messaggio"));
+                                    break;
+                                }
 
-                        if (richiesta.getString("Tipo-Messaggio").equals("Immagine"))
-                        {
-                            for (int i = 0; i < fragmentImg.size(); ++i)
-                            {
+                                for (int i = 0; i < fragmentImg.size(); ++i)
+                                {
+                                    JSONObject invioMessaggio = new JSONObject(); 
+                                    invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                                    invioMessaggio.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
+                                    invioMessaggio.put("Fine", false);
+                                    invioMessaggio.put("Nome", this.client.getNome());
+                                    invioMessaggio.put("Messaggio", fragmentImg.get(i));
+    
+                                    Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
+    
+                                    Thread.sleep(256);
+                                }
+
                                 JSONObject invioMessaggio = new JSONObject(); 
                                 invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
                                 invioMessaggio.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
-                                invioMessaggio.put("Fine", false);
+                                invioMessaggio.put("Fine", true);
                                 invioMessaggio.put("Nome", this.client.getNome());
-                                invioMessaggio.put("Messaggio", fragmentImg.get(i));
-
+                                invioMessaggio.put("Messaggio", "");
+    
                                 Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
 
-                                Thread.sleep(256);
-                            }
+                                Server.getServer().writer.addMsg(
+                                    richiesta.getString("Data") + " " + richiesta.getString("Time")
+                                    + "|" +
+                                    richiesta.getString("Nome")
+                                    + "|" +
+                                    "Ha mandato un'immagine!"
+                                );
+                            break;
+                            case "Plain-Text":
+                                JSONObject invioPlainText = new JSONObject(); 
+                                invioPlainText.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                                invioPlainText.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
+                                invioPlainText.put("Nome", this.client.getNome());
+                                invioPlainText.put("Messaggio", richiesta.getString("Messaggio"));
 
-                            JSONObject invioMessaggio = new JSONObject(); 
-                            invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
-                            invioMessaggio.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
-                            invioMessaggio.put("Fine", true);
-                            invioMessaggio.put("Nome", this.client.getNome());
-                            invioMessaggio.put("Messaggio", "");
+                                Server.getServer().mandaMessaggio(invioPlainText.toString(), this.client, null);
 
-                            Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
+                                Server.getServer().writer.addMsg(
+                                    richiesta.getString("Data") + " " + richiesta.getString("Time")
+                                    + "|" +
+                                    richiesta.getString("Nome")
+                                    + "|" +
+                                    richiesta.getString("Messaggio")
+                                );
+                            break;
                         }
-                        else if (richiesta.getString("Tipo-Messaggio").equals("Plain-Text"))
-                        {
-                            JSONObject invioMessaggio = new JSONObject(); 
-                            invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
-                            invioMessaggio.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
-                            invioMessaggio.put("Nome", this.client.getNome());
-                            invioMessaggio.put("Messaggio", richiesta.getString("Messaggio"));
-
-                            Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
-                        }
-
-                        Server.getServer().writer.addMsg(
-                            richiesta.getString("Data") + " " + richiesta.getString("Time")
-                            + "|" +
-                            richiesta.getString("Nome")
-                            + "|" +
-                            (richiesta.getString("Tipo-Messaggio").equals("Plain-Text") ? richiesta.getString("Messaggio") : "Ha mandato un'immagine!")
-                        );
                     break;
                     case "Chiudi-Connessione":
                         msg = null;

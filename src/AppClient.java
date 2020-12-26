@@ -178,7 +178,8 @@ public class AppClient
                             case "Immagine":
                                 if (!risposta.getBoolean("Fine"))
                                 {
-                                    fragmentImg.add(risposta.getString("Messaggio"));
+                                    fragmentImg.add(new String(Base64.getDecoder().decode(risposta.getString("Messaggio"))));
+                                    break;
                                 }
 
                                 int size = 0;
@@ -190,7 +191,7 @@ public class AppClient
 
                                 byte[] img = new byte[size];
 
-                                for (int i = 0, k = 0; i < size; ++i)
+                                for (int i = 0, k = 0; i < fragmentImg.size(); ++i)
                                 {
                                     for (int j = k; j < fragmentImg.get(i).length(); ++j)
                                     {
@@ -691,6 +692,7 @@ public class AppClient
                 ImageIcon i = new ImageIcon(imgData);
                 aggiungiMessaggio(nome, "");
                 textArea.insertIcon(i);
+                doc.insertString(doc.getLength(), "\n", null);
             }
             catch (Exception e)
             {
