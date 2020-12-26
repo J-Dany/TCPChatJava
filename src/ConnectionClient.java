@@ -3,13 +3,16 @@ package src;
 import org.json.JSONObject;
 import java.net.Socket;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class ConnectionClient implements Runnable
 {
     private Socket socket;
     private Client client;
 
-    private final int GRANDEZZA_BUFFER = 1 << 26; // Max. grandezza immagini = circa 67 MB
+    private final int GRANDEZZA_BUFFER = 8192;
+
+    private ArrayList<String> fragmentImg = new ArrayList<>();
 
     public ConnectionClient(Socket socket, Client client)
     {
@@ -30,6 +33,7 @@ public class ConnectionClient implements Runnable
                 int l = this.socket.getInputStream().read(buffer);
                 msg = new String(buffer, 0, l, "UTF8");
 
+                System.out.println(msg.length() + ", " + msg);
                 JSONObject richiesta = new JSONObject(msg);
 
                 Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " gestisco tipo richiesta");
@@ -87,13 +91,48 @@ public class ConnectionClient implements Runnable
                             break;
                         }
 
-                        JSONObject invioMessaggio = new JSONObject(); 
-                        invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
-                        invioMessaggio.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
-                        invioMessaggio.put("Nome", this.client.getNome());
-                        invioMessaggio.put("Messaggio", richiesta.getString("Messaggio"));
+                        if (richiesta.getString("Tipo-Messaggio").equals("Immagine") && !richiesta.getBoolean("Fine"))
+                        {
+                            fragmentImg.add(richiesta.getString("Messaggio"));
+                            break;
+                        }
 
-                        Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
+                        if (richiesta.getString("Tipo-Messaggio").equals("Immagine"))
+                        {
+                            for (int i = 0; i < fragmentImg.size(); ++i)
+                            {
+                                JSONObject invioMessaggio = new JSONObject(); 
+                                invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                                invioMessaggio.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
+                                invioMessaggio.put("Fine", false);
+                                invioMessaggio.put("Nome", this.client.getNome());
+                                invioMessaggio.put("Messaggio", fragmentImg.get(i));
+
+                                Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
+
+                                Thread.sleep(256);
+                            }
+
+                            JSONObject invioMessaggio = new JSONObject(); 
+                            invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                            invioMessaggio.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
+                            invioMessaggio.put("Fine", true);
+                            invioMessaggio.put("Nome", this.client.getNome());
+                            invioMessaggio.put("Messaggio", "");
+
+                            Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
+                        }
+                        else if (richiesta.getString("Tipo-Messaggio").equals("Plain-Text"))
+                        {
+                            JSONObject invioMessaggio = new JSONObject(); 
+                            invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                            invioMessaggio.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
+                            invioMessaggio.put("Nome", this.client.getNome());
+                            invioMessaggio.put("Messaggio", richiesta.getString("Messaggio"));
+
+                            Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
+                        }
+
                         Server.getServer().writer.addMsg(
                             richiesta.getString("Data") + " " + richiesta.getString("Time")
                             + "|" +

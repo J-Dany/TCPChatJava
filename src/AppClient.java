@@ -34,9 +34,7 @@ public class AppClient
     /**
      * Codici di ritorno dell'applicazione
      */
-    private static final int CONNESSIONE_RIFIUTATA = 1;
     private static final int IO_EXCEPTION = 2;
-    private static final int OUTPUT_STREAM_NON_ISTANZIATO = 3;
     private static final int UTENTE_NON_RICONOSCIUTO = 4;
 
     /**
@@ -46,10 +44,10 @@ public class AppClient
 
     /**
      * Grandezza buffer di ricezione.
-     * Possiamo ricevere un'immagine all'incirca
-     * di 67 MB
      */
-    private static final int GRANDEZZA_BUFFER = 1 << 26;
+    private static final int GRANDEZZA_BUFFER = 8192;
+
+    private static ArrayList<String> fragmentImg = new ArrayList<>();
 
     public static void main(String[] args) 
     {
@@ -178,8 +176,29 @@ public class AppClient
                                 chat.aggiungiMessaggio(nomeClient, risposta.getString("Messaggio"));
                             break;
                             case "Immagine":
-                                String nC = risposta.getString("Nome");
-                                chat.aggiungiImmagine(nC, risposta.getString("Messaggio"));
+                                if (!risposta.getBoolean("Fine"))
+                                {
+                                    fragmentImg.add(risposta.getString("Messaggio"));
+                                }
+
+                                int size = 0;
+
+                                for (int i = 0; i < fragmentImg.size(); ++i)
+                                {
+                                    size += fragmentImg.get(i).length();
+                                }
+
+                                byte[] img = new byte[size];
+
+                                for (int i = 0, k = 0; i < size; ++i)
+                                {
+                                    for (int j = k; j < fragmentImg.get(i).length(); ++j)
+                                    {
+                                        img[j] = (byte) fragmentImg.get(i).charAt(k++);
+                                    }
+                                }
+
+                                chat.aggiungiImmagine(risposta.getString("Nome"), img);
                             break;
                         }
                     break;
@@ -330,34 +349,79 @@ public class AppClient
                     {
                         FileInputStream fileInputStream = new FileInputStream(f);
 
-                        if (f.length() > GRANDEZZA_BUFFER)
+                        if (f.length() > 1 << 26)
                         {
                             JOptionPane.showMessageDialog(app, "L'immagine è troppo grande!", "Errore immagine", JOptionPane.ERROR_MESSAGE);
                         }
                         else
-                        {
-                            String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
-                            String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-
-                            JSONObject mandaImmagine = new JSONObject();
-                            mandaImmagine.put("Tipo-Richiesta", "Invio-Messaggio");
-                            mandaImmagine.put("Tipo-Messaggio", "Immagine");
-                            mandaImmagine.put("Data", data);
-                            mandaImmagine.put("Time", time);
-                            mandaImmagine.put("Nome", nome);
-                            
+                        {                          
                             byte[] imageData = new byte[(int) f.length()];
                             fileInputStream.read(imageData);
+                            aggiungiImmagine(nome, imageData);
                             String msg = Base64.getEncoder().encodeToString(imageData);
 
-                            mandaImmagine.put("Messaggio", msg);
-
-                            aggiungiImmagine(nome, msg);
+                            int msgLength = msg.length();
 
                             synchronized (writer)
                             {
-                                writer.write(mandaImmagine.toString());
-                                writer.flush();
+                                String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
+                                String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
+
+                                for (int i = 0; i < msgLength - 1;)
+                                {
+                                    int k = i;
+                                    JSONObject mandaImmagine = new JSONObject();
+                                    mandaImmagine.put("Tipo-Richiesta", "Invio-Messaggio");
+                                    mandaImmagine.put("Fine", false);
+                                    mandaImmagine.put("Tipo-Messaggio", "Immagine");
+                                    mandaImmagine.put("Data", data);
+                                    mandaImmagine.put("Time", time);
+                                    mandaImmagine.put("Nome", nome);
+
+                                    int lenPerPacketImg = 8192 - mandaImmagine.toString().length() - 15;
+
+                                    byte[] fragmentImg = new byte[lenPerPacketImg];
+                                    for (int j = 0; j < lenPerPacketImg; ++j)
+                                    {
+                                        if (k == msgLength)
+                                        {
+                                            break;
+                                        }
+                                        fragmentImg[j] = (byte)msg.charAt(k++);
+                                    }
+
+                                    if (k == msgLength)
+                                    {
+                                        break;
+                                    }
+
+                                    mandaImmagine.put("Messaggio", new String(fragmentImg));
+
+                                    writer.write(mandaImmagine.toString());
+                                    writer.flush();
+
+                                    i += lenPerPacketImg;
+                                    Thread.sleep(256);
+                                }
+
+                                JSONObject fineImmagine = new JSONObject();
+                                fineImmagine.put("Tipo-Richiesta", "Invio-Messaggio");
+                                fineImmagine.put("Fine", true);
+                                fineImmagine.put("Tipo-Messaggio", "Immagine");
+                                fineImmagine.put("Messaggio", "");
+                                fineImmagine.put("Data", data);
+                                fineImmagine.put("Time", time);
+                                fineImmagine.put("Nome", nome);
+
+                                try
+                                {
+                                    writer.write(fineImmagine.toString());
+                                    writer.flush();
+                                }
+                                catch (Exception e)
+                                {
+                                    e.printStackTrace();
+                                }
                             }
                         }
 
@@ -620,11 +684,11 @@ public class AppClient
             }
         }
 
-        public void aggiungiImmagine(String nome, String img)
+        public void aggiungiImmagine(String nome, byte[] imgData)
         {
             try
             {
-                ImageIcon i = new ImageIcon(img);
+                ImageIcon i = new ImageIcon(imgData);
                 aggiungiMessaggio(nome, "");
                 textArea.insertIcon(i);
             }
