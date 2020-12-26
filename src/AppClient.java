@@ -19,6 +19,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.time.LocalDate;
@@ -48,6 +49,8 @@ public class AppClient
     private static final int GRANDEZZA_BUFFER = 8192;
 
     private static ArrayList<String> fragmentImg = new ArrayList<>();
+
+    private static int nImage = 0;
 
     public static void main(String[] args) 
     {
@@ -178,28 +181,30 @@ public class AppClient
                             case "Immagine":
                                 if (!risposta.getBoolean("Fine"))
                                 {
-                                    fragmentImg.add(new String(Base64.getDecoder().decode(risposta.getString("Messaggio"))));
+                                    fragmentImg.add(risposta.getString("Messaggio"));
                                     break;
                                 }
 
-                                int size = 0;
+                                String img = "";
 
                                 for (int i = 0; i < fragmentImg.size(); ++i)
                                 {
-                                    size += fragmentImg.get(i).length();
+                                    img += fragmentImg.get(i);
                                 }
 
-                                byte[] img = new byte[size];
+                                fragmentImg.clear();
 
-                                for (int i = 0, k = 0; i < fragmentImg.size(); ++i)
-                                {
-                                    for (int j = k; j < fragmentImg.get(i).length(); ++j)
-                                    {
-                                        img[j] = (byte) fragmentImg.get(i).charAt(k++);
-                                    }
-                                }
+                                FileOutputStream fileOutputStream = new FileOutputStream("img" + nImage + ".png");
+                                fileOutputStream.write(Base64.getDecoder().decode(img));
 
-                                chat.aggiungiImmagine(risposta.getString("Nome"), img);
+                                File f = new File("img" + nImage + ".png");
+                                FileInputStream file = new FileInputStream(f);
+                                byte[] imgData = new byte[(int)f.length()];
+                                file.read(imgData);
+
+                                ++nImage;
+
+                                chat.aggiungiImmagine(risposta.getString("Nome"), imgData);
                             break;
                         }
                     break;
@@ -693,6 +698,7 @@ public class AppClient
                 aggiungiMessaggio(nome, "");
                 textArea.insertIcon(i);
                 doc.insertString(doc.getLength(), "\n", null);
+                this.s.setValue(this.s.getMaximum());
             }
             catch (Exception e)
             {
