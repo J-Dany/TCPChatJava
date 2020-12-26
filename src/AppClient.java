@@ -178,7 +178,8 @@ public class AppClient
                                 chat.aggiungiMessaggio(nomeClient, risposta.getString("Messaggio"));
                             break;
                             case "Immagine":
-
+                                String nC = risposta.getString("Nome");
+                                chat.aggiungiImmagine(nC, risposta.getString("Messaggio"));
                             break;
                         }
                     break;
