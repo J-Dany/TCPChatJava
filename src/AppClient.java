@@ -115,7 +115,7 @@ public class AppClient
 
             while (true)
             {
-                byte[] buffer = new byte[GRANDEZZA_BUFFER];
+                byte[] buffer = new byte[1024];
                 String msg = null;
 
                 synchronized (socket)
@@ -151,6 +151,7 @@ public class AppClient
                             
                             JSONObject nuovoMessaggio = new JSONObject();
                             nuovoMessaggio.put("Tipo-Richiesta", "Invio-Messaggio");
+                            nuovoMessaggio.put("Tipo-Messaggio", "Plain-Text");
                             nuovoMessaggio.put("Messaggio", "si è connesso!");
                             nuovoMessaggio.put("Nome", nome);
                             nuovoMessaggio.put("Data", data);
