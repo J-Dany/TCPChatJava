@@ -17,12 +17,15 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -167,8 +170,16 @@ public class AppClient
                         }
                     break;
                     case "Nuovo-Messaggio":
-                        String nomeClient = risposta.getString("Nome");
-                        chat.aggiungiMessaggio(nomeClient, risposta.getString("Messaggio"));
+                        switch (risposta.getString("Tipo-Messaggio"))
+                        {
+                            case "Plain-Text":
+                                String nomeClient = risposta.getString("Nome");
+                                chat.aggiungiMessaggio(nomeClient, risposta.getString("Messaggio"));
+                            break;
+                            case "Immagine":
+
+                            break;
+                        }
                     break;
                     case "Numero-Utenti":
                         chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
@@ -267,6 +278,7 @@ public class AppClient
 
                         JSONObject inviaAvvenutaDisconnessione = new JSONObject();
                         inviaAvvenutaDisconnessione.put("Tipo-Richiesta", "Invio-Messaggio");
+                        inviaAvvenutaDisconnessione.put("Tipo-Messaggio", "Plain-Text");
                         inviaAvvenutaDisconnessione.put("Nome", nome);
                         inviaAvvenutaDisconnessione.put("Messaggio", "si è disconnesso!");
                         inviaAvvenutaDisconnessione.put("Data", data);
@@ -309,6 +321,50 @@ public class AppClient
                 {
                     JFileChooser fileChooser = new JFileChooser();
                     fileChooser.showOpenDialog(app);
+
+                    File f = fileChooser.getSelectedFile();
+
+                    try
+                    {
+                        FileInputStream fileInputStream = new FileInputStream(f);
+
+                        if (f.length() > GRANDEZZA_BUFFER)
+                        {
+                            JOptionPane.showMessageDialog(app, "L'immagine è troppo grande!", "Errore immagine", JOptionPane.ERROR_MESSAGE);
+                        }
+                        else
+                        {
+                            String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
+                            String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
+
+                            JSONObject mandaImmagine = new JSONObject();
+                            mandaImmagine.put("Tipo-Richiesta", "Invio-Messaggio");
+                            mandaImmagine.put("Tipo-Messaggio", "Immagine");
+                            mandaImmagine.put("Data", data);
+                            mandaImmagine.put("Time", time);
+                            mandaImmagine.put("Nome", nome);
+                            
+                            byte[] imageData = new byte[(int) f.length()];
+                            fileInputStream.read(imageData);
+                            String msg = Base64.getEncoder().encodeToString(imageData);
+
+                            mandaImmagine.put("Messaggio", msg);
+
+                            aggiungiImmagine(nome, msg);
+
+                            synchronized (writer)
+                            {
+                                writer.write(mandaImmagine.toString());
+                                writer.flush();
+                            }
+                        }
+
+                        fileInputStream.close();
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
             });
             caricaImmagine.add(buttonCaricaImmagine);
@@ -367,6 +423,7 @@ public class AppClient
 
                         JSONObject inviaAvvenutaDisconnessione = new JSONObject();
                         inviaAvvenutaDisconnessione.put("Tipo-Richiesta", "Invio-Messaggio");
+                        inviaAvvenutaDisconnessione.put("Tipo-Messaggio", "Plain-Text");
                         inviaAvvenutaDisconnessione.put("Nome", nome);
                         inviaAvvenutaDisconnessione.put("Messaggio", "si è disconnesso!");
                         inviaAvvenutaDisconnessione.put("Data", data);
@@ -478,6 +535,7 @@ public class AppClient
 
                         JSONObject json = new JSONObject();
                         json.put("Tipo-Richiesta", "Invio-Messaggio");
+                        json.put("Tipo-Messaggio", "Plain-Text");
                         json.put("Data", data);
                         json.put("Time", time);
                         json.put("Nome", nome);
@@ -554,6 +612,20 @@ public class AppClient
                 doc.insertString(doc.getLength(), nome + ": " + msg + "\n", style);
                 this.s.setValue(this.s.getMaximum());
             } 
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        public void aggiungiImmagine(String nome, String img)
+        {
+            try
+            {
+                ImageIcon i = new ImageIcon(img);
+                aggiungiMessaggio(nome, "");
+                textArea.insertIcon(i);
+            }
             catch (Exception e)
             {
                 e.printStackTrace();

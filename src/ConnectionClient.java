@@ -87,8 +87,9 @@ public class ConnectionClient implements Runnable
                             break;
                         }
 
-                        JSONObject invioMessaggio = new JSONObject();
+                        JSONObject invioMessaggio = new JSONObject(); 
                         invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                        invioMessaggio.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
                         invioMessaggio.put("Nome", this.client.getNome());
                         invioMessaggio.put("Messaggio", richiesta.getString("Messaggio"));
 
@@ -98,7 +99,7 @@ public class ConnectionClient implements Runnable
                             + "|" +
                             richiesta.getString("Nome")
                             + "|" +
-                            richiesta.getString("Messaggio")
+                            (richiesta.getString("Tipo-Messaggio").equals("Plain-Text") ? richiesta.getString("Messaggio") : "Ha mandato un'immagine!")
                         );
                     break;
                     case "Chiudi-Connessione":
