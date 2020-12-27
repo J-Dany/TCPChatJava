@@ -38,6 +38,8 @@ I comandi per ora disponibili, con alias, sono:
     - Aggiunge nuovo utente al database
 - **manda-msg** | **send-msg** {msg}
     - Manda il messaggio a tutti i client connessi (il messaggio deve essere lungo max. 256 caratteri)
+- **utenti-registrati*** (v. corta: *ur*)
+    - Stampa una lista di utenti registrati nella chat
 - **svuota-db-messaggi** (v. corta: *svuota-db-msg*, *sdbm*)
     - Elimina tutti i messaggi fino ad ora salvati
 - **n-message-by** {nomeClient} (v. corta: *n-msg-by*, *nmb*)
