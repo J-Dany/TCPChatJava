@@ -189,6 +189,7 @@ public class Console
                     {
                         JSONObject json = new JSONObject();
                         json.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                        json.put("Tipo-Messaggio", "Plain-Text");
                         json.put("Nome", "SERVER");
                         json.put("Messaggio", msg);
 
