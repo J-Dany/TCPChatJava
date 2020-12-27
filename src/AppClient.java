@@ -10,6 +10,8 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import org.json.JSONObject;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,8 +32,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Random;
 
-public class AppClient 
-{
+public class AppClient {
     /**
      * Codici di ritorno dell'applicazione
      */
@@ -52,10 +53,8 @@ public class AppClient
 
     private static int nImage = 0;
 
-    public static void main(String[] args) 
-    {
-        try 
-        {
+    public static void main(String[] args) {
+        try {
             Socket socket = new Socket();
             InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
             socket.connect(server_address);
@@ -78,18 +77,38 @@ public class AppClient
             dialog.add(nomeUtente);
             dialog.add(password);
             JButton buttonLogin = new JButton("Autenticati");
-            buttonLogin.addActionListener(new ActionListener()
-            {
+            buttonLogin.addActionListener(new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent arg0) 
-                {
+                public void actionPerformed(ActionEvent arg0) {
                     String n = nomeUtente.getText();
                     String p = new String(password.getPassword());
+
+                    MessageDigest md = null;
+                    try 
+                    {
+                        md = MessageDigest.getInstance("MD5");
+                    } 
+                    catch (NoSuchAlgorithmException e1) 
+                    {
+                        e1.printStackTrace();
+                    }
+                    md.update(p.getBytes());
+                    byte[] digest = md.digest();
+                    String hash = null;
+
+                    try
+                    {
+                        hash = new String(digest, 0, digest.length, "UTF8");
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
 
                     JSONObject auth = new JSONObject();
                     auth.put("Tipo-Richiesta", "Autenticazione");
                     auth.put("Nome", n);
-                    auth.put("Password", p);
+                    auth.put("Password", hash);
                     
                     nome = n;
 

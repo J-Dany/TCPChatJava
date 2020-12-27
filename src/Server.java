@@ -1,6 +1,7 @@
 package src;
 
 import java.net.*;
+import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -431,11 +432,16 @@ public class Server extends Thread
                             String n = arguments[1];
                             String p = arguments[2];
 
+                            MessageDigest md = MessageDigest.getInstance("MD5");
+                            md.update(p.getBytes());
+                            byte[] digest = md.digest();
+                            String hash = new String(digest, 0, digest.length, "UTF8");
+
                             s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
                                 Connection connection = DatabaseConnection.getConnection();
                             s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
                         
-                            String query = "INSERT INTO utenti(username, password) VALUES('" + n + "', '" + p + "')";
+                            String query = "INSERT INTO utenti(username, password) VALUES('" + n + "', '" + hash + "')";
 
                             s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " creo un oggetto di tipo Statement");
                                 Statement stmt = connection.createStatement();
