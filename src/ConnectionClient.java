@@ -173,6 +173,7 @@ public class ConnectionClient implements Runnable
     private boolean gestisciAutenticazione(JSONObject richiesta)
     {
         String nomeUtente = richiesta.getString("Nome");
+        String password = richiesta.getString("Password");
         this.client.setNome(nomeUtente);
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " nuovo client: " + nomeUtente);
 
@@ -187,7 +188,7 @@ public class ConnectionClient implements Runnable
 
             Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " connesso al database e creato oggetto Statement, ora eseguo la query di ricerca utete");
 
-            ResultSet utenti = s.executeQuery("SELECT COUNT(*) as num_rows FROM utenti WHERE username = '" + nomeUtente + "'");
+            ResultSet utenti = s.executeQuery("SELECT COUNT(*) as num_rows FROM utenti WHERE username = '" + nomeUtente + "' AND password = '" + password + "'");
 
             Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
             

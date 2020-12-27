@@ -34,7 +34,7 @@ I comandi per ora disponibili, con alias, sono:
     - Stampa la lista dei comandi dati al server
 - **ban** {ip}
     - Banna l'indirizzo IP passato
-- **aggiungi-utente** {nome} (v. corta: *a-utente*, *au*)
+- **aggiungi-utente** {nome} {passwordInChiaro} (v. corta: *a-utente*, *au*)
     - Aggiunge nuovo utente al database
 - **manda-msg** | **send-msg** {msg}
     - Manda il messaggio a tutti i client connessi (il messaggio deve essere lungo max. 256 caratteri)

@@ -429,12 +429,13 @@ public class Server extends Thread
                         try
                         {
                             String n = arguments[1];
+                            String p = arguments[2];
 
                             s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
                                 Connection connection = DatabaseConnection.getConnection();
                             s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
                         
-                            String query = "INSERT INTO utenti VALUES('" + n + "')";
+                            String query = "INSERT INTO utenti(username, password) VALUES('" + n + "', '" + p + "')";
 
                             s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " creo un oggetto di tipo Statement");
                                 Statement stmt = connection.createStatement();
