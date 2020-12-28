@@ -1,5 +1,6 @@
 package srcclient;
 
+import java.awt.image.BufferedImage;
 import org.json.JSONObject;
 import java.net.Socket;
 import java.security.MessageDigest;
@@ -8,6 +9,8 @@ import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.io.File;
@@ -187,32 +190,10 @@ public class AppClient {
                                 chat.aggiungiMessaggio(nomeClient, risposta.getString("Messaggio"));
                             break;
                             case "Immagine":
-                                if (!risposta.getBoolean("Fine"))
-                                {
-                                    fragmentImg.add(risposta.getString("Messaggio"));
-                                    break;
-                                }
 
-                                String img = "";
-
-                                for (int i = 0; i < fragmentImg.size(); ++i)
-                                {
-                                    img += fragmentImg.get(i);
-                                }
-
-                                fragmentImg.clear();
-
-                                FileOutputStream fileOutputStream = new FileOutputStream("img" + nImage + ".png");
-                                fileOutputStream.write(Base64.getDecoder().decode(img));
-
-                                File f = new File("img" + nImage + ".png");
-                                FileInputStream file = new FileInputStream(f);
-                                byte[] imgData = new byte[(int)f.length()];
-                                file.read(imgData);
-
-                                ++nImage;
-
-                                chat.aggiungiImmagine(risposta.getString("Nome"), imgData);
+                                BufferedImage inputImage = ImageIO.read(ImageIO.createImageInputStream(socket.getOutputStream()));
+                                
+                                chat.aggiungiImmagine(risposta.getString("Nome"), inputImage);
                             break;
                         }
                     break;

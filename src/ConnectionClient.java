@@ -1,9 +1,12 @@
 package src;
 
+import java.awt.image.BufferedImage;
 import org.json.JSONObject;
 import java.net.Socket;
 import java.sql.*;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 public class ConnectionClient implements Runnable
 {
@@ -11,8 +14,6 @@ public class ConnectionClient implements Runnable
     private Client client;
 
     private final int GRANDEZZA_BUFFER = 8192;
-
-    private ArrayList<String> fragmentImg = new ArrayList<>();
 
     public ConnectionClient(Socket socket, Client client)
     {
@@ -93,42 +94,9 @@ public class ConnectionClient implements Runnable
                         switch (richiesta.getString("Tipo-Messaggio"))
                         {
                             case "Immagine":
-                                if (!richiesta.getBoolean("Fine"))
-                                {
-                                    fragmentImg.add(richiesta.getString("Messaggio"));
-                                    break;
-                                }
+                                BufferedImage inputImage = ImageIO.read(ImageIO.createImageInputStream(socket.getOutputStream()));
 
-                                for (int i = 0; i < fragmentImg.size(); ++i)
-                                {
-                                    JSONObject invioMessaggio = new JSONObject(); 
-                                    invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
-                                    invioMessaggio.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
-                                    invioMessaggio.put("Fine", false);
-                                    invioMessaggio.put("Nome", this.client.getNome());
-                                    invioMessaggio.put("Messaggio", fragmentImg.get(i));
-    
-                                    Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
-    
-                                    Thread.sleep(256);
-                                }
-
-                                JSONObject invioMessaggio = new JSONObject(); 
-                                invioMessaggio.put("Tipo-Richiesta", "Nuovo-Messaggio");
-                                invioMessaggio.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
-                                invioMessaggio.put("Fine", true);
-                                invioMessaggio.put("Nome", this.client.getNome());
-                                invioMessaggio.put("Messaggio", "");
-    
-                                Server.getServer().mandaMessaggio(invioMessaggio.toString(), this.client, null);
-
-                                Server.getServer().writer.addMsg(
-                                    richiesta.getString("Data") + " " + richiesta.getString("Time")
-                                    + "|" +
-                                    richiesta.getString("Nome")
-                                    + "|" +
-                                    "Ha mandato un'immagine!"
-                                );
+                                
                             break;
                             case "Plain-Text":
                                 JSONObject invioPlainText = new JSONObject(); 
