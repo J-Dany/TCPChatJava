@@ -15,6 +15,8 @@ public class Console
 
     public void avvia()
     {
+        DatabaseTable utenti = new DatabaseTable("utenti", "username");
+
         String command = "";
 
         Scanner input = new Scanner(System.in);
@@ -112,19 +114,7 @@ public class Console
                 case "ur":
                     try
                     {
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
-                            Connection connection = DatabaseConnection.getConnection();
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
-
-                        String query = "SELECT username FROM utenti";
-
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " creo un oggetto di tipo Statement");
-                            Statement stmt = connection.createStatement();
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " oggetto creato");
-
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " eseguo la query per vedere gli utenti registrati");
-                            ResultSet result = stmt.executeQuery(query);
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
+                        ResultSet result = utenti.findAll();
 
                         int j = 0;
                         while (result.next())
@@ -136,6 +126,12 @@ public class Console
                     {
                         Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
                     }
+                break;
+                case "delete-user":
+                case "du":
+                    String user = arguments[1];
+
+                    utenti.deleteOnce(user);
                 break;
                 case "aggiungi-utente":
                 case "a-utente":
@@ -150,19 +146,15 @@ public class Console
                         byte[] digest = md.digest();
                         String hash = new String(digest, 0, digest.length, "UTF8");
 
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
-                            Connection connection = DatabaseConnection.getConnection();
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
-                    
-                        String query = "INSERT INTO utenti(username, password) VALUES('" + n + "', '" + hash + "')";
+                        String[] fields = new String[2];
+                        fields[0] = "username";
+                        fields[1] = "password";
 
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " creo un oggetto di tipo Statement");
-                            Statement stmt = connection.createStatement();
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " oggetto creato");
+                        String[] values = new String[2];
+                        values[0] = n;
+                        values[1] = hash;
 
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " eseguo la query per inserire un nuovo utente nel database");
-                            stmt.executeUpdate(query);
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
+                        utenti.insertOnce(fields, values);
                     }
                     catch (Exception e)
                     {
