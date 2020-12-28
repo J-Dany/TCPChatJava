@@ -1,5 +1,12 @@
 compile:
 	javac -d out -classpath .:out/lib/* src/*.java
+	javac -d out -classpath .:out/lib/* srcclient/*.java
+
+compile-client:
+	javac -d out -classpath .:out/lib/* srcclient/*.java
+
+compile-server:
+	javac -d out -classpath .:out/lib/* src/*.java
 
 db:
 	cd db; \

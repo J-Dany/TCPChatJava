@@ -1,4 +1,4 @@
-package src;
+package srcclient;
 
 import org.json.JSONObject;
 import java.net.Socket;
