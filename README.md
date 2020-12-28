@@ -51,7 +51,7 @@ I comandi per ora disponibili, con alias, sono:
 Per avviare il client è sufficiente digitare:
 ```bash
 cd out
-java src.AppClient {indirizzo} {porta}
+java -classpath .:./lib/json-20201115.jar src.AppClient {indirizzo} {porta}
 ```
 **N.B.**: ogni utente che vuole usare la chat deve essere prima inserito nel database
 e dovrà usare quel nome per collegarsi altrimenti non riceverà nessun messaggio
