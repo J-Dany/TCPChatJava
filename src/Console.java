@@ -16,6 +16,7 @@ public class Console
     public void avvia()
     {
         DatabaseTable utenti = new DatabaseTable("utenti", "username");
+        DatabaseTable messaggi = new DatabaseTable("messaggi", "id");
 
         String command = "";
 
@@ -63,19 +64,7 @@ public class Console
                 case "sdbm":
                     try
                     {
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
-                            Connection connection = DatabaseConnection.getConnection();
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database");
-                    
-                        String query = "TRUNCATE TABLE messaggi";
-
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " creo un oggetto di tipo Statement");
-                            Statement stmt = connection.createStatement();
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " oggetto creato");
-
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " eseguo la query per eliminare tutti i messaggi dal database");
-                            stmt.executeUpdate(query);
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
+                        messaggi.delete();
                     }
                     catch (Exception e)
                     {

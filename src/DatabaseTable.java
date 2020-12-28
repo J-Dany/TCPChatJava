@@ -15,6 +15,10 @@ public class DatabaseTable
         this.tableName = tableName;
     }
 
+    /**
+     * Restituisce tutti i valori della tabella
+     * @return ResultSet, rappresentante tutti i valori della tabella
+     */
     public ResultSet findAll()
     {
         try
@@ -41,7 +45,36 @@ public class DatabaseTable
         return null;
     }
 
-    public void deleteOnce(String user)
+    /**
+     * Rimuove ogni record dalla tabella
+     */
+    public void delete()
+    {
+        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " elimino tutti i record da " + this.tableName);
+    
+        try
+        {
+            Connection connection = DatabaseConnection.getConnection();
+
+            String query = "DELETE FROM " + this.tableName;
+
+            Statement stmt = connection.createStatement();
+
+            stmt.executeUpdate(query);
+
+            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
+        }
+        catch (Exception e)
+        {
+            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+        }
+    }
+
+    /**
+     * Rimuove soltanto il record con primary key uguale a {value}
+     * @param value, valore della primary key del record da eliminare
+     */
+    public void deleteOnce(String value)
     {
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " eseguo query per eliminare un record da " + this.tableName);
 
@@ -49,7 +82,7 @@ public class DatabaseTable
         {
             Connection connection = DatabaseConnection.getConnection();
 
-            String query = "DELETE FROM " + this.tableName + " WHERE " + this.primaryKey + " = '" + user + "'";
+            String query = "DELETE FROM " + this.tableName + " WHERE " + this.primaryKey + " = '" + value + "'";
             Statement stmt = connection.createStatement();
     
             stmt.executeUpdate(query);
@@ -62,6 +95,11 @@ public class DatabaseTable
         }
     }
 
+    /**
+     * Inserisce un solo record nel database
+     * @param fields, i campi della tabella
+     * @param values, i valori dei campi
+     */
     public void insertOnce(String[] fields, Object[] values)
     {
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " inserisco un nuovo record nella tabella " + this.tableName);
