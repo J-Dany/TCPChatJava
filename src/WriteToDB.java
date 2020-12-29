@@ -40,9 +40,7 @@ public class WriteToDB extends Thread
         try
         {
             while (!Thread.currentThread().isInterrupted())
-            {
-                while (this.msgs.size() == 0 && !Thread.currentThread().isInterrupted()) { }
-                
+            {                
                 String[] obj = this.msgs.poll().split("\\|");
 
                 String user = obj[1];
