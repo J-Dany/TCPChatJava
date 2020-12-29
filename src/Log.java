@@ -18,7 +18,7 @@ public class Log extends Thread
     public Log(String filename)
     {
         this.filename = "../lop/" + filename;
-        this.coda = new LinkedBlockingQueue<>();
+        this.coda = new LinkedBlockingQueue<>(64);
         try
         {
             this.fw = new FileWriter(this.filename, true);
@@ -34,7 +34,14 @@ public class Log extends Thread
     {
         if (msg != null)
         {
-            this.coda.add(msg);
+            try
+            {
+                this.coda.put(msg);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -71,7 +78,14 @@ public class Log extends Thread
             
             while (!Thread.currentThread().isInterrupted())
             {
-                this.writeToFile(this.coda.poll());
+                try
+                {
+                    this.writeToFile(this.coda.take());
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
         catch (Exception e)

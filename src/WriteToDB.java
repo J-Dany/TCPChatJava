@@ -18,7 +18,7 @@ public class WriteToDB extends Thread
     public WriteToDB(String name)
     {
         super(name);
-        this.msgs = new LinkedBlockingQueue<>();
+        this.msgs = new LinkedBlockingQueue<>(64);
     }
 
     /**
@@ -31,7 +31,14 @@ public class WriteToDB extends Thread
     public synchronized void addMsg(String msg)
     {
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " arrivato nuovo messaggio");
-        this.msgs.add(msg);
+        try
+        {
+            this.msgs.add(msg);
+        }
+        catch (Exception e)
+        {
+            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+        }
     }
 
     @Override
@@ -41,7 +48,16 @@ public class WriteToDB extends Thread
         {
             while (!Thread.currentThread().isInterrupted())
             {                
-                String[] obj = this.msgs.poll().split("\\|");
+                String[] obj = null;
+
+                try
+                {
+                    obj = this.msgs.take().split("\\|");
+                }
+                catch (Exception e)
+                {
+                    Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                }
 
                 String user = obj[1];
                 String datetime = obj[0];
