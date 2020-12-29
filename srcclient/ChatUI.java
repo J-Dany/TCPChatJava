@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Random;
 import java.awt.*;
@@ -162,79 +161,27 @@ public class ChatUI {
                     {
                         byte[] imageData = new byte[(int) f.length()];
                         fileInputStream.read(imageData);
-                        //aggiungiImmagine(nome, new Image(imageData));
-                        String msg = Base64.getEncoder().encodeToString(imageData);
+                        aggiungiImmagine(nome, new ImageIcon(imageData));
 
-                        int msgLength = msg.length();
+                        String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
 
-                            String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                            String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
+                        JSONObject mandaImmagine = new JSONObject();
+                        mandaImmagine.put("Tipo-Richiesta", "Invio-Messaggio");
+                        mandaImmagine.put("Tipo-Messaggio", "Immagine");
+                        mandaImmagine.put("Data", data);
+                        mandaImmagine.put("Time", time);
+                        mandaImmagine.put("Nome", nome);
 
-                            JSONObject mandaImmagine = new JSONObject();
-                            mandaImmagine.put("Tipo-Richiesta", "Invio-Messaggio");
-                            mandaImmagine.put("Tipo-Messaggio", "Immagine");
-                            mandaImmagine.put("Data", data);
-                            mandaImmagine.put("Time", time);
-                            mandaImmagine.put("Nome", nome);
+                        synchronized (writer)
+                        {
+                            writer.write(mandaImmagine.toString());
+                            writer.flush();
+                        }
 
-                            synchronized (writer)
-                            {
-                                writer.write(mandaImmagine.toString());
-                                writer.flush();
-                            }
-
-                            Robot robot = new Robot();
-                            BufferedImage bimp = robot.createScreenCapture(new Rectangle(0, 0, 427, 240));
-                            ImageIO.write(bimp, "PNG", socket.getOutputStream());
-
-                            /*for (int i = 0; i < msgLength - 1;) 
-                            {
-                                int k = i;
-
-                                int lenPerPacketImg = 1024;
-
-                                byte[] fragmentImg = new byte[lenPerPacketImg];
-                                for (int j = 0; j < lenPerPacketImg; ++j) 
-                                {
-                                    if (k == msgLength) 
-                                    {
-                                        break;
-                                    }
-                                    fragmentImg[j] = (byte) msg.charAt(k++);
-                                }
-
-                                if (k == msgLength) 
-                                {
-                                    break;
-                                }
-
-                                mandaImmagine.put("Messaggio", new String(fragmentImg));
-
-                                writer.write(mandaImmagine.toString());
-                                writer.flush();
-
-                                i += lenPerPacketImg;
-                                Thread.sleep(256);
-                            }
-
-                            JSONObject fineImmagine = new JSONObject();
-                            fineImmagine.put("Tipo-Richiesta", "Invio-Messaggio");
-                            fineImmagine.put("Fine", true);
-                            fineImmagine.put("Tipo-Messaggio", "Immagine");
-                            fineImmagine.put("Messaggio", "");
-                            fineImmagine.put("Data", data);
-                            fineImmagine.put("Time", time);
-                            fineImmagine.put("Nome", nome);
-
-                            try 
-                            {
-                                writer.write(fineImmagine.toString());
-                                writer.flush();
-                            } 
-                            catch (Exception e) 
-                            {
-                                e.printStackTrace();
-                            }*/
+                        Robot robot = new Robot();
+                        BufferedImage bimp = robot.createScreenCapture(new Rectangle(0, 0, 427, 240));
+                        ImageIO.write(bimp, "PNG", socket.getOutputStream());
                     }
 
                     fileInputStream.close();
@@ -472,13 +419,12 @@ public class ChatUI {
         }
     }
 
-    public void aggiungiImmagine(String nome, Image img)
+    public void aggiungiImmagine(String nome, ImageIcon img)
     {
         try
         {
-            ImageIcon i = new ImageIcon(img);
             aggiungiMessaggio(nome, "");
-            textArea.insertIcon(i);
+            textArea.insertIcon(img);
             doc.insertString(doc.getLength(), "\n", null);
             this.s.setValue(this.s.getMaximum());
         }

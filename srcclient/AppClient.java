@@ -9,19 +9,13 @@ import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.net.InetSocketAddress;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Base64;
 
 public class AppClient {
     /**
@@ -38,10 +32,6 @@ public class AppClient {
      * Grandezza buffer di ricezione.
      */
     private static final int GRANDEZZA_BUFFER = 8192;
-
-    private static ArrayList<String> fragmentImg = new ArrayList<>();
-
-    private static int nImage = 0;
 
     public static void main(String[] args) 
     {
@@ -193,7 +183,7 @@ public class AppClient {
 
                                 BufferedImage inputImage = ImageIO.read(ImageIO.createImageInputStream(socket.getOutputStream()));
                                 
-                                chat.aggiungiImmagine(risposta.getString("Nome"), inputImage);
+                                chat.aggiungiImmagine(risposta.getString("Nome"), new ImageIcon(inputImage));
                             break;
                         }
                     break;

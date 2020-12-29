@@ -1,15 +1,15 @@
 package src;
 
 import java.sql.*;
-import java.util.Queue;
-import java.util.LinkedList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class WriteToDB extends Thread
 {
     /**
      * Rappresenta la coda dei messaggi arrivati
      */
-    private Queue<String> msgs;
+    private BlockingQueue<String> msgs;
 
     /**
      * Costruttore di WriteToDB
@@ -18,7 +18,7 @@ public class WriteToDB extends Thread
     public WriteToDB(String name)
     {
         super(name);
-        this.msgs = new LinkedList<>();
+        this.msgs = new LinkedBlockingQueue<>();
     }
 
     /**

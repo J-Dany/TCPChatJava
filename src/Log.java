@@ -5,12 +5,12 @@ import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Formatter;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Log extends Thread
 {
-    private Queue<String> coda;
+    private BlockingQueue<String> coda;
     private String filename;
     private FileWriter fw;
     private Formatter writer;
@@ -18,7 +18,7 @@ public class Log extends Thread
     public Log(String filename)
     {
         this.filename = "../lop/" + filename;
-        this.coda = new LinkedList<>();
+        this.coda = new LinkedBlockingQueue<>();
         try
         {
             this.fw = new FileWriter(this.filename, true);

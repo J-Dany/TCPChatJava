@@ -4,8 +4,6 @@ import java.awt.image.BufferedImage;
 import org.json.JSONObject;
 import java.net.Socket;
 import java.sql.*;
-import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
 
 public class ConnectionClient implements Runnable
@@ -43,6 +41,8 @@ public class ConnectionClient implements Runnable
                         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " tipo richiesta: Autenticazione");
                         if (this.gestisciAutenticazione(richiesta))
                         {   
+                            Thread.currentThread().setName("Thread-" + client.getNome());
+
                             JSONObject autenticazioneCorretta = new JSONObject();
                             autenticazioneCorretta.put("Tipo-Richiesta", "Autenticazione");
                             autenticazioneCorretta.put("Utenti-Connessi", Server.getServer().getNumeroUtentiConnessi());
@@ -96,7 +96,14 @@ public class ConnectionClient implements Runnable
                             case "Immagine":
                                 BufferedImage inputImage = ImageIO.read(ImageIO.createImageInputStream(socket.getOutputStream()));
 
+                                JSONObject invioImmagine = new JSONObject();
+                                invioImmagine.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                                invioImmagine.put("Tipo-Messaggio", "Immagine");
+                                invioImmagine.put("Nome", this.client.getNome());
                                 
+                                Server.getServer().mandaMessaggio(invioImmagine.toString(), this.client, null);
+
+                                ImageIO.write(inputImage, "PNG", socket.getOutputStream());
                             break;
                             case "Plain-Text":
                                 JSONObject invioPlainText = new JSONObject(); 
