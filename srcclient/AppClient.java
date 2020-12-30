@@ -1,10 +1,11 @@
 package srcclient;
 
+import com.google.common.base.Charsets;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import java.awt.image.BufferedImage;
 import org.json.JSONObject;
 import java.net.Socket;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +23,7 @@ public class AppClient {
      * Codici di ritorno dell'applicazione
      */
     private static final int UTENTE_NON_RICONOSCIUTO = 4;
+    private static final int ERRORE_NEL_FORM = 5;
 
     /**
      * Nome del client
@@ -37,6 +39,10 @@ public class AppClient {
     {
         try 
         {
+            Class.forName("com.google.common.hash.Hashing");
+            /*String p = "Helloworld1";
+            HashCode hash = Hashing.sha256().hashString(p, Charsets.UTF_8);*/
+
             Socket socket = new Socket();
             InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
             socket.connect(server_address);
@@ -65,32 +71,22 @@ public class AppClient {
                     String n = nomeUtente.getText();
                     String p = new String(password.getPassword());
 
-                    MessageDigest md = null;
-                    try 
-                    {
-                        md = MessageDigest.getInstance("MD5");
-                    } 
-                    catch (NoSuchAlgorithmException e1) 
-                    {
-                        e1.printStackTrace();
-                    }
-                    md.update(p.getBytes());
-                    byte[] digest = md.digest();
-                    String hash = null;
-
                     try
                     {
-                        hash = new String(digest, 0, digest.length, "UTF8");
+                        HashCode hash = Hashing.sha256().hashString(p, Charsets.UTF_8);
+                        p = hash.toString();
                     }
                     catch (Exception e)
                     {
                         e.printStackTrace();
+                        System.out.println("Errore nel prendere i valori dal form");
+                        System.exit(ERRORE_NEL_FORM);
                     }
 
                     JSONObject auth = new JSONObject();
                     auth.put("Tipo-Richiesta", "Autenticazione");
                     auth.put("Nome", n);
-                    auth.put("Password", hash);
+                    auth.put("Password", p);
                     
                     nome = n;
 

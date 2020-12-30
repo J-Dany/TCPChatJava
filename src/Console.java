@@ -1,7 +1,9 @@
 package src;
 
+import com.google.common.base.Charsets;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import java.net.InetAddress;
-import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -130,10 +132,8 @@ public class Console
                         String n = arguments[1];
                         String p = arguments[2];
 
-                        MessageDigest md = MessageDigest.getInstance("MD5");
-                        md.update(p.getBytes());
-                        byte[] digest = md.digest();
-                        String hash = new String(digest, 0, digest.length, "UTF8");
+                        HashCode h = Hashing.sha256().hashString(p, Charsets.UTF_8);
+                        String hash = h.toString();
 
                         String[] fields = new String[2];
                         fields[0] = "username";

@@ -5,6 +5,7 @@ Piccolo progetto per una chat in java criptata.
 - make
 - mysql
 - driver java per connettere il programma con mysql (su Linux: libmysql-java)
+- google guava (già integrato nella cartella *out/lib*)
 
 ## Aggiungere il database
 Per aggiungere il database basta scrivere:
@@ -68,5 +69,6 @@ Ecco una tabella dei codici di errore:
 - 2 => **IO Exception**, c'è stato un errore con il socket
 - 3 => **Stream di output non inizializzato**, non è stato possibile inizializzare lo stream di output per mandare i messaggi
 - 4 => **Utente non riconosciuto**, probabilmente nel Server non sei stato aggiunto nel database
+- 5 => **Errore nel prendere i dati dal form**
 
 #### Thanks to: Daniele Castiglia
