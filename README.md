@@ -20,6 +20,11 @@ per funzionare, quindi dobbiamo un utente con accesso al database
 **N.B.**: Ogni client deve essere registrato prima che quest'ultimo possa usare la chat.
 Per registrare un nuovo client usa il comando *aggiungi-utente*
 
+Per avviare il Server:
+```bash
+sudo chat-server
+```
+
 Quando avviate un server, nella console apparirà:
 ```bash
 ?
@@ -46,6 +51,12 @@ I comandi per ora disponibili, con alias, sono:
     - Elimina tutti i messaggi fino ad ora salvati
 - **n-message-by** {nomeClient} (v. corta: *n-msg-by*, *nmb*)
     - Stampa il numero dei messaggi che {nomeClient} ha mandato oggi
+
+## Client
+Per avviare il client:
+```bash
+chat-client
+```
 
 ## Codice di errore Client
 Se non riesci a connetterti con il client al server, puoi controllare
