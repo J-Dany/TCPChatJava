@@ -20,7 +20,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class AppClient {
+public class AppClient 
+{
     /**
      * Codici di ritorno dell'applicazione
      */
@@ -37,13 +38,11 @@ public class AppClient {
      */
     private static final int GRANDEZZA_BUFFER = 8192;
 
-    public static void main(String[] args) {
-        try {
+    public static void main(String[] args) 
+    {
+        try 
+        {
             Class.forName("com.google.common.hash.Hashing");
-            /*
-             * String p = "Helloworld1"; HashCode hash = Hashing.sha256().hashString(p,
-             * Charsets.UTF_8);
-             */
 
             Socket socket = new Socket();
             InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
