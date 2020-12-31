@@ -7,20 +7,19 @@ Piccolo progetto per una chat in java criptata.
 - driver java per connettere il programma con mysql (su Linux: libmysql-java)
 - google guava (già integrato nella cartella *out/lib*)
 
-## Aggiungere il database
-Per aggiungere il database basta scrivere:
-```bash
-make db
-```
-
-## Come compilare ed avviare il Server
-Date i seguenti comandi nella directory del progetto:
+## Come installare (Linux)
+Per installare:
 ```bash
 make compile
-make run-server
+sudo make install
 ```
+**N.B.**: nella prima istruzione verrà importato il database necessario alla chat
+per funzionare, quindi dobbiamo un utente con accesso al database
 
 ## Console del programma Server
+**N.B.**: Ogni client deve essere registrato prima che quest'ultimo possa usare la chat.
+Per registrare un nuovo client usa il comando *aggiungi-utente*
+
 Quando avviate un server, nella console apparirà:
 ```bash
 ?
@@ -47,15 +46,6 @@ I comandi per ora disponibili, con alias, sono:
     - Elimina tutti i messaggi fino ad ora salvati
 - **n-message-by** {nomeClient} (v. corta: *n-msg-by*, *nmb*)
     - Stampa il numero dei messaggi che {nomeClient} ha mandato oggi
-
-## Come avviare il Client
-Per avviare il client è sufficiente digitare:
-```bash
-cd out
-java -classpath .:./lib/json-20201115.jar src.AppClient {indirizzo} {porta}
-```
-**N.B.**: ogni utente che vuole usare la chat deve essere prima inserito nel database
-e dovrà usare quel nome per collegarsi altrimenti non riceverà nessun messaggio
 
 ## Codice di errore Client
 Se non riesci a connetterti con il client al server, puoi controllare

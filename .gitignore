@@ -1,8 +1,9 @@
 *.class
-lop/log
+lop
 struttura_messaggio
 mysql-connector-java-8.0.22.zip
 mysql-connector-java-8.0.22/
 .vscode
+out/com
 out/img?.png
 out/*.jar

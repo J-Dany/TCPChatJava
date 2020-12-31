@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: 1.0.0 (Daniele Castiglia)
+Main-Class: srcclient.AppClient
+Class-Path: /bin/ /usr/lib/tcpchat/json-20201115.jar /usr/lib/tcpchat/guava-30.1-jre.jar /usr/lib/tcpchat/mysql-connector-java-8.0.22.jar
