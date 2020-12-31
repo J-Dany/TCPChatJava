@@ -17,6 +17,7 @@ public class Log extends Thread
     
     public Log(String filename)
     {
+        this.setName("Logger");
         this.filename = "../lop/" + filename;
         this.coda = new LinkedBlockingQueue<>(64);
         try
