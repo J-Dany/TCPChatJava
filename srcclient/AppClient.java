@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -35,13 +37,13 @@ public class AppClient {
      */
     private static final int GRANDEZZA_BUFFER = 8192;
 
-    public static void main(String[] args) 
-    {
-        try 
-        {
+    public static void main(String[] args) {
+        try {
             Class.forName("com.google.common.hash.Hashing");
-            /*String p = "Helloworld1";
-            HashCode hash = Hashing.sha256().hashString(p, Charsets.UTF_8);*/
+            /*
+             * String p = "Helloworld1"; HashCode hash = Hashing.sha256().hashString(p,
+             * Charsets.UTF_8);
+             */
 
             Socket socket = new Socket();
             InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
@@ -104,6 +106,24 @@ public class AppClient {
                 }
             });
             buttonLogin.setFont(font);
+            password.addKeyListener(new KeyListener() {
+
+                @Override
+                public void keyPressed(KeyEvent arg0) 
+                { 
+                    if (arg0.getKeyCode() == KeyEvent.VK_ENTER) 
+                    {
+                        buttonLogin.doClick();
+                    }
+                }
+
+                @Override
+                public void keyReleased(KeyEvent arg0) { }
+
+                @Override
+                public void keyTyped(KeyEvent arg0) { }
+                
+            });
             dialog.add(Box.createHorizontalGlue());
             dialog.add(buttonLogin);
             dialog.pack();

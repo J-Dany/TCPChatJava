@@ -368,7 +368,8 @@ public class ChatUI {
 
             @Override
             public void keyPressed(KeyEvent arg0) {
-                if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+                if (arg0.getKeyCode() == KeyEvent.VK_ENTER) 
+                {
                     buttonInviaMessaggio.doClick();
                 }
             }
