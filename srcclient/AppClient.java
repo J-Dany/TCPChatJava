@@ -38,17 +38,53 @@ public class AppClient
      */
     private static final int GRANDEZZA_BUFFER = 8192;
 
+    private static String ip;
+    private static int port;
+
     public static void main(String[] args) 
     {
         try 
         {
             Class.forName("com.google.common.hash.Hashing");
 
+            FontUIResource font = new FontUIResource("Arial", FontUIResource.PLAIN, 16);
+            JDialog server = new JDialog();
+            server.setModal(true);
+            server.setPreferredSize(new Dimension(500, 200));
+            server.setLayout(new GridLayout(8, 1));
+            server.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            server.add(Box.createHorizontalGlue());
+            server.setTitle("Autenticazione");
+            JLabel label = new JLabel("Inserisci IP (o dominio) e porta del server a cui collegarsi:");
+            label.setFont(font);
+            server.add(label);
+            server.add(Box.createHorizontalGlue());
+            JTextField ipTextField = new JTextField();
+            ipTextField.setFont(font);
+            JTextField inputPort = new JTextField();
+            server.add(ipTextField);
+            server.add(inputPort);
+            JButton collegati = new JButton("Collegati");
+            collegati.addActionListener(new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent arg0) 
+                {
+                    ip = ipTextField.getText();
+                    port = Integer.parseInt(inputPort.getText());
+                    server.dispose();
+                }
+            });
+            collegati.setFont(font);
+            server.add(Box.createHorizontalGlue());
+            server.add(collegati);
+            server.pack();
+            server.setVisible(true);
+
             Socket socket = new Socket();
-            InetSocketAddress server_address = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
+            InetSocketAddress server_address = new InetSocketAddress(ip, port);
             socket.connect(server_address);
 
-            FontUIResource font = new FontUIResource("Arial", FontUIResource.PLAIN, 16);
             JDialog dialog = new JDialog();
             dialog.setModal(true);
             dialog.setPreferredSize(new Dimension(500, 200));
