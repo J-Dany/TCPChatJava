@@ -54,6 +54,7 @@ public class WriteToDB extends Thread
                 {
                     obj = this.msgs.take().split("\\|");
                 }
+                catch (InterruptedException e) { break; }
                 catch (Exception e)
                 {
                     Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);

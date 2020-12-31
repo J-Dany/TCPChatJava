@@ -39,6 +39,7 @@ public class Log extends Thread
             {
                 this.coda.put(msg);
             }
+            catch (InterruptedException e) { }
             catch (Exception e)
             {
                 e.printStackTrace();
@@ -83,6 +84,7 @@ public class Log extends Thread
                 {
                     this.writeToFile(this.coda.take());
                 }
+                catch (InterruptedException e) { }
                 catch (Exception e)
                 {
                     e.printStackTrace();
