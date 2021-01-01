@@ -52,6 +52,11 @@ I comandi per ora disponibili, con alias, sono:
 - **n-message-by** {nomeClient} (v. corta: *n-msg-by*, *nmb*)
     - Stampa il numero dei messaggi che {nomeClient} ha mandato oggi
 
+## Server Log
+Alcune volte ci potrebbero essere degli errori nel server e vorrete sapere cosa ha portato al suddetto errore.
+Su *Linux* c'è un file di log che si trova sotto
+> /var/log/chat-log/
+
 ## Come avviare il Client
 Per avviare il client:
 ```bash
