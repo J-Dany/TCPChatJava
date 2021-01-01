@@ -18,7 +18,7 @@ public class Log extends Thread
     public Log(String filename)
     {
         this.setName("Logger");
-        this.filename = "../lop/" + filename;
+        this.filename = "/var/log/chat-log/" + filename;
         this.coda = new LinkedBlockingQueue<>(64);
         try
         {
@@ -72,7 +72,7 @@ public class Log extends Thread
     {
         try
         {
-            File lop_dir = new File("../lop");
+            File lop_dir = new File("/var/log/chat-log");
             if (!lop_dir.exists())
             {
                 lop_dir.mkdirs();
