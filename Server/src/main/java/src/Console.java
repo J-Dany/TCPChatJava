@@ -1,4 +1,4 @@
-package src;
+package Server.src.main.java.src;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
@@ -28,7 +28,7 @@ public class Console
         while (command != null)
         {
             System.out.print("? ");
-            command = input.nextLine();
+            command = input.next();
             String[] arguments = command.split(" ");
             String com = arguments[0];
 

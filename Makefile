@@ -1,6 +1,5 @@
 compile:
-	javac -d out -classpath .:out/lib/* src/*.java
-	javac -d out -classpath .:out/lib/* srcclient/*.java
+	./gradlew build
 
 install:
 	# Metto i file jar nella cartella /lib

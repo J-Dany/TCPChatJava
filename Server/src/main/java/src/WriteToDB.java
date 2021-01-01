@@ -1,4 +1,4 @@
-package src;
+package Server.src.main.java.src;
 
 import java.sql.*;
 import java.util.concurrent.BlockingQueue;

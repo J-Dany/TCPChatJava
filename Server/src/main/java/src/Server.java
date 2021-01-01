@@ -1,4 +1,4 @@
-package src;
+package Server.src.main.java.src;
 
 import java.net.*;
 import java.util.ArrayList;
@@ -65,10 +65,15 @@ public class Server extends Thread
     public Server(String name, int port) throws IOException
     {
         super(name);
+        System.out.println("Hey");
         this.socket = new ServerSocket(port);
+        System.out.println("Hey");
         this.banned = new ArrayList<>();
+        System.out.println("Hey");
         this.connected_clients = new HashMap<>();
+        System.out.println("Hey");
         this.writer = new WriteToDB("WriterDB");
+        System.out.println("Hey");
     }
 
     /**
@@ -364,8 +369,8 @@ public class Server extends Thread
             if (s == null)
             {
                 System.out.println("Errore nell'inizializzare il server");
+                System.exit(1);
             }
-            s.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " exception: " + e);
         }
 
         try

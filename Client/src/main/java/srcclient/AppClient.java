@@ -1,4 +1,4 @@
-package srcclient;
+package Client.src.main.java.srcclient;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;

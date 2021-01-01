@@ -1,4 +1,4 @@
-package src;
+package Server.src.main.java.src;
 
 public class Config 
 {

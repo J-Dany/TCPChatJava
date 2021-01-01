@@ -1,4 +1,4 @@
-package src;
+package Server.src.main.java.src;
 
 import java.awt.image.BufferedImage;
 import org.json.JSONObject;

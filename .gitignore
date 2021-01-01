@@ -7,3 +7,5 @@ mysql-connector-java-8.0.22/
 out/com
 out/img?.png
 out/*.jar
+.gradle
+build
