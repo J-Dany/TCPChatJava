@@ -76,6 +76,23 @@ public class AppClient
                 }
             });
             collegati.setFont(font);
+            inputPort.addKeyListener(new KeyListener()
+            {
+                @Override
+                public void keyPressed(KeyEvent arg0) 
+                {
+                    if (arg0.getKeyCode() == KeyEvent.VK_ENTER) 
+                    {
+                        collegati.doClick();
+                    }
+                }
+
+                @Override
+                public void keyReleased(KeyEvent arg0) { }
+
+                @Override
+                public void keyTyped(KeyEvent arg0) { }
+            });
             server.add(Box.createHorizontalGlue());
             server.add(collegati);
             server.pack();
@@ -102,9 +119,11 @@ public class AppClient
             dialog.add(nomeUtente);
             dialog.add(password);
             JButton buttonLogin = new JButton("Autenticati");
-            buttonLogin.addActionListener(new ActionListener() {
+            buttonLogin.addActionListener(new ActionListener() 
+            {
                 @Override
-                public void actionPerformed(ActionEvent arg0) {
+                public void actionPerformed(ActionEvent arg0) 
+                {
                     String n = nomeUtente.getText();
                     String p = new String(password.getPassword());
 
@@ -141,8 +160,8 @@ public class AppClient
                 }
             });
             buttonLogin.setFont(font);
-            password.addKeyListener(new KeyListener() {
-
+            password.addKeyListener(new KeyListener() 
+            {
                 @Override
                 public void keyPressed(KeyEvent arg0) 
                 { 
