@@ -1,4 +1,4 @@
-package Client.src.main.java.srcclient;
+package srcclient;
 
 import java.io.File;
 import java.io.FileInputStream;

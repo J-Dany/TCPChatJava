@@ -1,4 +1,4 @@
-package Server.src.main.java.src;
+package src;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;

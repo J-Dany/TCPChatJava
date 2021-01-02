@@ -9,3 +9,4 @@ out/img?.png
 out/*.jar
 .gradle
 build
+bin

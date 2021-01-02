@@ -1,4 +1,4 @@
-package Client.src.main.java.srcclient;
+package srcclient;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
@@ -139,7 +139,6 @@ public class AppClient
                         System.exit(ERRORE_NEL_FORM);
                     }
 
-                    JSONObject hey = new JSONObject();
                     JSONObject auth = new JSONObject();
                     auth.put("Tipo-Richiesta", "Autenticazione");
                     auth.put("Nome", n);

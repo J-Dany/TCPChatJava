@@ -8,6 +8,10 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    runtimeLibraries
+}
+
 dependencies {
     // Use JUnit test framework.
     testImplementation 'junit:junit:4.13'
@@ -15,9 +19,25 @@ dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:30.1-jre'
     implementation 'org.json:json:20201115'
+
+    runtimeLibraries 'com.google.guava:guava:30.1-jre', 'org.json:json:20201115'
 }
 
 application {
     // Define the main class for the application.
-    mainClass = 'Client.src.main.java.srcclient.AppClient'
+    mainClass = 'srcclient.AppClient'
+}
+
+jar {
+    from sourceSets.main.output
+    def libraries = ['json-20201115.jar', 'guava-30.1-jre.jar']
+    from configurations.runtimeClasspath.
+        findAll { libraries.contains(it.name) }.
+        collect { zipTree(it) }
+
+    manifest {
+        attributes(
+            'Main-Class': 'srcclient.AppClient'
+        )
+    }
 }
