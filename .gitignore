@@ -10,5 +10,3 @@ out/*.jar
 .gradle
 build
 bin
-Server/.classpath
-Client/.classpath
