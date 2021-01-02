@@ -28,7 +28,7 @@ public class Console
         while (command != null)
         {
             System.out.print("? ");
-            command = input.next();
+            command = input.nextLine();
             String[] arguments = command.split(" ");
             String com = arguments[0];
 
