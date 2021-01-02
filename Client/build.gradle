@@ -5,9 +5,7 @@ plugins {
 
 repositories {
     // Use JCenter for resolving dependencies.
-    flatDir {
-        dirs 'src/main/resources/'
-    }
+    mavenCentral()
 }
 
 dependencies {
@@ -16,7 +14,7 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:30.1-jre'
-    implementation 'org.json:json-20201115'
+    implementation 'org.json:json:20201115'
 }
 
 application {

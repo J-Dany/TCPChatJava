@@ -126,7 +126,7 @@ public class AppClient
                 {
                     String n = nomeUtente.getText();
                     String p = new String(password.getPassword());
-
+                    
                     try
                     {
                         HashCode hash = Hashing.sha256().hashString(p, Charsets.UTF_8);
@@ -139,6 +139,7 @@ public class AppClient
                         System.exit(ERRORE_NEL_FORM);
                     }
 
+                    JSONObject hey = new JSONObject();
                     JSONObject auth = new JSONObject();
                     auth.put("Tipo-Richiesta", "Autenticazione");
                     auth.put("Nome", n);
