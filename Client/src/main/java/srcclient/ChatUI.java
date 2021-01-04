@@ -41,7 +41,7 @@ public class ChatUI
     public final int HEIGHT = 720;
     public final int WIDTH = 1280;
 
-    private HashMap<String, CasellaUtente> utenti;
+    private HashMap<String, CasellaUtente> utenti = new HashMap<>();
     private HashMap<String, Color> utenteColore;
     private OutputStreamWriter writer;
     private Socket socket;
