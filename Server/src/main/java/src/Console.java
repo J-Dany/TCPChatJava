@@ -61,6 +61,19 @@ public class Console
                         Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
                     }
                 break;
+                case "del-user":
+                case "du":
+                    String u = arguments[1];
+
+                    try
+                    {
+                        utenti.deleteOnce(u);
+                    }
+                    catch (Exception e)
+                    {
+                        Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                    }
+                break;
                 case "svuota-db-messaggi":
                 case "svuota-db-msg":
                 case "sdbm":
@@ -117,12 +130,6 @@ public class Console
                     {
                         Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
                     }
-                break;
-                case "delete-user":
-                case "du":
-                    String user = arguments[1];
-
-                    utenti.deleteOnce(user);
                 break;
                 case "aggiungi-utente":
                 case "a-utente":
