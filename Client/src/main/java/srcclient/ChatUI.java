@@ -23,31 +23,38 @@ import java.awt.Robot;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
-import javax.swing.plaf.DimensionUIResource;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import org.json.JSONObject;
 
-public class ChatUI {
+public class ChatUI 
+{
 
     private static final int IO_EXCEPTION = 2;
     /**
      * Grandezza dell'applicazione
      */
-    public final int HEIGHT = 480;
-    public final int WIDTH = 853;
+    public final int HEIGHT = 720;
+    public final int WIDTH = 1280;
 
+    private HashMap<String, CasellaUtente> utenti;
     private HashMap<String, Color> utenteColore;
     private OutputStreamWriter writer;
     private Socket socket;
     public JFrame app;
+    private JPanel panelUtenti;
     private JTextField input, utentiConnessi;
     private Font font = new FontUIResource("Noto Sans", Font.PLAIN, 14);
     private Font fontTextArea = new FontUIResource("Caladea", Font.PLAIN, 18);
     private Font fontInviaMessaggio = new FontUIResource("Noto Sans", Font.PLAIN, 18);
     private JTextPane textArea;
+    private JTextPane currentTextArea;
+    private DefaultStyledDocument document = new DefaultStyledDocument();
+    private StyleContext context = new StyleContext();
     private StyledDocument doc;
     private String nome;
     private JScrollPane scrollPaneTextArea;
@@ -87,8 +94,9 @@ public class ChatUI {
 
     public void prepareApp() 
     {
-        this.app.setSize(WIDTH, HEIGHT);
-        this.app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.app.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        this.app.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.app.setLayout(new BorderLayout());
 
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
@@ -285,29 +293,30 @@ public class ChatUI {
             public void windowOpened(WindowEvent arg0) { }
         });
 
-        JPanel panel = new JPanel();
-        LayoutManager layout = new BoxLayout(panel, BoxLayout.PAGE_AXIS);
-        panel.setLayout(layout);
-        this.app.setContentPane(panel);
+        panelUtenti = new JPanel();
+        panelUtenti.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        panelUtenti.setLayout(new BoxLayout(panelUtenti, BoxLayout.PAGE_AXIS));
 
+        JScrollPane scrollUtenti = new JScrollPane(panelUtenti);
+        this.app.add(scrollUtenti, BorderLayout.LINE_START);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
         utentiConnessi = new JTextField();
+        utentiConnessi.setBorder(null);
         utentiConnessi.setFont(font);
         utentiConnessi.setEditable(false);
+        utentiConnessi.setPreferredSize(new Dimension(WIDTH, 20));
         panel.add(utentiConnessi);
+        this.app.add(panel, BorderLayout.PAGE_START);
 
-        this.textArea = new JTextPane();
+        this.textArea = new JTextPane(document);
+        this.textArea.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         this.textArea.setFont(fontTextArea);
-        DimensionUIResource dimension = new DimensionUIResource(WIDTH, 400);
-        this.textArea.setPreferredSize(dimension);
         this.textArea.setAutoscrolls(true);
         this.textArea.setEditable(false);
-        panel.add(this.textArea);
-
-        scrollPaneTextArea = new JScrollPane(this.textArea);
-        this.app.getContentPane().add(scrollPaneTextArea);
 
         JPanel panelInput = new JPanel();
-        panelInput.setBackground(Color.WHITE);
         BoxLayout layoutInput = new BoxLayout(panelInput, BoxLayout.LINE_AXIS);
         panelInput.setLayout(layoutInput);
 
@@ -364,10 +373,11 @@ public class ChatUI {
         });
         buttonInviaMessaggio.setBorder(null);
 
-        this.input.addKeyListener(new KeyListener() {
-
+        this.input.addKeyListener(new KeyListener() 
+        {
             @Override
-            public void keyPressed(KeyEvent arg0) {
+            public void keyPressed(KeyEvent arg0) 
+            {
                 if (arg0.getKeyCode() == KeyEvent.VK_ENTER) 
                 {
                     buttonInviaMessaggio.doClick();
@@ -379,44 +389,102 @@ public class ChatUI {
 
             @Override
             public void keyTyped(KeyEvent arg0) { }
-            });
+        });
 
-            panelInput.add(buttonInviaMessaggio);
+        panelInput.add(buttonInviaMessaggio);
 
-            this.doc = this.textArea.getStyledDocument();
-            this.s = scrollPaneTextArea.getVerticalScrollBar();
+        scrollPaneTextArea = new JScrollPane(this.textArea);
+        this.app.add(scrollPaneTextArea, BorderLayout.CENTER);
 
-            panel.add(panelInput);
-        }
+        this.doc = this.textArea.getStyledDocument();
+        this.s = scrollPaneTextArea.getVerticalScrollBar();
+
+        CasellaUtente glob = new CasellaUtente("Globale", this);
+        this.utenti.put("Globale", glob);
+        glob.setOpen(false);
+        glob.getUtente().setTextArea(this.textArea);
+        panelUtenti.add(glob);
+
+        this.app.add(panelInput, BorderLayout.PAGE_END);
+    }
 
     public void show() 
     {
+        this.app.pack();
         this.app.setResizable(false);
         this.app.setVisible(true);
+    }
+
+    private void aggiungiUtente(String nome)
+    {
+        panelUtenti.add(new CasellaUtente(nome, this));
+        panelUtenti.revalidate();
+        panelUtenti.repaint();
     }
 
     public void aggiungiMessaggio(String nome, String msg) 
     {
         try 
         {
-            if (!this.utenteColore.containsKey(nome))
+            if (currentTextArea != null && currentTextArea != textArea)
             {
-                this.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
+                StyledDocument doc = currentTextArea.getStyledDocument();
+                doc.insertString(doc.getLength(), nome + ": " + msg + "\n", null);
             }
+            else
+            {
+                if (!nome.equals("Tu") && !this.utenteColore.containsKey(nome))
+                {
+                    if (!nome.equals("SERVER"))
+                    {
+                        this.aggiungiUtente(nome);
+                    }
 
-            Style style = textArea.addStyle(msg, null);
-            Color c = nome.equals("Tu")
-                ? Color.BLACK
-                : utenteColore.get(nome);
-                
-            StyleConstants.setForeground(style, c);
-
-            doc.insertString(doc.getLength(), nome + ": " + msg + "\n", style);
-            this.s.setValue(this.s.getMaximum());
-            } 
+                    this.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
+                }
+    
+                Style style = context.addStyle(msg, null);
+                Color c = nome.equals("Tu")
+                    ? Color.BLACK
+                    : utenteColore.get(nome);
+                    
+                StyleConstants.setForeground(style, c);
+    
+                doc.insertString(doc.getLength(), nome + ": " + msg + "\n", style);
+                this.s.setValue(this.s.getMaximum());
+            }
+        } 
         catch (Exception e)
         {
             e.printStackTrace();
+        }
+    }
+    
+    public HashMap<String, CasellaUtente> getUtenti()
+    {
+        return this.utenti;
+    }
+
+    public void aggiungiTextPaneChatCorrente(Utente u)
+    {
+        this.currentTextArea = u.getTextArea();
+        this.app.add(u.getTextArea(), BorderLayout.CENTER);
+        this.app.revalidate();
+        this.app.repaint();
+        if (currentTextArea == textArea)
+        {
+            try
+            {
+                this.textArea.setText(document.getText(0, document.getLength()));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            this.currentTextArea.setText(currentTextArea.getText());
         }
     }
 

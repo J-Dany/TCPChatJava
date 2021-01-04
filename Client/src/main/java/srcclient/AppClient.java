@@ -245,6 +245,9 @@ public class AppClient
                     case "Nuovo-Messaggio":
                         switch (risposta.getString("Tipo-Messaggio"))
                         {
+                            case "Per":
+                                
+                            break;
                             case "Plain-Text":
                                 String nomeClient = risposta.getString("Nome");
                                 chat.aggiungiMessaggio(nomeClient, risposta.getString("Messaggio"));
