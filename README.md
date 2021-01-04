@@ -4,6 +4,7 @@ Piccolo progetto per una chat in java criptata.
 ## Dipendenze
 - gradle
 - mysql
+- make
 
 ## Console del programma Server
 **N.B.**: Ogni client deve essere registrato prima che quest'ultimo possa usare la chat.
