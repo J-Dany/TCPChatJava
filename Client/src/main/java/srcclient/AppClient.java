@@ -267,15 +267,23 @@ public class AppClient
                         }
                     break;
                     case "Numero-Utenti":
-                        chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
-
-                        if (risposta.has("Lista-Utenti"))
+                        switch (risposta.getString("Tipo-Set-Numero"))
                         {
-                            for (Object n : risposta.getJSONArray("Lista-Utenti").toList())
-                            {
-                                String nome = (String) n;
-                                chat.aggiungiUtente(nome);
-                            }
+                            case "Connessione":
+                                chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
+
+                                if (risposta.has("Lista-Utenti"))
+                                {
+                                    for (Object n : risposta.getJSONArray("Lista-Utenti").toList())
+                                    {
+                                        String nome = (String) n;
+                                        chat.aggiungiUtente(nome);
+                                    }
+                                }
+                            break;
+                            case "Disconnessione":
+                                chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
+                            break;
                         }
                     break;
                     case "Non-Puoi-Inviare-Messaggi":

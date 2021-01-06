@@ -63,6 +63,7 @@ public class ConnectionClient implements Runnable
 
                             JSONObject numeroUtenti = new JSONObject();
                             numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
+                            numeroUtenti.put("Tipo-Set-Numero", "Connessione");
                             numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi());
                             numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi());
 
@@ -153,6 +154,7 @@ public class ConnectionClient implements Runnable
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " " + this.client.getNome() + " si e' disconnesso, aggiorno il numero degli utenti connessi al client");
         JSONObject numeroUtenti = new JSONObject();
         numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
+        numeroUtenti.put("Tipo-Set-Numero", "Connessione");
         numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi());
         numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi());
         Server.getServer().messaggioBroadcast(numeroUtenti.toString());
