@@ -435,11 +435,6 @@ public class ChatUI
             {
                 if (!nome.equals("Tu") && !this.utenteColore.containsKey(nome))
                 {
-                    if (!nome.equals("SERVER"))
-                    {
-                        this.aggiungiUtente(nome);
-                    }
-
                     this.aggiungiUtenteColore(nome, colors.get(new Random().nextInt(colors.size())));
                 }
     

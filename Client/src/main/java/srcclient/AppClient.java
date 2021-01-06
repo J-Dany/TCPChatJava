@@ -4,8 +4,6 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import java.awt.image.BufferedImage;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 import java.net.Socket;
 import java.io.OutputStreamWriter;
