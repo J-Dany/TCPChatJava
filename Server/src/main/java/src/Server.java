@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -72,6 +74,23 @@ public class Server extends Thread
         this.connected_clients = new HashMap<>();
         this.writer = new WriteToDB("WriterDB");
         this.errors = new ArrayList<>();
+    }
+
+    /**
+     * Ritorna un JSONArray contenente tutti gli utenti connessi
+     * @return JSONArray
+     */
+    public JSONArray getListaUtentiConnessi()
+    {
+        JSONArray array = new JSONArray();
+
+        for (Object it : this.connected_clients.keySet().toArray())
+        {
+            Client c = (Client)it;
+            array.put(c.getNome());
+        }
+
+        return array;
     }
 
     /**

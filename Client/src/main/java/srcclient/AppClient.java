@@ -4,6 +4,8 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import java.awt.image.BufferedImage;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import java.net.Socket;
 import java.io.OutputStreamWriter;
@@ -236,6 +238,12 @@ public class AppClient
                             chat.prepareApp();
                             chat.show();
                             chat.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
+
+                            for (Object n : risposta.getJSONArray("Lista-Utenti").toList())
+                            {
+                                String nome = (String) n;
+                                chat.aggiungiUtente(nome);
+                            }
                         }
                         catch (Exception e)
                         {

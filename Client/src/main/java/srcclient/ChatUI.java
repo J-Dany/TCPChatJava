@@ -415,7 +415,7 @@ public class ChatUI
         this.app.setVisible(true);
     }
 
-    private void aggiungiUtente(String nome)
+    public void aggiungiUtente(String nome)
     {
         panelUtenti.add(new CasellaUtente(nome, this));
         panelUtenti.revalidate();
