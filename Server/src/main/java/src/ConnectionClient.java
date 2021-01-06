@@ -155,6 +155,7 @@ public class ConnectionClient implements Runnable
         JSONObject numeroUtenti = new JSONObject();
         numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
         numeroUtenti.put("Tipo-Set-Numero", "Disconnessione");
+        numeroUtenti.put("Nome", this.client.getNome());
         numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi() - 1);
         numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi(""));
         Server.getServer().messaggioBroadcast(numeroUtenti.toString());

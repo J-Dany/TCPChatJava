@@ -286,6 +286,7 @@ public class AppClient
                             break;
                             case "Disconnessione":
                                 chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
+                                chat.eliminaCasellaUtente(risposta.getString("Nome"));
                             break;
                         }
                     break;
