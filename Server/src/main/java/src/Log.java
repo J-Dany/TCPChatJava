@@ -40,11 +40,19 @@ public class Log extends Thread
     {
         if (msg != null)
         {
+            if (msg.contains("[ ERR ]"))
+            {
+                Server.getServer().nuovoErrore(msg);
+            }
+            else if (msg.contains("[ ERR ] - Console"))
+            {
+                System.out.println("C'e' stato un errore nell'eseguire l'ultimo comando");
+            }
+
             try
             {
-                this.coda.put(msg);
+                this.coda.add(msg);
             }
-            catch (InterruptedException e) { }
             catch (Exception e)
             {
                 e.printStackTrace();

@@ -24,6 +24,10 @@ I comandi per ora disponibili, con alias, sono:
     - Stampa la lista dei comandi dati al server
 - **ban** {ip}
     - Banna l'indirizzo IP passato
+- **numero-errori** (v. corta: *n-err*)
+    - Stampa a video il numero degli errori registrati
+- **error** [indexErrore] (v. corta: *err*)
+    - Stampa a video l'errore richiesto. Se non viene specificato l'index dell'errore verrà stampato l'ultimo
 - **aggiungi-utente** {nome} {passwordInChiaro} (v. corta: *a-utente*, *au*)
     - Aggiunge nuovo utente al database
 - **delete-user** {nomeUtente} (v. corta: *du*)

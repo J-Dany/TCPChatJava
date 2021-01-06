@@ -55,6 +55,8 @@ public class Server extends Thread
      */
     private Object[] arr;
 
+    private ArrayList<String> errors;
+
     /**
      * Costruttore del Server
      * 
@@ -69,6 +71,69 @@ public class Server extends Thread
         this.banned = new ArrayList<>();
         this.connected_clients = new HashMap<>();
         this.writer = new WriteToDB("WriterDB");
+        this.errors = new ArrayList<>();
+    }
+
+    /**
+     * Aggiunge un nuovo errore alla lista
+     * degli errori per recuperarli dalla Console
+     */
+    public void nuovoErrore(String err)
+    {
+        if (this.errors != null)
+        {
+            this.errors.add(err);
+        }
+    }
+
+    /**
+     * Ritorna l'ultimo errore dalla lista degli errori
+     * 
+     * @return String, ultimo errore registrato, null se la lista non è stata inizializzata
+    */
+    public String ultimoErrore()
+    {
+        if (this.errors.size() == 0)
+        {
+            return "";
+        }
+
+        if (this.errors != null)
+        {
+            return this.errors.get(this.errors.size() - 1);
+        }
+
+        return null;
+    }
+
+    /**
+     * Ritorna l'errore nell'index specificato
+     * 
+     * @param index, l'indice dell'errore
+     * @return String l'errore a quell'indice, null se non esiste quell'indice
+     */
+    public String erroreNellIndex(int index)
+    {
+        if (this.errors != null && index < this.errors.size())
+        {
+            return this.errors.get(index);
+        }
+
+        return null;
+    }
+
+    /**
+     * Ritorna il numero degli errori registrati
+     * @return int, numero degli errori registrati
+     */
+    public int numeroErrori()
+    {
+        if (this.errors != null)
+        {
+            return this.errors.size();
+        }
+
+        return -1;
     }
 
     /**

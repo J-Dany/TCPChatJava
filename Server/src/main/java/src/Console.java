@@ -61,6 +61,50 @@ public class Console
                         Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
                     }
                 break;
+                case "numero-errori":
+                case "n-err":
+                    System.out.println(Server.getServer().numeroErrori());
+                break;
+                case "error":
+                case "err":
+                    String nErr = (Server.getServer().numeroErrori() == 1)
+                        ? "( 1 Errore ) - "
+                        : "( " + Server.getServer().numeroErrori() + " Errori ) - ";
+
+                    try
+                    {
+                        int index = Integer.parseInt(arguments[1]);
+
+                        String err = Server.getServer().erroreNellIndex(index);
+
+                        if (err == null)
+                        {
+                            System.out.println(nErr + "Errore n. " + index + " non trovato");
+                        }
+                        else if (err.equals(""))
+                        {
+                            System.out.println("Ancora non ci sono errori!");
+                        }
+                        else
+                        {
+                            System.out.println(nErr + "Errore n. " + index + ": " + err);
+                        }
+                    }
+                    catch (IndexOutOfBoundsException e)
+                    {
+                        String err = Server.getServer().ultimoErrore();
+
+                        if (err.equals(""))
+                        {
+                            System.out.println("Ancora non ci sono errori!");
+                        }
+                        else
+                        {
+                            System.out.println(nErr + "Ultimo errore: " + err);
+                        }
+                        
+                    }
+                break;
                 case "del-user":
                 case "du":
                     String u = arguments[1];
