@@ -50,11 +50,20 @@ public class ConnectionClient implements Runnable
                             autenticazioneCorretta.put("Risultato", true);
                             
                             Server.getServer().mandaMessaggio(autenticazioneCorretta.toString(), null, this.socket);
+
+                            synchronized (Server.getServer().connected_clients)
+                            {
+                                if (!Server.getServer().connected_clients.containsKey(this.client)) 
+                                {
+                                    Server.getServer().connected_clients.put(this.client, this.socket);
+                                }
+                            }
                         
                             Thread.sleep(64);
 
                             JSONObject numeroUtenti = new JSONObject();
                             numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
+                            numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi());
                             numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi());
 
                             Server.getServer().mandaMessaggio(numeroUtenti.toString(), this.client, null);
@@ -145,6 +154,7 @@ public class ConnectionClient implements Runnable
         JSONObject numeroUtenti = new JSONObject();
         numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
         numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi());
+        numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi());
         Server.getServer().messaggioBroadcast(numeroUtenti.toString());
     }
 

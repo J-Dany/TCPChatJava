@@ -507,7 +507,7 @@ public class ChatUI
     {
         try
         {
-            if (numero == 1)
+            if (numero == 0)
             {
                 this.utentiConnessi.setText("Solo te sei connesso!");
             }

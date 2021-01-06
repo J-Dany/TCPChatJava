@@ -270,6 +270,15 @@ public class AppClient
                     break;
                     case "Numero-Utenti":
                         chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
+
+                        if (risposta.has("Lista-Utenti"))
+                        {
+                            for (Object n : risposta.getJSONArray("Lista-Utenti").toList())
+                            {
+                                String nome = (String) n;
+                                chat.aggiungiUtente(nome);
+                            }
+                        }
                     break;
                     case "Non-Puoi-Inviare-Messaggi":
                         JOptionPane.showMessageDialog(chat.app, risposta.getString("Motivo"), "Non puoi inviare messaggi", JOptionPane.ERROR_MESSAGE);                                   

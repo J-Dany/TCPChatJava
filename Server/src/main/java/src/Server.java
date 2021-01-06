@@ -39,7 +39,7 @@ public class Server extends Thread
      * Rappresenta il Socket aperto
      * per ogni client connesso
      */
-    private HashMap<Client, Socket> connected_clients;
+    public HashMap<Client, Socket> connected_clients;
 
     /**
      * Rappresenta la Thread Pool per gestire
@@ -80,7 +80,7 @@ public class Server extends Thread
      * Ritorna un JSONArray contenente tutti gli utenti connessi
      * @return JSONArray
      */
-    public JSONArray getListaUtentiConnessi()
+    public synchronized JSONArray getListaUtentiConnessi()
     {
         JSONArray array = new JSONArray();
 
@@ -298,24 +298,11 @@ public class Server extends Thread
                     Thread.currentThread().interrupt();
                     break;
                 }
-                this.logger.add_msg("[ OK  ] - " + this.getName() + " accettata la connessione per " + sclient.getInetAddress());
 
                 // Creo un nuovo oggetto client, che rappresenta il client connesso
                 this.logger.add_msg("[ OK  ] - Creo un oggetto Client per rappresentare il client connesso...");
                     Client c = new Client(sclient.getInetAddress());
                 this.logger.add_msg("[ OK  ] - Oggetto creato");
-
-                this.logger.add_msg("[ OK  ] - Controllo se il client esiste gia'");
-
-                // Controllo se è un client che gia' si era connesso in precedenza, altrimenti
-                // lo aggiungo
-                synchronized (this.connected_clients)
-                {
-                    if (!this.connected_clients.containsKey(c)) 
-                    {
-                        this.connected_clients.put(c, sclient);
-                    }
-                }
 
                 this.logger.add_msg("[ OK  ] - Sto in ascolto per i messaggi di questo client.");
 
