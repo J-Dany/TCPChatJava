@@ -277,7 +277,10 @@ public class AppClient
                                     for (Object n : risposta.getJSONArray("Lista-Utenti").toList())
                                     {
                                         String nome = (String) n;
-                                        chat.aggiungiUtente(nome);
+                                        if (!nome.equals(AppClient.nome))
+                                        {
+                                            chat.aggiungiUtente(nome);
+                                        }
                                     }
                                 }
                             break;

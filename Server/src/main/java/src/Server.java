@@ -78,16 +78,21 @@ public class Server extends Thread
 
     /**
      * Ritorna un JSONArray contenente tutti gli utenti connessi
+     * 
+     * @param nome, una stringa che rappresenta il nome del client da non mettere nell'array
      * @return JSONArray
      */
-    public synchronized JSONArray getListaUtentiConnessi()
+    public synchronized JSONArray getListaUtentiConnessi(String nome)
     {
         JSONArray array = new JSONArray();
 
         for (Object it : this.connected_clients.keySet().toArray())
         {
             Client c = (Client)it;
-            array.put(c.getNome());
+            if (!nome.equals(c.getNome()))
+            {
+                array.put(c.getNome());
+            }
         }
 
         return array;

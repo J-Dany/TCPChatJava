@@ -46,7 +46,7 @@ public class ConnectionClient implements Runnable
                             JSONObject autenticazioneCorretta = new JSONObject();
                             autenticazioneCorretta.put("Tipo-Richiesta", "Autenticazione");
                             autenticazioneCorretta.put("Utenti-Connessi", Server.getServer().getNumeroUtentiConnessi());
-                            autenticazioneCorretta.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi());
+                            autenticazioneCorretta.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi(this.client.getNome()));
                             autenticazioneCorretta.put("Risultato", true);
                             
                             Server.getServer().mandaMessaggio(autenticazioneCorretta.toString(), null, this.socket);
@@ -64,7 +64,7 @@ public class ConnectionClient implements Runnable
                             JSONObject numeroUtenti = new JSONObject();
                             numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
                             numeroUtenti.put("Tipo-Set-Numero", "Connessione");
-                            numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi());
+                            numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi(""));
                             numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi());
 
                             Server.getServer().mandaMessaggio(numeroUtenti.toString(), this.client, null);
@@ -154,9 +154,9 @@ public class ConnectionClient implements Runnable
         Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " " + this.client.getNome() + " si e' disconnesso, aggiorno il numero degli utenti connessi al client");
         JSONObject numeroUtenti = new JSONObject();
         numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
-        numeroUtenti.put("Tipo-Set-Numero", "Connessione");
+        numeroUtenti.put("Tipo-Set-Numero", "Disconnessione");
         numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi());
-        numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi());
+        numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi(""));
         Server.getServer().messaggioBroadcast(numeroUtenti.toString());
     }
 
