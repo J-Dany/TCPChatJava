@@ -454,6 +454,20 @@ public class ChatUI
             e.printStackTrace();
         }
     }
+
+    private void repaintListaUtenti()
+    {
+        panelUtenti.revalidate();
+        panelUtenti.repaint();
+    }
+
+    public void eliminaCasellaUtente(String nome)
+    {
+        CasellaUtente c = this.utenti.get(nome);
+        this.utenti.remove(nome);
+        panelUtenti.remove(c);
+        this.repaintListaUtenti();
+    }
     
     public HashMap<String, CasellaUtente> getUtenti()
     {
