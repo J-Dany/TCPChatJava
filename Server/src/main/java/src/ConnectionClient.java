@@ -65,7 +65,7 @@ public class ConnectionClient implements Runnable
                             numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
                             numeroUtenti.put("Tipo-Set-Numero", "Connessione");
                             numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi(""));
-                            numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi());
+                            numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi() - 1);
 
                             Server.getServer().mandaMessaggio(numeroUtenti.toString(), this.client, null);
                         }

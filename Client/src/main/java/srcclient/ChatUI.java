@@ -506,6 +506,10 @@ public class ChatUI
             {
                 this.utentiConnessi.setText("Solo te sei connesso!");
             }
+            else if (numero == 1)
+            {
+                this.utentiConnessi.setText("1 utente connesso!");
+            }
             else 
             {
                 this.utentiConnessi.setText(numero + " utenti connessi!");
