@@ -10,6 +10,8 @@ import javax.swing.text.StyledDocument;
 public class Utente 
 {
     private String nome;
+    private JScrollPane scrollPane;
+    private JScrollBar scrollBar;
     private JTextPane textArea;
     private StyledDocument doc;
     private Font fontTextArea = new FontUIResource("Caladea", Font.PLAIN, 18);
@@ -18,6 +20,8 @@ public class Utente
     {
         this.nome = nome;
         this.textArea = new JTextPane();
+        this.scrollPane = new JScrollPane(this.textArea);
+        this.scrollBar = this.scrollPane.getVerticalScrollBar();
         this.textArea.setEditable(false);
         this.doc = this.textArea.getStyledDocument();
         this.textArea.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -39,6 +43,11 @@ public class Utente
         return this.textArea;
     }
 
+    public JScrollPane getScrollPane()
+    {
+        return this.scrollPane;
+    }
+
     public void aggiungiMessaggio(CasellaMessaggio casella)
     {
         try
@@ -50,6 +59,8 @@ public class Utente
             Style space = doc.addStyle("space", null);
             StyleConstants.setComponent(space, Box.createRigidArea(new Dimension(0, 4)));
             doc.insertString(doc.getLength(), "invisible\n", space);
+
+            this.scrollBar.setValue(this.scrollBar.getMaximum());
         }
         catch (Exception e)
         {

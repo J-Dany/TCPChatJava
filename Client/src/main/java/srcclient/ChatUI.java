@@ -87,7 +87,7 @@ public class ChatUI
         file.add(quit);
         JMenu caricaImmagine = new JMenu("Immagine");
         caricaImmagine.setFont(font);
-        JMenuItem buttonCaricaImmagine = new JMenuItem("Carica...");
+        /*JMenuItem buttonCaricaImmagine = new JMenuItem("Carica...");
         buttonCaricaImmagine.setFont(font);
         buttonCaricaImmagine.addActionListener(new ActionListener() {
             @Override
@@ -125,7 +125,7 @@ public class ChatUI
 
                         /*Robot robot = new Robot();
                         BufferedImage bimp = robot.createScreenCapture(new Rectangle(0, 0, 427, 240));
-                        ImageIO.write(bimp, "PNG", socket.getOutputStream());*/
+                        ImageIO.write(bimp, "PNG", socket.getOutputStream());
                     }
 
                     fileInputStream.close();
@@ -136,7 +136,7 @@ public class ChatUI
                 }
             }
         });
-        caricaImmagine.add(buttonCaricaImmagine);
+        caricaImmagine.add(buttonCaricaImmagine);*/
         JMenu info = new JMenu("Info");
         info.setFont(font);
         JMenuItem about = new JMenuItem("About");
@@ -337,7 +337,7 @@ public class ChatUI
 
     public void aggiungiTextPaneChatCorrente(Utente u)
     {
-        this.app.add(u.getTextArea(), BorderLayout.CENTER);
+        this.app.add(u.getScrollPane(), BorderLayout.CENTER);
         this.app.revalidate();
         this.app.repaint();
     }
