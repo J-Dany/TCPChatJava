@@ -251,7 +251,7 @@ public class ChatUI
                     String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                     String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
 
-                    AppClient.aggiungiMessaggio(new CasellaMessaggio("Tu", msg, data, time));
+                    AppClient.aggiungiMessaggio(nome, new CasellaMessaggio("Tu", msg, data, time));
 
                     JSONObject json = new JSONObject();
                     json.put("Tipo-Richiesta", "Invio-Messaggio");
