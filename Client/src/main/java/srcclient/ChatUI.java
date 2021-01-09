@@ -266,6 +266,8 @@ public class ChatUI
                         json.put("Per", nome);
                     }
 
+                    System.out.println(json);
+
                     AppClient.manda(json.toString());
 
                     input.setText("");

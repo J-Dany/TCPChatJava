@@ -155,7 +155,7 @@ public class AppClient
                                 if (risposta.getString("Destinatario").equals(nome) 
                                 && utenteCorrente != utenti.get(risposta.getString("Destinatario")))
                                 {
-                                    
+                                    chatUI.incrementaNumeroMessaggiDa(risposta.getString("Destinatario"));
                                 }
                             break;
                             case "Plain-Text":
