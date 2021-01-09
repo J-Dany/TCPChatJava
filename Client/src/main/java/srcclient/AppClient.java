@@ -143,20 +143,7 @@ public class AppClient
                         }
 
                         try
-                        {                            
-                            String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
-                            String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-                            
-                            JSONObject nuovoMessaggio = new JSONObject();
-                            nuovoMessaggio.put("Tipo-Richiesta", "Invio-Messaggio");
-                            nuovoMessaggio.put("Tipo-Messaggio", "Plain-Text");
-                            nuovoMessaggio.put("Messaggio", "si è connesso!");
-                            nuovoMessaggio.put("Nome", nome);
-                            nuovoMessaggio.put("Data", data);
-                            nuovoMessaggio.put("Time", time);
-
-                            manda(nuovoMessaggio.toString());
-
+                        {
                             chatUI = new ChatUI(nome);
                             chatUI.prepareApp();
                             chatUI.show();

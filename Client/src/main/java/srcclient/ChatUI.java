@@ -71,19 +71,6 @@ public class ChatUI
             {
                 try 
                 {
-                    String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-
-                    JSONObject inviaAvvenutaDisconnessione = new JSONObject();
-                    inviaAvvenutaDisconnessione.put("Tipo-Richiesta", "Invio-Messaggio");
-                    inviaAvvenutaDisconnessione.put("Tipo-Messaggio", "Plain-Text");
-                    inviaAvvenutaDisconnessione.put("Nome", nome);
-                    inviaAvvenutaDisconnessione.put("Messaggio", "si è disconnesso!");
-                    inviaAvvenutaDisconnessione.put("Data", data);
-                    inviaAvvenutaDisconnessione.put("Time", time);
-
-                    AppClient.manda(inviaAvvenutaDisconnessione.toString());
-
                     JSONObject closeRequest = new JSONObject();
                     closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
 
@@ -192,19 +179,6 @@ public class ChatUI
             public void windowClosing(WindowEvent arg0) {
                 try 
                 {
-                    String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-
-                    JSONObject inviaAvvenutaDisconnessione = new JSONObject();
-                    inviaAvvenutaDisconnessione.put("Tipo-Richiesta", "Invio-Messaggio");
-                    inviaAvvenutaDisconnessione.put("Tipo-Messaggio", "Plain-Text");
-                    inviaAvvenutaDisconnessione.put("Nome", nome);
-                    inviaAvvenutaDisconnessione.put("Messaggio", "si è disconnesso!");
-                    inviaAvvenutaDisconnessione.put("Data", data);
-                    inviaAvvenutaDisconnessione.put("Time", time);
-
-                    AppClient.manda(inviaAvvenutaDisconnessione.toString());
-
                     JSONObject closeRequest = new JSONObject();
                     closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
 
