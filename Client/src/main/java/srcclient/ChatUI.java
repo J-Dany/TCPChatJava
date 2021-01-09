@@ -346,6 +346,8 @@ public class ChatUI
         this.app.add(u.getScrollPane(), BorderLayout.CENTER);
         this.app.revalidate();
         this.app.repaint();
+        //u.getTextArea().add(u.getTextArea(), u.getTextArea().getComponents());
+        u.getTextArea().setText(u.getTextArea().getText());
     }
 
     /**
