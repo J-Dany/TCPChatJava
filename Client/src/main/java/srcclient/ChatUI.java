@@ -264,7 +264,7 @@ public class ChatUI
 
                     if (!AppClient.getNomeUtenteCorrente().equals("Globale"))
                     {
-                        json.put("Per", nome);
+                        json.put("Per", AppClient.getNomeUtenteCorrente());
                     }
 
                     System.out.println(json);
