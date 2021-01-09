@@ -232,7 +232,11 @@ public class AppClient
 
     public static void aggiungiMessaggio(String mittente, CasellaMessaggio c)
     {
-        utenti.get(mittente).aggiungiMessaggio(c);
+        System.out.println(utenti.toString());
+        if (utenti.containsKey(mittente))
+        {
+            utenti.get(mittente).aggiungiMessaggio(c);
+        }
     }
 
     public static void setUtenteCorrente(Utente u)
