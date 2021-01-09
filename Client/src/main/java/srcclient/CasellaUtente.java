@@ -2,7 +2,6 @@ package srcclient;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
-
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 
@@ -10,24 +9,19 @@ public class CasellaUtente extends JPanel
 {
     private static final long serialVersionUID = 8745213302075828373L;
 
-    private Utente utenteCorrente;
+    private Utente user;
     private JLabel labelNome;
     private JLabel labelNumeroMessaggi;
     private boolean open;
-    private final ChatUI gui;
+    private ChatUI gui;
 
-    public CasellaUtente(String nomeUtente, ChatUI gui) 
+    public CasellaUtente(Utente u, ChatUI gui) 
     {
-        this.open = false;
         this.gui = gui;
-        this.utenteCorrente = new Utente(nomeUtente);
-        this.labelNome = new JLabel(nomeUtente);
+        this.open = false;
+        this.user = u;
+        this.labelNome = new JLabel(u.getNome());
         this.labelNumeroMessaggi = new JLabel();
-
-        if (!gui.getUtenti().containsKey(nomeUtente))
-        {
-            gui.getUtenti().put(nomeUtente, this);
-        }
 
         this.setPreferredSize(new Dimension(240, 64));
         this.setMinimumSize(new Dimension(240, 64));
@@ -41,8 +35,8 @@ public class CasellaUtente extends JPanel
             @Override
             public void mouseClicked(MouseEvent arg0) 
             {
-                gui.aggiungiTextPaneChatCorrente(utenteCorrente);
-                gui.getUtenti().get(utenteCorrente.getNome()).setOpen(true);
+                AppClient.setUtenteCorrente(user);
+                gui.aggiungiTextPaneChatCorrente(user);
             }
 
             @Override
@@ -84,7 +78,7 @@ public class CasellaUtente extends JPanel
 
     public Utente getUtente()
     {
-        return this.utenteCorrente;
+        return this.user;
     }
 
     public void setNumeroMessaggi(String numero)

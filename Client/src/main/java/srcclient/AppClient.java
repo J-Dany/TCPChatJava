@@ -3,7 +3,6 @@ package srcclient;
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
-import java.awt.image.BufferedImage;
 import org.json.JSONObject;
 import java.net.Socket;
 import java.io.OutputStreamWriter;
@@ -12,13 +11,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.*;
-import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import java.net.InetSocketAddress;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 public class AppClient 
 {
@@ -27,6 +29,7 @@ public class AppClient
      */
     private static final int UTENTE_NON_RICONOSCIUTO = 4;
     private static final int ERRORE_NEL_FORM = 5;
+    private static final int OUTPUT_STREAM_NON_INIZIALIZZATO = 3;
 
     /**
      * Nome del client
@@ -41,161 +44,86 @@ public class AppClient
     private static String ip;
     private static int port;
 
+    /**
+     * Socket di connessione del client
+     */
+    private static Socket s;
+    
+    /**
+     * Output stream per mandare i dati
+     */
+    private static OutputStreamWriter outputStream;
+
+    /**
+     * HashMap che collega l'utente ad un colore
+     */
+    private static HashMap<String, Color> utenteColore = new HashMap<>();
+
+    /**
+     * Un array di colori da dare ad ogni client connesso
+     */
+    private static ArrayList<ColorUIResource> colors = new ArrayList<>();
+
+    /**
+     * Utenti
+     */
+    private static HashMap<String, Utente> utenti = new HashMap<>();
+
+    /**
+     * Utente corrente a cui mandare il messaggio
+     */
+    private static Utente utenteCorrente;
+    
     public static void main(String[] args) 
     {
+        
         try 
         {
             Class.forName("com.google.common.hash.Hashing");
 
-            FontUIResource font = new FontUIResource("Arial", FontUIResource.PLAIN, 16);
-            JDialog server = new JDialog();
-            server.setModal(true);
-            server.setPreferredSize(new Dimension(500, 200));
-            server.setLayout(new GridLayout(8, 1));
-            server.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            server.add(Box.createHorizontalGlue());
-            server.setTitle("Autenticazione");
-            JLabel label = new JLabel("Inserisci IP (o dominio) e porta del server a cui collegarsi:");
-            label.setFont(font);
-            server.add(label);
-            server.add(Box.createHorizontalGlue());
-            JTextField ipTextField = new JTextField();
-            ipTextField.setFont(font);
-            JTextField inputPort = new JTextField();
-            server.add(ipTextField);
-            server.add(inputPort);
-            JButton collegati = new JButton("Collegati");
-            collegati.addActionListener(new ActionListener() 
-            {
-                @Override
-                public void actionPerformed(ActionEvent arg0) 
-                {
-                    ip = ipTextField.getText();
-                    port = Integer.parseInt(inputPort.getText());
-                    server.dispose();
-                }
-            });
-            collegati.setFont(font);
-            inputPort.addKeyListener(new KeyListener()
-            {
-                @Override
-                public void keyPressed(KeyEvent arg0) 
-                {
-                    if (arg0.getKeyCode() == KeyEvent.VK_ENTER) 
-                    {
-                        collegati.doClick();
-                    }
-                }
+            // Mostra il form per inserire l'IP e la porta a cui collegarsi
+            formIpPort();
 
-                @Override
-                public void keyReleased(KeyEvent arg0) { }
-
-                @Override
-                public void keyTyped(KeyEvent arg0) { }
-            });
-            server.add(Box.createHorizontalGlue());
-            server.add(collegati);
-            server.pack();
-            server.setVisible(true);
-
-            Socket socket = new Socket();
+            s = new Socket();
             InetSocketAddress server_address = new InetSocketAddress(ip, port);
-            socket.connect(server_address);
+            s.connect(server_address);
 
-            JDialog dialog = new JDialog();
-            dialog.setModal(true);
-            dialog.setPreferredSize(new Dimension(500, 200));
-            dialog.setLayout(new GridLayout(8, 1));
-            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            dialog.add(Box.createHorizontalGlue());
-            dialog.setTitle("Autenticazione");
-            JLabel labelInfo = new JLabel("Per autenticarti ho bisogno di username e password:");
-            labelInfo.setFont(font);
-            dialog.add(labelInfo);
-            dialog.add(Box.createHorizontalGlue());
-            JTextField nomeUtente = new JTextField();
-            nomeUtente.setFont(font);
-            JPasswordField password = new JPasswordField();
-            dialog.add(nomeUtente);
-            dialog.add(password);
-            JButton buttonLogin = new JButton("Autenticati");
-            buttonLogin.addActionListener(new ActionListener() 
+            // Mostra il form per autenticarsi
+            formAutenticazione();
+            
+            for (int i = 0; i < 256; ++i) 
             {
-                @Override
-                public void actionPerformed(ActionEvent arg0) 
-                {
-                    String n = nomeUtente.getText();
-                    String p = new String(password.getPassword());
-                    
-                    try
-                    {
-                        HashCode hash = Hashing.sha256().hashString(p, Charsets.UTF_8);
-                        p = hash.toString();
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                        System.out.println("Errore nel prendere i valori dal form");
-                        System.exit(ERRORE_NEL_FORM);
-                    }
+                colors.add(new ColorUIResource(new Random().nextInt(120) + 70, new Random().nextInt(100),
+                        new Random().nextInt(100) + 70));
+            }
 
-                    JSONObject auth = new JSONObject();
-                    auth.put("Tipo-Richiesta", "Autenticazione");
-                    auth.put("Nome", n);
-                    auth.put("Password", p);
-                    
-                    nome = n;
-
-                    try
-                    {
-                        socket.getOutputStream().write(auth.toString().getBytes());
-                        socket.getOutputStream().flush();
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-
-                    dialog.dispose();
-                }
-            });
-            buttonLogin.setFont(font);
-            password.addKeyListener(new KeyListener() 
+            try
             {
-                @Override
-                public void keyPressed(KeyEvent arg0) 
-                { 
-                    if (arg0.getKeyCode() == KeyEvent.VK_ENTER) 
-                    {
-                        buttonLogin.doClick();
-                    }
-                }
+                outputStream = new OutputStreamWriter(s.getOutputStream());
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                System.exit(OUTPUT_STREAM_NON_INIZIALIZZATO);
+            }
 
-                @Override
-                public void keyReleased(KeyEvent arg0) { }
-
-                @Override
-                public void keyTyped(KeyEvent arg0) { }
-                
-            });
-            dialog.add(Box.createHorizontalGlue());
-            dialog.add(buttonLogin);
-            dialog.pack();
-            dialog.setVisible(true);
-
-            ChatUI chat = null;
+            ChatUI chatUI = null;
 
             while (true)
             {
                 byte[] buffer = new byte[GRANDEZZA_BUFFER];
                 String msg = null;
 
-                synchronized (socket)
+                synchronized (s)
                 {
                     try
                     {
-                        int l = socket.getInputStream().read(buffer);
+                        int l = s.getInputStream().read(buffer);
                         msg = new String(buffer, 0, l, "UTF8");
+                    }
+                    catch (StringIndexOutOfBoundsException e)
+                    {
+                        System.exit(0);
                     }
                     catch (Exception e)
                     {
@@ -215,9 +143,7 @@ public class AppClient
                         }
 
                         try
-                        {
-                            OutputStreamWriter write = new OutputStreamWriter(socket.getOutputStream(), "UTF8");
-                            
+                        {                            
                             String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
                             String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
                             
@@ -229,18 +155,26 @@ public class AppClient
                             nuovoMessaggio.put("Data", data);
                             nuovoMessaggio.put("Time", time);
 
-                            write.write(nuovoMessaggio.toString());
-                            write.flush();
+                            manda(nuovoMessaggio.toString());
 
-                            chat = new ChatUI(socket, nome);
-                            chat.prepareApp();
-                            chat.show();
-                            chat.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
+                            chatUI = new ChatUI(nome);
+                            chatUI.prepareApp();
+                            chatUI.show();
+                            chatUI.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
+
+                            Utente glob = new Utente("Globale");
+                            utenti.put("Globale", glob);
+
+                            utenteCorrente = glob;
+                            chatUI.aggiungiUtente(glob);
+                            chatUI.aggiungiTextPaneChatCorrente(glob);
 
                             for (Object n : risposta.getJSONArray("Lista-Utenti").toList())
                             {
-                                String nome = (String) n;
-                                chat.aggiungiUtente(nome);
+                                String nome = (String)n;
+                                Utente u = new Utente(nome);
+                                utenti.put(nome, u);
+                                chatUI.aggiungiUtente(u);
                             }
                         }
                         catch (Exception e)
@@ -252,17 +186,18 @@ public class AppClient
                         switch (risposta.getString("Tipo-Messaggio"))
                         {
                             case "Per":
-                                
+
                             break;
                             case "Plain-Text":
-                                String nomeClient = risposta.getString("Nome");
-                                chat.aggiungiMessaggio(nomeClient, risposta.getString("Messaggio"));
+                                aggiungiMessaggio(new CasellaMessaggio(
+                                    risposta.getString("Nome"),
+                                    risposta.getString("Messaggio"),
+                                    risposta.getString("Data"),
+                                    risposta.getString("Time")
+                                ));                         
                             break;
                             case "Immagine":
 
-                                BufferedImage inputImage = ImageIO.read(ImageIO.createImageInputStream(socket.getOutputStream()));
-                                
-                                chat.aggiungiImmagine(risposta.getString("Nome"), new ImageIcon(inputImage));
                             break;
                         }
                     break;
@@ -270,7 +205,13 @@ public class AppClient
                         switch (risposta.getString("Tipo-Set-Numero"))
                         {
                             case "Connessione":
-                                chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
+                                chatUI.setNumeroUtentiConnessi(risposta.getInt("Numero"));
+
+                                if (risposta.has("Nome-Utente"))
+                                {
+                                    Utente u = new Utente(risposta.getString("Nome-Utente"));
+                                    utenti.put(risposta.getString("Nome-Utente"), u);
+                                }
 
                                 if (risposta.has("Lista-Utenti"))
                                 {
@@ -279,23 +220,26 @@ public class AppClient
                                         String nome = (String) n;
                                         if (!nome.equals(AppClient.nome))
                                         {
-                                            chat.aggiungiUtente(nome);
+                                            Utente u = new Utente(nome);
+                                            utenti.put(nome, u);
+                                            chatUI.aggiungiUtente(u);
                                         }
                                     }
                                 }
                             break;
                             case "Disconnessione":
-                                chat.setNumeroUtentiConnessi(risposta.getInt("Numero"));
-                                chat.eliminaCasellaUtente(risposta.getString("Nome"));
+                                utenti.remove(risposta.getString("Nome"));
+                                chatUI.setNumeroUtentiConnessi(risposta.getInt("Numero"));
+                                chatUI.eliminaCasellaUtente(risposta.getString("Nome"));
                             break;
                         }
                     break;
                     case "Non-Puoi-Inviare-Messaggi":
-                        JOptionPane.showMessageDialog(chat.app, risposta.getString("Motivo"), "Non puoi inviare messaggi", JOptionPane.ERROR_MESSAGE);                                   
+                        JOptionPane.showMessageDialog(chatUI.app, risposta.getString("Motivo"), "Non puoi inviare messaggi", JOptionPane.ERROR_MESSAGE);                                   
                     break;
                     case "Chiudi-Connessione":
-                        JOptionPane.showMessageDialog(chat.app, "Il server ha mandato una richiesta di disconnessione perché si sta chiudendo. Chiudo l'applicazione", "Server chiuso", JOptionPane.ERROR_MESSAGE);
-                        socket.close();
+                        JOptionPane.showMessageDialog(chatUI.app, "Il server ha mandato una richiesta di disconnessione perché si sta chiudendo. Chiudo l'applicazione", "Server chiuso", JOptionPane.ERROR_MESSAGE);
+                        s.close();
                         System.exit(0);    
                     break;
                 }
@@ -305,5 +249,187 @@ public class AppClient
         {
             e.printStackTrace();
         }
+    }
+
+    public static void aggiungiMessaggio(CasellaMessaggio c)
+    {
+        utenteCorrente.aggiungiMessaggio(c);
+    }
+
+    public static void setUtenteCorrente(Utente u)
+    {
+        utenteCorrente = u;
+    }
+
+    public static void dispose()
+    {
+        try
+        {
+            s.shutdownOutput();
+            s.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+    public static synchronized void manda(String data)
+    {
+        try
+        {
+            outputStream.write(data);
+            outputStream.flush();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
+
+    private static void formIpPort()
+    {
+        FontUIResource font = new FontUIResource("Arial", FontUIResource.PLAIN, 16);
+        JDialog server = new JDialog();
+        server.setModal(true);
+        server.setPreferredSize(new Dimension(500, 200));
+        server.setLayout(new GridLayout(8, 1));
+        server.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        server.add(Box.createHorizontalGlue());
+        server.setTitle("Autenticazione");
+        JLabel label = new JLabel("Inserisci IP (o dominio) e porta del server a cui collegarsi:");
+        label.setFont(font);
+        server.add(label);
+        server.add(Box.createHorizontalGlue());
+        JTextField ipTextField = new JTextField();
+        ipTextField.setFont(font);
+        JTextField inputPort = new JTextField();
+        server.add(ipTextField);
+        server.add(inputPort);
+        JButton collegati = new JButton("Collegati");
+        collegati.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent arg0) 
+            {
+                ip = ipTextField.getText();
+                port = Integer.parseInt(inputPort.getText());
+                server.dispose();
+            }
+        });
+        collegati.setFont(font);
+        inputPort.addKeyListener(new KeyListener()
+        {
+            @Override
+            public void keyPressed(KeyEvent arg0) 
+            {
+                if (arg0.getKeyCode() == KeyEvent.VK_ENTER) 
+                {
+                    collegati.doClick();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent arg0) { }
+
+            @Override
+            public void keyTyped(KeyEvent arg0) { }
+        });
+        server.add(Box.createHorizontalGlue());
+        server.add(collegati);
+        server.pack();
+        server.setVisible(true);
+    }
+
+    public static Utente getUtenteCorrente ()
+    {
+        return utenteCorrente;
+    }
+
+    private static void formAutenticazione()
+    {
+        FontUIResource font = new FontUIResource("Arial", FontUIResource.PLAIN, 16);
+        JDialog dialog = new JDialog();
+        dialog.setModal(true);
+        dialog.setPreferredSize(new Dimension(500, 200));
+        dialog.setLayout(new GridLayout(8, 1));
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.add(Box.createHorizontalGlue());
+        dialog.setTitle("Autenticazione");
+        JLabel labelInfo = new JLabel("Per autenticarti ho bisogno di username e password:");
+        labelInfo.setFont(font);
+        dialog.add(labelInfo);
+        dialog.add(Box.createHorizontalGlue());
+        JTextField nomeUtente = new JTextField();
+        nomeUtente.setFont(font);
+        JPasswordField password = new JPasswordField();
+        dialog.add(nomeUtente);
+        dialog.add(password);
+        JButton buttonLogin = new JButton("Autenticati");
+        buttonLogin.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent arg0) 
+            {
+                String n = nomeUtente.getText();
+                String p = new String(password.getPassword());
+                
+                try
+                {
+                    HashCode hash = Hashing.sha256().hashString(p, Charsets.UTF_8);
+                    p = hash.toString();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    System.out.println("Errore nel prendere i valori dal form");
+                    System.exit(ERRORE_NEL_FORM);
+                }
+
+                JSONObject auth = new JSONObject();
+                auth.put("Tipo-Richiesta", "Autenticazione");
+                auth.put("Nome", n);
+                auth.put("Password", p);
+                
+                nome = n;
+
+                try
+                {
+                    s.getOutputStream().write(auth.toString().getBytes());
+                    s.getOutputStream().flush();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+                dialog.dispose();
+            }
+        });
+        buttonLogin.setFont(font);
+        password.addKeyListener(new KeyListener() 
+        {
+            @Override
+            public void keyPressed(KeyEvent arg0) 
+            { 
+                if (arg0.getKeyCode() == KeyEvent.VK_ENTER) 
+                {
+                    buttonLogin.doClick();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent arg0) { }
+
+            @Override
+            public void keyTyped(KeyEvent arg0) { }
+            
+        });
+        dialog.add(Box.createHorizontalGlue());
+        dialog.add(buttonLogin);
+        dialog.pack();
+        dialog.setVisible(true);
     }
 }

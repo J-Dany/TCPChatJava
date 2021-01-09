@@ -64,6 +64,7 @@ public class ConnectionClient implements Runnable
                             JSONObject numeroUtenti = new JSONObject();
                             numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
                             numeroUtenti.put("Tipo-Set-Numero", "Connessione");
+                            numeroUtenti.put("Nome-Utente", this.client.getNome());
                             numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi(""));
                             numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi() - 1);
 
@@ -124,6 +125,8 @@ public class ConnectionClient implements Runnable
                                 invioPlainText.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
                                 invioPlainText.put("Nome", this.client.getNome());
                                 invioPlainText.put("Messaggio", richiesta.getString("Messaggio"));
+                                invioPlainText.put("Data", richiesta.getString("Data"));
+                                invioPlainText.put("Time", richiesta.getString("Time"));
 
                                 Server.getServer().mandaMessaggio(invioPlainText.toString(), this.client, null);
 
