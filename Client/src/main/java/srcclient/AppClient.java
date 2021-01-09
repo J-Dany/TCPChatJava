@@ -153,13 +153,20 @@ public class AppClient
                         {
                             case "Per":
                                 if (risposta.getString("Destinatario").equals(nome) 
-                                && utenteCorrente != utenti.get(risposta.getString("Destinatario")))
+                                && utenteCorrente != utenti.get("Globale"))
                                 {
                                     chatUI.incrementaNumeroMessaggiDa(risposta.getString("Destinatario"));
+                                    aggiungiMessaggio(risposta.getString("Mittente"), 
+                                        new CasellaMessaggio(risposta.getString("Mittente"), 
+                                            risposta.getString("Messaggio"), 
+                                            risposta.getString("Data"), 
+                                            risposta.getString("Time")
+                                        )
+                                    );
                                 }
                             break;
                             case "Plain-Text":
-                                aggiungiMessaggio(new CasellaMessaggio(
+                                aggiungiMessaggio("Globale", new CasellaMessaggio(
                                     risposta.getString("Nome"),
                                     risposta.getString("Messaggio"),
                                     risposta.getString("Data"),
@@ -221,7 +228,7 @@ public class AppClient
         }
     }
 
-    public static void aggiungiMessaggio(CasellaMessaggio c)
+    public static void aggiungiMessaggio(String mittente, CasellaMessaggio c)
     {
         utenteCorrente.aggiungiMessaggio(c);
     }

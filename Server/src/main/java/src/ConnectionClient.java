@@ -123,7 +123,7 @@ public class ConnectionClient implements Runnable
                                 JSONObject messaggioPrivato = new JSONObject(); 
                                 messaggioPrivato.put("Tipo-Richiesta", "Nuovo-Messaggio");
                                 messaggioPrivato.put("Tipo-Messaggio", "Per");
-                                messaggioPrivato.put("Nome", this.client.getNome());
+                                messaggioPrivato.put("Mittente", this.client.getNome());
                                 messaggioPrivato.put("Messaggio", richiesta.getString("Messaggio"));
                                 messaggioPrivato.put("Data", richiesta.getString("Data"));
                                 messaggioPrivato.put("Time", richiesta.getString("Time"));
