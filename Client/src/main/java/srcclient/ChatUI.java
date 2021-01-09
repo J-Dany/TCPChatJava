@@ -269,6 +269,7 @@ public class ChatUI
 
                     System.out.println(json);
 
+                    AppClient.getUtenteCorrente().aggiungiMessaggio(new CasellaMessaggio(nome, msg, data, time));
                     AppClient.manda(json.toString());
 
                     input.setText("");
@@ -346,8 +347,6 @@ public class ChatUI
         this.app.add(u.getScrollPane(), BorderLayout.CENTER);
         this.app.revalidate();
         this.app.repaint();
-        //u.getTextArea().add(u.getTextArea(), u.getTextArea().getComponents());
-        u.getTextArea().setText(u.getTextArea().getText());
     }
 
     /**
