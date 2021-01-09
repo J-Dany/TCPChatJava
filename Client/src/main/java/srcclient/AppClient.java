@@ -12,15 +12,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import java.net.InetSocketAddress;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 public class AppClient 
 {
@@ -55,28 +49,18 @@ public class AppClient
     private static OutputStreamWriter outputStream;
 
     /**
-     * HashMap che collega l'utente ad un colore
-     */
-    private static HashMap<String, Color> utenteColore = new HashMap<>();
-
-    /**
-     * Un array di colori da dare ad ogni client connesso
-     */
-    private static ArrayList<ColorUIResource> colors = new ArrayList<>();
-
-    /**
      * Utenti
      */
     private static HashMap<String, Utente> utenti = new HashMap<>();
 
     /**
-     * Utente corrente a cui mandare il messaggio
+     * Utente e nome corrente a cui mandare il messaggio
      */
     private static Utente utenteCorrente;
+    private static String nomeUtenteCorrente;
     
     public static void main(String[] args) 
     {
-        
         try 
         {
             Class.forName("com.google.common.hash.Hashing");
@@ -90,12 +74,6 @@ public class AppClient
 
             // Mostra il form per autenticarsi
             formAutenticazione();
-            
-            for (int i = 0; i < 256; ++i) 
-            {
-                colors.add(new ColorUIResource(new Random().nextInt(120) + 70, new Random().nextInt(100),
-                        new Random().nextInt(100) + 70));
-            }
 
             try
             {
@@ -153,6 +131,7 @@ public class AppClient
                             utenti.put("Globale", glob);
 
                             utenteCorrente = glob;
+                            nomeUtenteCorrente = "Globale";
                             chatUI.aggiungiUtente(glob);
                             chatUI.aggiungiTextPaneChatCorrente(glob);
 
@@ -173,7 +152,11 @@ public class AppClient
                         switch (risposta.getString("Tipo-Messaggio"))
                         {
                             case "Per":
-
+                                if (risposta.getString("Destinatario").equals(nome) 
+                                && utenteCorrente != utenti.get(risposta.getString("Destinatario")))
+                                {
+                                    
+                                }
                             break;
                             case "Plain-Text":
                                 aggiungiMessaggio(new CasellaMessaggio(
@@ -246,6 +229,16 @@ public class AppClient
     public static void setUtenteCorrente(Utente u)
     {
         utenteCorrente = u;
+    }
+
+    public static String getNomeUtenteCorrente()
+    {
+        return nomeUtenteCorrente;
+    }
+
+    public static void setNomeUtenteCorrente(String nome)
+    {
+        nomeUtenteCorrente = nome;
     }
 
     public static void dispose()

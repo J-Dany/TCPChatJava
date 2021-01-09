@@ -1,7 +1,5 @@
 package srcclient;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -85,9 +83,9 @@ public class ChatUI
         });
         quit.setFont(font);
         file.add(quit);
-        JMenu caricaImmagine = new JMenu("Immagine");
+        /*JMenu caricaImmagine = new JMenu("Immagine");
         caricaImmagine.setFont(font);
-        /*JMenuItem buttonCaricaImmagine = new JMenuItem("Carica...");
+        JMenuItem buttonCaricaImmagine = new JMenuItem("Carica...");
         buttonCaricaImmagine.setFont(font);
         buttonCaricaImmagine.addActionListener(new ActionListener() {
             @Override
@@ -162,7 +160,7 @@ public class ChatUI
         JMenu n = new JMenu("Sei loggato come: " + nome);
         n.setFont(font);
         menuBar.add(file);
-        menuBar.add(caricaImmagine);
+        //menuBar.add(caricaImmagine);
         menuBar.add(info);
         menuBar.add(n);
         info.add(about);
@@ -263,6 +261,11 @@ public class ChatUI
                     json.put("Nome", nome);
                     json.put("Messaggio", msg);
 
+                    if (!AppClient.getNomeUtenteCorrente().equals("Globale"))
+                    {
+                        json.put("Per", nome);
+                    }
+
                     AppClient.manda(json.toString());
 
                     input.setText("");
@@ -349,6 +352,18 @@ public class ChatUI
      * @param img, l'immagine da aggiungere
      */
     public void aggiungiImmagine(String nome, ImageIcon img) { }
+
+    /**
+     * Incrementa il numero dei messaggi mandati dal mittente ancora non letti
+     * @param mittente, il nome del mittente
+     */
+    public void incrementaNumeroMessaggiDa(String mittente)
+    {
+        CasellaUtente u = utenti.get(mittente);
+        int n = u.getNumeroMessaggi() + 1;
+
+        u.setNumeroMessaggi("" + n);
+    }
 
     /**
      * Setta la JTextField del numero degli utenti connessi al numero passato come parametro

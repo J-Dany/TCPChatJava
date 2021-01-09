@@ -12,13 +12,11 @@ public class CasellaUtente extends JPanel
     private Utente user;
     private JLabel labelNome;
     private JLabel labelNumeroMessaggi;
-    private boolean open;
     private ChatUI gui;
 
     public CasellaUtente(Utente u, ChatUI gui) 
     {
         this.gui = gui;
-        this.open = false;
         this.user = u;
         this.labelNome = new JLabel(u.getNome());
         this.labelNumeroMessaggi = new JLabel();
@@ -36,7 +34,9 @@ public class CasellaUtente extends JPanel
             public void mouseClicked(MouseEvent arg0) 
             {
                 AppClient.setUtenteCorrente(user);
+                AppClient.setNomeUtenteCorrente(user.getNome());
                 gui.aggiungiTextPaneChatCorrente(user);
+                labelNumeroMessaggi.setText("");
             }
 
             @Override
@@ -64,21 +64,6 @@ public class CasellaUtente extends JPanel
 
         this.add(this.labelNome, BorderLayout.LINE_START);
         this.add(this.labelNumeroMessaggi, BorderLayout.LINE_END);
-    }
-
-    public boolean isOpen()
-    {
-        return this.open;
-    }
-
-    public void setOpen(boolean value)
-    {
-        this.open = value;
-    }
-
-    public Utente getUtente()
-    {
-        return this.user;
     }
 
     public void setNumeroMessaggi(String numero)

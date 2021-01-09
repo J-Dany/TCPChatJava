@@ -119,6 +119,26 @@ public class ConnectionClient implements Runnable
 
                                 ImageIO.write(inputImage, "PNG", socket.getOutputStream());
                             break;
+                            case "Per":
+                                JSONObject messaggioPrivato = new JSONObject(); 
+                                messaggioPrivato.put("Tipo-Richiesta", "Nuovo-Messaggio");
+                                messaggioPrivato.put("Tipo-Messaggio", "Per");
+                                messaggioPrivato.put("Nome", this.client.getNome());
+                                messaggioPrivato.put("Messaggio", richiesta.getString("Messaggio"));
+                                messaggioPrivato.put("Data", richiesta.getString("Data"));
+                                messaggioPrivato.put("Time", richiesta.getString("Time"));
+                                messaggioPrivato.put("Destinatario", richiesta.getString("Per"));
+
+                                Server.getServer().mandaMessaggio(messaggioPrivato.toString(), this.client, null);
+
+                                Server.getServer().writer.addMsg(
+                                    richiesta.getString("Data") + " " + richiesta.getString("Time")
+                                    + "|" +
+                                    richiesta.getString("Nome")
+                                    + "|" +
+                                    richiesta.getString("Messaggio")
+                                );
+                            break;
                             case "Plain-Text":
                                 JSONObject invioPlainText = new JSONObject(); 
                                 invioPlainText.put("Tipo-Richiesta", "Nuovo-Messaggio");
