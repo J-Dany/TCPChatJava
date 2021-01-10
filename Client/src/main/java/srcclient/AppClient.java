@@ -199,6 +199,9 @@ public class AppClient
                                 utenti.remove(risposta.getString("Nome"));
                                 chatUI.setNumeroUtentiConnessi(risposta.getInt("Numero"));
                                 chatUI.eliminaCasellaUtente(risposta.getString("Nome"));
+                                utenteCorrente = utenti.get("Globale");
+                                nomeUtenteCorrente = "Globale";
+                                chatUI.aggiungiTextPaneChatCorrente(utenteCorrente);
                             break;
                         }
                     break;
