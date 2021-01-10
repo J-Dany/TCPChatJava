@@ -201,6 +201,7 @@ public class AppClient
                                         {
                                             Utente u = new Utente(nome);
                                             utenti.put(nome, u);
+                                            u.getTextArea().setText("Salve");
                                             chatUI.aggiungiUtente(u);
                                         }
                                     }
