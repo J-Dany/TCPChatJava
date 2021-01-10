@@ -159,7 +159,7 @@ public class AppClient
                             case "Per":
                                 if (risposta.getString("Destinatario").equals(nome))
                                 {
-                                    chatUI.incrementaNumeroMessaggiDa(risposta.getString("Destinatario"));
+                                    chatUI.incrementaNumeroMessaggiDa(risposta.getString("Mittente"));
                                     aggiungiMessaggio(risposta.getString("Mittente"), 
                                         new CasellaMessaggio(risposta.getString("Mittente"), 
                                             risposta.getString("Messaggio"), 
