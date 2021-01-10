@@ -255,7 +255,6 @@ public class ChatUI
 
                     JSONObject json = new JSONObject();
                     json.put("Tipo-Richiesta", "Invio-Messaggio");
-                    json.put("Tipo-Messaggio", "Plain-Text");
                     json.put("Data", data);
                     json.put("Time", time);
                     json.put("Nome", nome);
@@ -263,7 +262,12 @@ public class ChatUI
 
                     if (!AppClient.getNomeUtenteCorrente().equals("Globale"))
                     {
+                        json.put("Tipo-Messaggio", "Per");
                         json.put("Per", AppClient.getNomeUtenteCorrente());
+                    }
+                    else
+                    {
+                        json.put("Tipo-Messaggio", "Plain-Text");
                     }
 
                     System.out.println(json);
@@ -363,6 +367,7 @@ public class ChatUI
 
     /**
      * Aggiunge l'immagine passata alla JTextPane
+     * (Ancora non implementata)
      * 
      * @param nome, l'utente che l'ha mandata
      * @param img, l'immagine da aggiungere

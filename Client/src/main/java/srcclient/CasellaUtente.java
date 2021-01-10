@@ -33,9 +33,12 @@ public class CasellaUtente extends JPanel
             @Override
             public void mouseClicked(MouseEvent arg0) 
             {
+                System.out.println("Casella di " + user.getNome() + " cliccata, setto utente corrente");
                 AppClient.setUtenteCorrente(user);
                 AppClient.setNomeUtenteCorrente(user.getNome());
+                System.out.println("Carico la text pane di " + user.getNome());
                 gui.aggiungiTextPaneChatCorrente(user);
+                System.out.println("Text pane caricata");
                 labelNumeroMessaggi.setText("");
             }
 
