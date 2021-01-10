@@ -139,10 +139,13 @@ public class AppClient
 
                             for (Object n : risposta.getJSONArray("Lista-Utenti").toList())
                             {
-                                String nome = (String)n;
-                                Utente u = new Utente(nome);
-                                utenti.put(nome, u);
-                                chatUI.aggiungiUtente(u);
+                                String nome = (String) n;
+                                if (!nome.equals(AppClient.nome))
+                                {
+                                    Utente u = new Utente(nome);
+                                    utenti.put(nome, u);
+                                    chatUI.aggiungiUtente(u);
+                                }
                             }
                         }
                         catch (Exception e)
@@ -191,20 +194,6 @@ public class AppClient
                                     Utente u = new Utente(risposta.getString("Nome-Utente"));
                                     utenti.put(risposta.getString("Nome-Utente"), u);
                                     chatUI.aggiungiUtente(u);
-                                }
-
-                                if (risposta.has("Lista-Utenti"))
-                                {
-                                    for (Object n : risposta.getJSONArray("Lista-Utenti").toList())
-                                    {
-                                        String nome = (String) n;
-                                        if (!nome.equals(AppClient.nome))
-                                        {
-                                            Utente u = new Utente(nome);
-                                            utenti.put(nome, u);
-                                            chatUI.aggiungiUtente(u);
-                                        }
-                                    }
                                 }
                             break;
                             case "Disconnessione":

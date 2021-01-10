@@ -348,9 +348,13 @@ public class ChatUI
 
     public void aggiungiTextPaneChatCorrente(Utente u)
     {
-        this.app.remove(AppClient.getUtenteCorrente().getScrollPane());
-        this.app.revalidate();
-        this.app.repaint();
+        if (!u.getNome().equals("Globale"))
+        {
+            this.app.remove(AppClient.getUtenteCorrente().getScrollPane());
+            this.app.revalidate();
+            this.app.repaint();
+            return;
+        }
         this.app.add(u.getScrollPane(), BorderLayout.CENTER);
         this.app.revalidate();
         this.app.repaint();
