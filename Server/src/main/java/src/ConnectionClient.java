@@ -45,7 +45,7 @@ public class ConnectionClient implements Runnable
 
                             JSONObject autenticazioneCorretta = new JSONObject();
                             autenticazioneCorretta.put("Tipo-Richiesta", "Autenticazione");
-                            autenticazioneCorretta.put("Numero-Utenti", Server.getServer().getNumeroUtentiConnessi() - 1);
+                            autenticazioneCorretta.put("Utenti-Connessi", Server.getServer().getNumeroUtentiConnessi());
                             autenticazioneCorretta.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi(""));
                             autenticazioneCorretta.put("Risultato", true);
                             
