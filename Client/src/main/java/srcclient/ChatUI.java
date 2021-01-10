@@ -348,11 +348,11 @@ public class ChatUI
 
     public void aggiungiTextPaneChatCorrente(Utente u)
     {
-        if (AppClient.getUtenteCorrente() != null)
+        if (AppClient.getUtenteCorrente() == null)
         {
             return;
         }
-        
+
         this.app.remove(AppClient.getUtenteCorrente().getScrollPane());
         this.app.revalidate();
         this.app.repaint();
