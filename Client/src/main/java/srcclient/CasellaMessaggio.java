@@ -1,10 +1,14 @@
 package srcclient;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
+
 import javax.swing.*;
+import javax.swing.event.MouseInputListener;
 import javax.swing.plaf.FontUIResource;
 
-public class CasellaMessaggio extends JPanel {
+public class CasellaMessaggio extends JPanel 
+{
     private static final long serialVersionUID = -7569772015523879553L;
 
     private JTextArea areaMessaggio;
@@ -32,6 +36,34 @@ public class CasellaMessaggio extends JPanel {
         areaMessaggio.setText(msg);
         nomeUtente.setText(nome);
         dataTempoMessaggio.setText(data + " " + tempo);
+
+        this.addMouseListener(new MouseInputListener() 
+        {
+            @Override
+            public void mouseClicked(MouseEvent arg0) { }
+
+            @Override
+            public void mouseEntered(MouseEvent arg0) 
+            {
+                setCursor(new Cursor(Cursor.TEXT_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent arg0) { }
+
+            @Override
+            public void mousePressed(MouseEvent arg0) { }
+
+            @Override
+            public void mouseReleased(MouseEvent arg0) { }
+
+            @Override
+            public void mouseDragged(MouseEvent arg0) { }
+
+            @Override
+            public void mouseMoved(MouseEvent arg0) { }
+            
+        });
 
         this.setPreferredSize(new Dimension(500, 100));
         this.setMinimumSize(new Dimension(500, 100));

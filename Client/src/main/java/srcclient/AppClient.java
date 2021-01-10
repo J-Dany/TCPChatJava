@@ -190,6 +190,7 @@ public class AppClient
                                 {
                                     Utente u = new Utente(risposta.getString("Nome-Utente"));
                                     utenti.put(risposta.getString("Nome-Utente"), u);
+                                    chatUI.aggiungiUtente(u);
                                 }
 
                                 if (risposta.has("Lista-Utenti"))

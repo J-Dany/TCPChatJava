@@ -252,7 +252,6 @@ public class ChatUI
                     String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
 
                     System.out.println("Robe: " + nome + ", " + msg + ", " + data + ", " + time);
-                    AppClient.aggiungiMessaggio(nome, new CasellaMessaggio("Tu", msg, data, time));
 
                     JSONObject json = new JSONObject();
                     json.put("Tipo-Richiesta", "Invio-Messaggio");
@@ -269,7 +268,7 @@ public class ChatUI
 
                     System.out.println(json);
 
-                    AppClient.getUtenteCorrente().aggiungiMessaggio(new CasellaMessaggio(nome, msg, data, time));
+                    AppClient.getUtenteCorrente().aggiungiMessaggio(new CasellaMessaggio("Tu", msg, data, time));
                     AppClient.manda(json.toString());
 
                     input.setText("");
@@ -349,6 +348,9 @@ public class ChatUI
 
     public void aggiungiTextPaneChatCorrente(Utente u)
     {
+        this.app.remove(AppClient.getUtenteCorrente().getScrollPane());
+        this.app.revalidate();
+        this.app.repaint();
         this.app.add(u.getScrollPane(), BorderLayout.CENTER);
         this.app.revalidate();
         this.app.repaint();
