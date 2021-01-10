@@ -157,8 +157,7 @@ public class AppClient
                         switch (risposta.getString("Tipo-Messaggio"))
                         {
                             case "Per":
-                                if (risposta.getString("Destinatario").equals(nome) 
-                                && utenteCorrente != utenti.get("Globale"))
+                                if (risposta.getString("Destinatario").equals(nome))
                                 {
                                     chatUI.incrementaNumeroMessaggiDa(risposta.getString("Destinatario"));
                                     aggiungiMessaggio(risposta.getString("Mittente"), 
