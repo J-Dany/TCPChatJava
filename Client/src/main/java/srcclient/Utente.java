@@ -60,7 +60,7 @@ public class Utente
             StyleConstants.setComponent(space, Box.createRigidArea(new Dimension(0, 4)));
             doc.insertString(doc.getLength(), "invisible\n", space);
 
-            //this.scrollBar.setValue(this.scrollBar.getMaximum());
+            this.scrollBar.setValue(this.scrollBar.getMaximum());
         }
         catch (Exception e)
         {

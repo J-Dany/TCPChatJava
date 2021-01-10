@@ -320,6 +320,11 @@ public class ChatUI
         repaintListaUtenti();
     }
 
+    public HashMap<String, CasellaUtente> getUtenti()
+    {
+        return utenti;
+    }
+
     /**
      * Funzione richiamata soltanto quando si connette
      * un nuovo utente, ridisegna la lista degli utenti
