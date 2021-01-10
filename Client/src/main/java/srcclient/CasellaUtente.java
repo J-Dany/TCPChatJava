@@ -76,6 +76,10 @@ public class CasellaUtente extends JPanel
 
     public int getNumeroMessaggi()
     {
-        return Integer.parseInt(this.labelNumeroMessaggi.getText());
+        return Integer.parseInt(
+            (this.labelNumeroMessaggi.getText().equals(""))
+            ? "0"
+            : this.labelNumeroMessaggi.getText()
+        );
     }
 }
