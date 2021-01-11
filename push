@@ -1,0 +1,8 @@
+#!/bin/bash
+git add .
+git rm Server/.classpath
+git rm Server/.project
+git rm Client/.classpath
+git rm Client/.project
+git commit -m $0
+git push
