@@ -3,8 +3,8 @@ package srcclient;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import javax.swing.event.MouseInputListener;
+import javax.swing.plaf.FontUIResource;
 
 public class CasellaUtente extends JPanel 
 {
@@ -14,6 +14,8 @@ public class CasellaUtente extends JPanel
     private JLabel labelNome;
     private JLabel labelNumeroMessaggi;
     private ChatUI gui;
+    private Font fontNumeroMessaggi = new FontUIResource("monospace", Font.BOLD, 14);
+    private Font fontNome = new FontUIResource("Arial", Font.PLAIN, 16);
 
     public CasellaUtente(Utente u, ChatUI gui) 
     {
@@ -22,9 +24,12 @@ public class CasellaUtente extends JPanel
         this.labelNome = new JLabel(u.getNome());
         this.labelNumeroMessaggi = new JLabel();
 
-        LineBorder bord = new LineBorder(Color.GREEN, 8, true);
+        this.labelNumeroMessaggi.setFont(fontNumeroMessaggi);
+        this.labelNome.setFont(fontNome);
 
-        this.labelNumeroMessaggi.setBorder(bord);
+        this.labelNumeroMessaggi.setPreferredSize(new Dimension(24, 32));
+        this.labelNumeroMessaggi.setMinimumSize(new Dimension(24, 32));
+        this.labelNumeroMessaggi.setMaximumSize(new Dimension(24, 32));
 
         this.setPreferredSize(new Dimension(240, 64));
         this.setMinimumSize(new Dimension(240, 64));
@@ -70,8 +75,19 @@ public class CasellaUtente extends JPanel
             
         });
 
-        this.add(this.labelNome, BorderLayout.LINE_START);
-        this.add(this.labelNumeroMessaggi, BorderLayout.LINE_END);
+        JPanel wrapperNumeroMessaggi = new JPanel();
+        wrapperNumeroMessaggi.setLayout(new BoxLayout(wrapperNumeroMessaggi, BoxLayout.PAGE_AXIS));
+        wrapperNumeroMessaggi.setBackground(Color.WHITE);
+        wrapperNumeroMessaggi.add(Box.createRigidArea(new Dimension(0, 16)));
+        wrapperNumeroMessaggi.add(this.labelNumeroMessaggi);
+
+        JPanel wrapperNome = new JPanel();
+        wrapperNome.setBackground(Color.WHITE);
+        wrapperNome.setLayout(new BorderLayout());
+        wrapperNome.add(this.labelNome, BorderLayout.CENTER);
+
+        this.add(wrapperNome, BorderLayout.LINE_START);
+        this.add(wrapperNumeroMessaggi, BorderLayout.LINE_END);
     }
 
     public void setNumeroMessaggi(String numero)
