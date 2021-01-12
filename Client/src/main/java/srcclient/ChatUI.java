@@ -16,7 +16,7 @@ import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import org.json.JSONObject;
 
-public class ChatUI 
+public class ChatUI
 {
     /**
      * Grandezza dell'applicazione

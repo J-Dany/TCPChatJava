@@ -3,6 +3,7 @@ package srcclient;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.event.MouseInputListener;
 
 public class CasellaUtente extends JPanel 
@@ -20,6 +21,10 @@ public class CasellaUtente extends JPanel
         this.user = u;
         this.labelNome = new JLabel(u.getNome());
         this.labelNumeroMessaggi = new JLabel();
+
+        LineBorder bord = new LineBorder(Color.GREEN, 8, true);
+
+        this.labelNumeroMessaggi.setBorder(bord);
 
         this.setPreferredSize(new Dimension(240, 64));
         this.setMinimumSize(new Dimension(240, 64));
