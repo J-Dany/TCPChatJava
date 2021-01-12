@@ -1,10 +1,6 @@
 package srcclient;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,7 +12,7 @@ import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import org.json.JSONObject;
 
-public class ChatUI
+public class ChatView
 {
     /**
      * Grandezza dell'applicazione
@@ -24,36 +20,22 @@ public class ChatUI
     public final int HEIGHT = 720;
     public final int WIDTH = 1280;
 
-    private HashMap<String, CasellaUtente> utenti = new HashMap<>();
-    private HashMap<String, Color> utenteColore;
     public JFrame app;
     private JPanel panelUtenti;
     private JTextField input, utentiConnessi;
     private Font font = new FontUIResource("Noto Sans", Font.PLAIN, 14);
     private Font fontInviaMessaggio = new FontUIResource("Noto Sans", Font.PLAIN, 18);
-    private String nome;
+    private JButton buttonInvia;
 
-    public ChatUI(String nome) throws IOException 
+    public ChatView() throws IOException 
     {
-        this.utenteColore = new HashMap<>();
-        this.nome = nome;
         this.app = new JFrame("Chat");
-    }
-
-    public void aggiungiUtenteColore(String nome, Color color) 
-    {
-        this.utenteColore.put(nome, color);
-    }
-
-    public HashMap<String, Color> getUtenteColore() 
-    {
-        return this.utenteColore;
     }
 
     /**
      * Prepara l'interfaccia grafica dell'App
      */
-    public void prepareApp() 
+    public void buildApp() 
     {
         this.app.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.app.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -83,58 +65,6 @@ public class ChatUI
         });
         quit.setFont(font);
         file.add(quit);
-        /*JMenu caricaImmagine = new JMenu("Immagine");
-        caricaImmagine.setFont(font);
-        JMenuItem buttonCaricaImmagine = new JMenuItem("Carica...");
-        buttonCaricaImmagine.setFont(font);
-        buttonCaricaImmagine.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.showOpenDialog(app);
-
-                File f = fileChooser.getSelectedFile();
-
-                try {
-                    FileInputStream fileInputStream = new FileInputStream(f);
-
-                    if (f.length() > 1 << 26) 
-                    {
-                        JOptionPane.showMessageDialog(app, "L'immagine è troppo grande!", "Errore immagine",
-                                JOptionPane.ERROR_MESSAGE);
-                    } 
-                    else 
-                    {
-                        byte[] imageData = new byte[(int) f.length()];
-                        fileInputStream.read(imageData);
-                        aggiungiImmagine(nome, new ImageIcon(imageData));
-
-                        String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-
-                        JSONObject mandaImmagine = new JSONObject();
-                        mandaImmagine.put("Tipo-Richiesta", "Invio-Messaggio");
-                        mandaImmagine.put("Tipo-Messaggio", "Immagine");
-                        mandaImmagine.put("Data", data);
-                        mandaImmagine.put("Time", time);
-                        mandaImmagine.put("Nome", nome);
-
-                        AppClient.manda(mandaImmagine.toString());
-
-                        /*Robot robot = new Robot();
-                        BufferedImage bimp = robot.createScreenCapture(new Rectangle(0, 0, 427, 240));
-                        ImageIO.write(bimp, "PNG", socket.getOutputStream());
-                    }
-
-                    fileInputStream.close();
-                } 
-                catch (Exception e) 
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-        caricaImmagine.add(buttonCaricaImmagine);*/
         JMenu info = new JMenu("Info");
         info.setFont(font);
         JMenuItem about = new JMenuItem("About");
@@ -157,12 +87,8 @@ public class ChatUI
                 dialog.setVisible(true);
             }
         });
-        JMenu n = new JMenu("Sei loggato come: " + nome);
-        n.setFont(font);
         menuBar.add(file);
-        //menuBar.add(caricaImmagine);
         menuBar.add(info);
-        menuBar.add(n);
         info.add(about);
         this.app.setJMenuBar(menuBar);
 
@@ -230,7 +156,7 @@ public class ChatUI
         JButton buttonInviaMessaggio = new JButton("Invia");
         buttonInviaMessaggio.setPreferredSize(new Dimension(75, 40));
         buttonInviaMessaggio.setFont(fontInviaMessaggio);
-        buttonInviaMessaggio.addActionListener(new ActionListener() {
+        /*buttonInviaMessaggio.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) 
             {
@@ -282,8 +208,10 @@ public class ChatUI
                     e.printStackTrace();
                 }
             }
-        });
+        });*/
         buttonInviaMessaggio.setBorder(null);
+
+        this.buttonInvia = buttonInviaMessaggio;
 
         this.input.addKeyListener(new KeyListener() 
         {
@@ -308,6 +236,27 @@ public class ChatUI
         this.app.add(panelInput, BorderLayout.PAGE_END);
     }
 
+    /**
+     * Ritorna il messaggio scritto all'interno della JTextField
+     * e poi lo elimina
+     * 
+     * @return String
+     */
+    public String getInput ()
+    {
+        String text = input.getText();
+        input.setText("");
+        return text;
+    }
+
+    public JButton getButtonInvia()
+    {
+        return buttonInvia;
+    }
+
+    /**
+     * Visualizza l'applicazione
+     */
     public void show() 
     {
         this.app.pack();
@@ -317,15 +266,9 @@ public class ChatUI
 
     public void aggiungiUtente(Utente u)
     {
-        CasellaUtente c = new CasellaUtente(u, this);
-        utenti.put(u.getNome(), c);
+        CasellaUtente c = new CasellaUtente(u.getNome());
         panelUtenti.add(c);
         repaintListaUtenti();
-    }
-
-    public HashMap<String, CasellaUtente> getUtenti()
-    {
-        return utenti;
     }
 
     /**
@@ -340,26 +283,16 @@ public class ChatUI
 
     /**
      * Elimina la casella dell'utente selezionato
-     * @param nome, nome dell'utente da eliminare
+     * @param c, la casella da eliminare
      */
-    public void eliminaCasellaUtente(String nome)
+    public void eliminaCasellaUtente(CasellaUtente c)
     {
-        CasellaUtente c = this.utenti.get(nome);
-        this.utenti.remove(nome);
         panelUtenti.remove(c);
         this.repaintListaUtenti();
     }
 
     public void aggiungiTextPaneChatCorrente(Utente u)
     {
-        if (AppClient.getUtenteCorrente() == null)
-        {
-            return;
-        }
-
-        this.app.remove(AppClient.getUtenteCorrente().getScrollPane());
-        this.app.revalidate();
-        this.app.repaint();
         this.app.add(u.getScrollPane(), BorderLayout.CENTER);
         this.app.revalidate();
         this.app.repaint();
@@ -376,14 +309,13 @@ public class ChatUI
 
     /**
      * Incrementa il numero dei messaggi mandati dal mittente ancora non letti
-     * @param mittente, il nome del mittente
+     * @param c, la casella del mittente
      */
-    public void incrementaNumeroMessaggiDa(String mittente)
+    public void incrementaNumeroMessaggiDa(CasellaUtente c)
     {
-        CasellaUtente u = utenti.get(mittente);
-        int n = u.getNumeroMessaggi() + 1;
+        int n = c.getNumeroMessaggi() + 1;
 
-        u.setNumeroMessaggi("" + n);
+        c.setNumeroMessaggi("" + n);
     }
 
     /**

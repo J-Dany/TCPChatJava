@@ -10,18 +10,14 @@ public class CasellaUtente extends JPanel
 {
     private static final long serialVersionUID = 8745213302075828373L;
 
-    private Utente user;
     private JLabel labelNome;
     private JLabel labelNumeroMessaggi;
-    private ChatUI gui;
     private Font fontNumeroMessaggi = new FontUIResource("monospace", Font.BOLD, 14);
     private Font fontNome = new FontUIResource("Arial", Font.PLAIN, 16);
 
-    public CasellaUtente(Utente u, ChatUI gui) 
+    public CasellaUtente(String nome) 
     {
-        this.gui = gui;
-        this.user = u;
-        this.labelNome = new JLabel(u.getNome());
+        this.labelNome = new JLabel(nome);
         this.labelNumeroMessaggi = new JLabel();
 
         this.labelNumeroMessaggi.setFont(fontNumeroMessaggi);
@@ -41,16 +37,7 @@ public class CasellaUtente extends JPanel
         this.addMouseListener(new MouseInputListener() 
         {
             @Override
-            public void mouseClicked(MouseEvent arg0) 
-            {
-                System.out.println("Casella di " + user.getNome() + " cliccata, setto utente corrente");
-                AppClient.setUtenteCorrente(user);
-                AppClient.setNomeUtenteCorrente(user.getNome());
-                System.out.println("Carico la text pane di " + user.getNome());
-                gui.aggiungiTextPaneChatCorrente(user);
-                System.out.println("Text pane caricata");
-                labelNumeroMessaggi.setText("");
-            }
+            public void mouseClicked(MouseEvent arg0) { }
 
             @Override
             public void mouseEntered(MouseEvent arg0) 
@@ -102,5 +89,10 @@ public class CasellaUtente extends JPanel
             ? "0"
             : this.labelNumeroMessaggi.getText()
         );
+    }
+
+    public void incrementaNumeroMessaggi()
+    {
+        setNumeroMessaggi("" + (getNumeroMessaggi() + 1));
     }
 }

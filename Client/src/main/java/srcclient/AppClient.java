@@ -14,7 +14,6 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 
 public class AppClient 
 {
@@ -24,11 +23,6 @@ public class AppClient
     private static final int UTENTE_NON_RICONOSCIUTO = 4;
     private static final int ERRORE_NEL_FORM = 5;
     private static final int OUTPUT_STREAM_NON_INIZIALIZZATO = 3;
-
-    /**
-     * Nome del client
-     */
-    private static String nome;
 
     /**
      * Grandezza buffer di ricezione.
@@ -48,16 +42,11 @@ public class AppClient
      */
     private static OutputStreamWriter outputStream;
 
-    /**
-     * Utenti
-     */
-    private static HashMap<String, Utente> utenti = new HashMap<>();
+    private static ChatModel model = null;
+    private static ChatView chatUI = null;
+    private static ChatController controller = null;
 
-    /**
-     * Utente e nome corrente a cui mandare il messaggio
-     */
-    private static Utente utenteCorrente;
-    private static String nomeUtenteCorrente;
+    private static String nome;
     
     public static void main(String[] args) 
     {
@@ -84,8 +73,6 @@ public class AppClient
                 e.printStackTrace();
                 System.exit(OUTPUT_STREAM_NON_INIZIALIZZATO);
             }
-
-            ChatUI chatUI = null;
 
             while (true)
             {
@@ -124,16 +111,17 @@ public class AppClient
 
                         try
                         {
-                            chatUI = new ChatUI(nome);
-                            chatUI.prepareApp();
+                            chatUI = new ChatView();
+                            chatUI.buildApp();
                             chatUI.show();
                             chatUI.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
 
-                            Utente glob = new Utente("Globale");
-                            utenti.put("Globale", glob);
+                            model = new ChatModel(nome, chatUI);
+                            controller = new ChatController(chatUI, model);
 
-                            utenteCorrente = glob;
-                            nomeUtenteCorrente = "Globale";
+                            Utente glob = new Utente("Globale");
+                            model.updateUtenti(glob);
+
                             chatUI.aggiungiUtente(glob);
                             chatUI.aggiungiTextPaneChatCorrente(glob);
 
@@ -143,7 +131,7 @@ public class AppClient
                                 if (!nome.equals(AppClient.nome))
                                 {
                                     Utente u = new Utente(nome);
-                                    utenti.put(nome, u);
+                                    model.updateUtenti(u);
                                     chatUI.aggiungiUtente(u);
                                 }
                             }
@@ -159,23 +147,11 @@ public class AppClient
                             case "Per":
                                 if (risposta.getString("Destinatario").equals(nome))
                                 {
-                                    chatUI.incrementaNumeroMessaggiDa(risposta.getString("Mittente"));
-                                    aggiungiMessaggio(risposta.getString("Mittente"), 
-                                        new CasellaMessaggio(risposta.getString("Mittente"), 
-                                            risposta.getString("Messaggio"), 
-                                            risposta.getString("Data"), 
-                                            risposta.getString("Time")
-                                        )
-                                    );
+                                    
                                 }
                             break;
                             case "Plain-Text":
-                                aggiungiMessaggio("Globale", new CasellaMessaggio(
-                                    risposta.getString("Nome"),
-                                    risposta.getString("Messaggio"),
-                                    risposta.getString("Data"),
-                                    risposta.getString("Time")
-                                ));                         
+                                                        
                             break;
                             case "Immagine":
 
@@ -191,17 +167,13 @@ public class AppClient
                                 if (risposta.has("Nome-Utente"))
                                 {
                                     Utente u = new Utente(risposta.getString("Nome-Utente"));
-                                    utenti.put(risposta.getString("Nome-Utente"), u);
-                                    chatUI.aggiungiUtente(u);
+                                    model.updateUtenti(u);
                                 }
                             break;
                             case "Disconnessione":
-                                utenti.remove(risposta.getString("Nome"));
+                                model.removeUtente(risposta.getString("Nome"));
                                 chatUI.setNumeroUtentiConnessi(risposta.getInt("Numero"));
-                                chatUI.eliminaCasellaUtente(risposta.getString("Nome"));
-                                utenteCorrente = utenti.get("Globale");
-                                nomeUtenteCorrente = "Globale";
-                                chatUI.aggiungiTextPaneChatCorrente(utenteCorrente);
+                                chatUI.eliminaCasellaUtente(model.getCasella(risposta.getString("Nome")));
                             break;
                         }
                     break;
@@ -210,8 +182,7 @@ public class AppClient
                     break;
                     case "Chiudi-Connessione":
                         JOptionPane.showMessageDialog(chatUI.app, "Il server ha mandato una richiesta di disconnessione perché si sta chiudendo. Chiudo l'applicazione", "Server chiuso", JOptionPane.ERROR_MESSAGE);
-                        s.close();
-                        System.exit(0);    
+                        dispose(); 
                     break;
                 }
             }
@@ -220,30 +191,6 @@ public class AppClient
         {
             e.printStackTrace();
         }
-    }
-
-    public static void aggiungiMessaggio(String mittente, CasellaMessaggio c)
-    {
-        System.out.println(utenti.toString());
-        if (utenti.containsKey(mittente))
-        {
-            utenti.get(mittente).aggiungiMessaggio(c);
-        }
-    }
-
-    public static void setUtenteCorrente(Utente u)
-    {
-        utenteCorrente = u;
-    }
-
-    public static String getNomeUtenteCorrente()
-    {
-        return nomeUtenteCorrente;
-    }
-
-    public static void setNomeUtenteCorrente(String nome)
-    {
-        nomeUtenteCorrente = nome;
     }
 
     public static void dispose()
@@ -328,11 +275,6 @@ public class AppClient
         server.setVisible(true);
     }
 
-    public static Utente getUtenteCorrente ()
-    {
-        return utenteCorrente;
-    }
-
     private static void formAutenticazione()
     {
         FontUIResource font = new FontUIResource("Arial", FontUIResource.PLAIN, 16);
@@ -377,7 +319,7 @@ public class AppClient
                 auth.put("Tipo-Richiesta", "Autenticazione");
                 auth.put("Nome", n);
                 auth.put("Password", p);
-                
+
                 nome = n;
 
                 try
