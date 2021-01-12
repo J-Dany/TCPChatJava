@@ -206,7 +206,7 @@ public class Server extends Thread
      */
     public synchronized void mandaMessaggio(String msg, Client c, Socket s)
     {
-        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
+        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
         if (c == null)
         {
             try
@@ -217,10 +217,10 @@ public class Server extends Thread
             }
             catch (Exception e)
             {
-                this.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                this.logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
             }
 
-            this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " messaggio inoltrato");
+            this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " messaggio inoltrato");
             return;
         }
 
@@ -241,12 +241,12 @@ public class Server extends Thread
                 }
                 catch (Exception e)
                 {
-                    this.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                    this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
                 }
             }
         }
 
-        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " messaggio inoltrato");
+        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " messaggio inoltrato");
     }
 
     /**
@@ -258,7 +258,7 @@ public class Server extends Thread
      */
     public synchronized void messaggioBroadcast(String msg)
     {
-        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mando messaggio in broadcast: " + msg);
+        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mando messaggio in broadcast: " + msg);
         arr = this.connected_clients.keySet().toArray();
         for (int i = 0; i < this.connected_clients.size(); ++i)
         {
@@ -272,10 +272,10 @@ public class Server extends Thread
             }
             catch (Exception e)
             {
-                this.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
             }
         }
-        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mandato messaggio broadcast");
+        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mandato messaggio broadcast");
     }
 
     @Override
@@ -283,40 +283,40 @@ public class Server extends Thread
     {
         this.threadPoolClient = Executors.newScheduledThreadPool(32);
         
-        this.logger.add_msg("[ OK  ] - Server partito");
+        this.logger.add_msg(Log.LogType.OK, "Server partito");
         try 
         {
             // Esegui finché non viene interrotto il server
             while (!Thread.currentThread().isInterrupted()) 
             {
                 // Sta in ascolto per le connessioni in entrata
-                this.logger.add_msg("[ OK  ] - " + this.getName() + " sta in ascolto per i client");
+                this.logger.add_msg(Log.LogType.OK, this.getName() + " sta in ascolto per i client");
                 Socket sclient = null;
                 try 
                 {
                     sclient = this.socket.accept();
-                    this.logger.add_msg("[ OK  ] - Connessione accettata per " + sclient.getInetAddress());                    
+                    this.logger.add_msg(Log.LogType.OK, "Connessione accettata per " + sclient.getInetAddress());                    
                 }
                 catch (SocketException e) 
                 {
-                    this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " + e);
+                    this.logger.add_msg(Log.LogType.ERR, this.getName() + " exception: " + e);
                     Thread.currentThread().interrupt();
                     break;
                 }
 
                 // Creo un nuovo oggetto client, che rappresenta il client connesso
-                this.logger.add_msg("[ OK  ] - Creo un oggetto Client per rappresentare il client connesso...");
+                this.logger.add_msg(Log.LogType.OK, "Creo un oggetto Client per rappresentare il client connesso...");
                     Client c = new Client(sclient.getInetAddress());
-                this.logger.add_msg("[ OK  ] - Oggetto creato");
+                this.logger.add_msg(Log.LogType.OK, "Oggetto creato");
 
-                this.logger.add_msg("[ OK  ] - Sto in ascolto per i messaggi di questo client.");
+                this.logger.add_msg(Log.LogType.OK, "Sto in ascolto per i messaggi di questo client.");
 
                 this.threadPoolClient.submit(new ConnectionClient(sclient, c));
             }
         } 
         catch (Exception e) 
         {
-            this.logger.add_msg("[ ERR ] - " + this.getName() + " exception: " + e);
+            this.logger.add_msg(Log.LogType.ERR, this.getName() + " exception: " + e);
         }
 
         // Libera le risorse allocate
@@ -328,7 +328,7 @@ public class Server extends Thread
      */
     private void liberaRisorse()
     {
-        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Chiudo tutti i socket dei client");
+        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " Chiudo tutti i socket dei client");
         for (Socket s : this.connected_clients.values())
         {
             try
@@ -343,24 +343,24 @@ public class Server extends Thread
             }
             catch (Exception e)
             {
-                this.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+                this.logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
             }
         }
-        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Chiusi tutti i socket dei client");
+        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " Chiusi tutti i socket dei client");
 
-        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Libero la memoria creata per contenere hashmap");
+        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " Libero la memoria creata per contenere hashmap");
         
         // Elimino hashmap
         this.connected_clients.clear();
 
-        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " Libero la memoria creata per contenere arraylist di client bannati");
+        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " Libero la memoria creata per contenere arraylist di client bannati");
         // Elimino i client bannati
         this.banned.clear();
 
-        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " spengo la ThreadPool");
+        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " spengo la ThreadPool");
         this.threadPoolClient.shutdownNow();
 
-        this.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " chiuso.");
+        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " chiuso.");
     }
 
     public synchronized HashMap<Client, Socket> getConnectedClients()
@@ -416,24 +416,24 @@ public class Server extends Thread
             Console console = new Console();
             console.avvia();
 
-            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " sta per chiudere il server");
+            s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " sta per chiudere il server");
 
             // Chiudo il socket
             s.socket.close();
 
-            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " ha chiuso il socket");
-            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " aspetta la fine dell'esecuzione del server");
+            s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " ha chiuso il socket");
+            s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " aspetta la fine dell'esecuzione del server");
             
             // Aspetto che il server si chiuda correttamente
             s.join();
 
-            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " interrompe il thread WriterToDB");
+            s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " interrompe il thread WriterToDB");
 
             // Interrompo e aspetto il thread Writer
             s.writer.interrupt();
             s.writer.join();
 
-            s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " thread WriterToDB interrotto");
+            s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " thread WriterToDB interrotto");
         }
         catch (IOException | InterruptedException e)
         {
@@ -451,11 +451,11 @@ public class Server extends Thread
         }
         catch (Exception e)
         {
-            s.logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+            s.logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
         }
 
         // Interrompo il logger
-        s.logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " fine programma");
+        s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " fine programma");
 
         // Chiudo correttamente il logger
         s.logger.shutdown();

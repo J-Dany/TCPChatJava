@@ -36,22 +36,25 @@ public class Log extends Thread
         }
     }
 
-    public synchronized void add_msg(String msg)
+    public synchronized void add_msg(Log.LogType type, String msg)
     {
         if (msg != null)
         {
-            if (msg.contains("[ ERR ]"))
+            if (type == LogType.ERR)
             {
                 Server.getServer().nuovoErrore(msg);
             }
-            else if (msg.contains("[ ERR ] - Console"))
+            else if (type == LogType.ERR && msg.contains("Console"))
             {
                 System.out.println("C'e' stato un errore nell'eseguire l'ultimo comando");
             }
 
             try
             {
-                this.coda.add(msg);
+                this.coda.add(
+                    (type == LogType.OK) ? "[ OK  ] - " : "[ ERR ] - "
+                    + msg
+                );
             }
             catch (Exception e)
             {
@@ -123,4 +126,9 @@ public class Log extends Thread
             }
         }
     }
+
+    public enum LogType {
+        OK,
+        ERR
+    };
 }

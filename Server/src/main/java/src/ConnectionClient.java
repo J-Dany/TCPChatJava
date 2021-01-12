@@ -34,11 +34,11 @@ public class ConnectionClient implements Runnable
 
                 JSONObject richiesta = new JSONObject(msg);
 
-                Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " gestisco tipo richiesta");
+                Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " gestisco tipo richiesta");
                 switch (richiesta.getString("Tipo-Richiesta"))
                 {
                     case "Autenticazione":
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " tipo richiesta: Autenticazione");
+                        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " tipo richiesta: Autenticazione");
                         if (this.gestisciAutenticazione(richiesta))
                         {   
                             Thread.currentThread().setName("Thread-" + client.getNome());
@@ -80,9 +80,9 @@ public class ConnectionClient implements Runnable
                         }
                     break;
                     case "Invio-Messaggio":
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " tipo richiesta: Invio-Messaggio");
+                        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " tipo richiesta: Invio-Messaggio");
 
-                        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
+                        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
                         if (Server.getServer().banned.contains(this.client.getAddress()))
                         {
                             JSONObject bannato = new JSONObject();
@@ -167,13 +167,13 @@ public class ConnectionClient implements Runnable
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+            Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
         }
 
-        try { this.socket.close(); } catch (Exception e) { Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e); }
+        try { this.socket.close(); } catch (Exception e) { Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e); }
         Server.getServer().rimuoviClient(this.client);
 
-        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " " + this.client.getNome() + " si e' disconnesso, aggiorno il numero degli utenti connessi al client");
+        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " " + this.client.getNome() + " si e' disconnesso, aggiorno il numero degli utenti connessi al client");
         JSONObject numeroUtenti = new JSONObject();
         numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
         numeroUtenti.put("Tipo-Set-Numero", "Disconnessione");
@@ -188,36 +188,36 @@ public class ConnectionClient implements Runnable
         String nomeUtente = richiesta.getString("Nome");
         String password = richiesta.getString("Password");
         this.client.setNome(nomeUtente);
-        Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " nuovo client: " + nomeUtente);
+        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " nuovo client: " + nomeUtente);
 
         try
         {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " mi connetto al database e istanzio un oggetto di tipo Statement");
+            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mi connetto al database e istanzio un oggetto di tipo Statement");
 
             Connection c = DatabaseConnection.getConnection();
             Statement s = c.createStatement();
 
-            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " connesso al database e creato oggetto Statement, ora eseguo la query di ricerca utete");
+            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " connesso al database e creato oggetto Statement, ora eseguo la query di ricerca utete");
 
             ResultSet utenti = s.executeQuery("SELECT COUNT(*) as num_rows FROM utenti WHERE username = '" + nomeUtente + "' AND password = '" + password + "'");
 
-            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " query eseguita correttamente");
+            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
             
             if (utenti.next() && utenti.getInt("num_rows") == 0)
             {
-                Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " utente non riconosciuto (" + nomeUtente + ")");
+                Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " utente non riconosciuto (" + nomeUtente + ")");
                 throw new Exception("Utente non riconosciuto");
             }
 
-            Server.getServer().logger.add_msg("[ OK  ] - " + Thread.currentThread().getName() + " si e' connesso " + nomeUtente);
+            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " si e' connesso " + nomeUtente);
 
             return true;
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg("[ ERR ] - " + Thread.currentThread().getName() + " " + e);
+            Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
         }
 
         return false;
