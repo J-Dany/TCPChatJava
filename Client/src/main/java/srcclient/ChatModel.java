@@ -25,18 +25,12 @@ public class ChatModel
     private String nome;
 
     /**
-     * La view dell'applicazione
-     */
-    private ChatView view;
-
-    /**
      * Ctor
      * 
      * @param nome, nome dell'utente che ha avviato l'applicazione e si è autenticato
      */
-    public ChatModel(String nome, ChatView view)
+    public ChatModel(String nome)
     {
-        this.view = view;
         this.propertyChangeSupport = new SwingPropertyChangeSupport(this);
         this.nome = nome;
     }

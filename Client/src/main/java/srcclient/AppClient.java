@@ -111,12 +111,12 @@ public class AppClient
 
                         try
                         {
-                            chatUI = new ChatView();
+                            chatUI = new ChatView(model);
                             chatUI.buildApp();
                             chatUI.show();
                             chatUI.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
 
-                            model = new ChatModel(nome, chatUI);
+                            model = new ChatModel(nome);
                             controller = new ChatController(chatUI, model);
 
                             Utente glob = new Utente("Globale");

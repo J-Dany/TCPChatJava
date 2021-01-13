@@ -26,10 +26,18 @@ public class ChatView
     private Font font = new FontUIResource("Noto Sans", Font.PLAIN, 14);
     private Font fontInviaMessaggio = new FontUIResource("Noto Sans", Font.PLAIN, 18);
     private JButton buttonInvia;
+    private ChatModel model;
 
-    public ChatView() throws IOException 
+    /**
+     * Ctor
+     * 
+     * @param model, il Model dell'applicazione
+     * @throws IOException
+     */
+    public ChatView(ChatModel model) throws IOException 
     {
         this.app = new JFrame("Chat");
+        this.model = model;
     }
 
     /**
