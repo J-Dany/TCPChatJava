@@ -1,8 +1,8 @@
 package srcclient;
 
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
-
 import javax.swing.event.SwingPropertyChangeSupport;
 
 public class ChatModel 
