@@ -111,20 +111,17 @@ public class AppClient
 
                         try
                         {
+                            model = new ChatModel(nome);
                             chatUI = new ChatView(model);
                             chatUI.buildApp();
                             chatUI.show();
                             chatUI.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
 
-                            model = new ChatModel(nome);
                             controller = new ChatController(chatUI, model);
 
                             Utente glob = new Utente("Globale");
                             model.updateUtenti(glob);
-
-                            glob.aggiungiMessaggio(new CasellaMessaggio("Tu", "Ciao", "2020-01-14", "09:32:45"));
-                            chatUI.aggiungiUtente(glob);
-                            chatUI.aggiungiTextPaneChatCorrente(glob);
+                            model.setUtenteCorrente(glob);
 
                             for (Object n : risposta.getJSONArray("Lista-Utenti").toList())
                             {
@@ -133,7 +130,6 @@ public class AppClient
                                 {
                                     Utente u = new Utente(nome);
                                     model.updateUtenti(u);
-                                    chatUI.aggiungiUtente(u);
                                 }
                             }
                         }
@@ -146,13 +142,24 @@ public class AppClient
                         switch (risposta.getString("Tipo-Messaggio"))
                         {
                             case "Per":
-                                if (risposta.getString("Destinatario").equals(nome))
-                                {
-                                    
-                                }
+                                model.incrementaNumeroMessaggiDa(risposta.getString("Mittente"));
+                                model.updateMessaggi(risposta.getString("Mittente"), new CasellaMessaggio(
+                                    risposta.getString("Mittente"), 
+                                    risposta.getString("Messaggio"), 
+                                    risposta.getString("Data"), 
+                                    risposta.getString("Time")
+                                    )
+                                );
                             break;
                             case "Plain-Text":
-                                                        
+                                model.incrementaNumeroMessaggiDa("Globale");
+                                model.updateMessaggi("Globale", new CasellaMessaggio(
+                                    risposta.getString("Nome"), 
+                                    risposta.getString("Messaggio"), 
+                                    risposta.getString("Data"), 
+                                    risposta.getString("Time")
+                                    )
+                                );
                             break;
                             case "Immagine":
 

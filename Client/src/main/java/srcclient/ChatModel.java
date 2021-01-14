@@ -24,6 +24,8 @@ public class ChatModel
      */
     private String nome;
 
+    private Utente utenteCorrente;
+
     /**
      * Ctor
      * 
@@ -33,6 +35,16 @@ public class ChatModel
     {
         this.propertyChangeSupport = new SwingPropertyChangeSupport(this);
         this.nome = nome;
+    }
+
+    public Utente getUtenteCorrente()
+    {
+        return utenteCorrente;
+    }
+
+    public void setUtenteCorrente (Utente u)
+    {
+        utenteCorrente = u;
     }
 
     /**
@@ -139,11 +151,19 @@ public class ChatModel
         caselle.put(nome, c);
     }
 
+    /**
+     * Incrementa nella casella utente il numero dei messaggi
+     * non letti da ...
+     * @param nome, il nome del mittente
+     */
     public void incrementaNumeroMessaggiDa (String nome)
     {
         if (caselle.containsKey(nome))
         {
-            caselle.get(nome).incrementaNumeroMessaggi();
+            if (!nome.equals(utenteCorrente.getNome()))
+            {
+                caselle.get(nome).incrementaNumeroMessaggi();
+            }
         }
     }
 

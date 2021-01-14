@@ -8,12 +8,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import org.json.JSONObject;
 
-public class ChatView
-{
+public class ChatView {
     /**
      * Grandezza dell'applicazione
      */
@@ -34,10 +36,18 @@ public class ChatView
      * @param model, il Model dell'applicazione
      * @throws IOException
      */
-    public ChatView(ChatModel model) throws IOException 
-    {
+    public ChatView(ChatModel model) throws IOException {
         this.app = new JFrame("Chat");
         this.model = model;
+        model.addListener(new PropertyChangeListener() 
+        {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) 
+            {
+                System.out.println("Qualcosa è cambiato sul model");
+                System.out.println(evt);
+            }   
+        });
     }
 
     /**
@@ -270,13 +280,6 @@ public class ChatView
         this.app.pack();
         this.app.setResizable(false);
         this.app.setVisible(true);
-    }
-
-    public void aggiungiUtente(Utente u)
-    {
-        CasellaUtente c = new CasellaUtente(u.getNome());
-        panelUtenti.add(c);
-        repaintListaUtenti();
     }
 
     /**

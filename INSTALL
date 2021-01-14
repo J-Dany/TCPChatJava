@@ -1,0 +1,4 @@
+# Compile
+make
+# Install (Linux, Mac OS)
+sudo make install

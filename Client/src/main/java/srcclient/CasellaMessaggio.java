@@ -15,14 +15,16 @@ public class CasellaMessaggio extends JPanel
     private JTextField dataTempoMessaggio;
 
     private Font fontDataTempo = new FontUIResource("Noto Sans", Font.PLAIN, 12);
-    private Font fontMessaggio = new FontUIResource("Caladea", Font.PLAIN, 18);
-    private Font fontNome = new FontUIResource("Noto Sans", Font.BOLD, 16);
+    private Font fontMessaggio = new FontUIResource("Noto Sans", Font.PLAIN, 16);
+    private Font fontNome = new FontUIResource("Noto Sans", Font.BOLD, 18);
 
     public CasellaMessaggio(String nome, String msg, String data, String tempo) 
     {
         areaMessaggio = new JTextArea();
         nomeUtente = new JTextField();
         dataTempoMessaggio = new JTextField();
+
+        areaMessaggio.setAutoscrolls(true);
 
         nomeUtente.setBackground(Color.WHITE);
         dataTempoMessaggio.setBackground(Color.WHITE);
