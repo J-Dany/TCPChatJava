@@ -5,7 +5,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
 import javax.swing.event.SwingPropertyChangeSupport;
 
-public class ChatModel 
+public class ChatModel implements PropertyChangeListener
 {
     private SwingPropertyChangeSupport propertyChangeSupport;
 
@@ -44,6 +44,7 @@ public class ChatModel
 
     public void setUtenteCorrente (Utente u)
     {
+        propertyChangeSupport.firePropertyChange("Imposta-Chat-Corrente", utenteCorrente, u);
         utenteCorrente = u;
     }
 
@@ -121,6 +122,7 @@ public class ChatModel
      */
     public void updateUtenti(Utente u)
     {
+        propertyChangeSupport.firePropertyChange("Nuovo-Utente", null, u);
         utenti.put(u.getNome(), u);
     }
 
@@ -183,5 +185,11 @@ public class ChatModel
         utenti.clear();
         caselle.clear();
         nome = null;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) 
+    {
+        System.out.println(evt);
     }
 }

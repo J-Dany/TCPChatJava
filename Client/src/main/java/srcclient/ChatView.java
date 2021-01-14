@@ -45,7 +45,17 @@ public class ChatView {
             public void propertyChange(PropertyChangeEvent evt) 
             {
                 System.out.println("Qualcosa è cambiato sul model");
-                System.out.println(evt);
+                switch (evt.getPropertyName())
+                {
+                    case "Imposta-Chat-Corrente":
+                        aggiungiTextPaneChatCorrente(
+                            (Utente) evt.getNewValue()
+                        );
+                    break;
+                    case "Nuovo-Utente":
+                        aggiungiNuovoUtente(new CasellaUtente(((Utente)evt.getNewValue()).getNome()));
+                    break;
+                }
             }   
         });
     }
@@ -307,6 +317,12 @@ public class ChatView {
         this.app.add(u.getScrollPane(), BorderLayout.CENTER);
         this.app.revalidate();
         this.app.repaint();
+    }
+
+    public void aggiungiNuovoUtente (CasellaUtente c)
+    {
+        panelUtenti.add(c);
+        repaintListaUtenti();
     }
 
     /**

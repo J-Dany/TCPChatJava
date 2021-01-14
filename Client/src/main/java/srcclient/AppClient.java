@@ -50,6 +50,7 @@ public class AppClient
     
     public static void main(String[] args) 
     {
+        Thread.currentThread().setName("Thread-Listener-Messaggi");
         try 
         {
             Class.forName("com.google.common.hash.Hashing");
