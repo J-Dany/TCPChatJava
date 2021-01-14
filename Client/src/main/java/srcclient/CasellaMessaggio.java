@@ -2,7 +2,6 @@ package srcclient;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
-
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import javax.swing.plaf.FontUIResource;
@@ -24,6 +23,14 @@ public class CasellaMessaggio extends JPanel
         areaMessaggio = new JTextArea();
         nomeUtente = new JTextField();
         dataTempoMessaggio = new JTextField();
+
+        nomeUtente.setBackground(Color.WHITE);
+        dataTempoMessaggio.setBackground(Color.WHITE);
+
+        nomeUtente.setBorder(null);
+        dataTempoMessaggio.setBorder(null);
+
+        this.setBorder(BorderFactory.createLineBorder(Color.lightGray));
 
         areaMessaggio.setFont(fontMessaggio);
         nomeUtente.setFont(fontNome);

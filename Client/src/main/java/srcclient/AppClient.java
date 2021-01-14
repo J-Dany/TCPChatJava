@@ -122,6 +122,7 @@ public class AppClient
                             Utente glob = new Utente("Globale");
                             model.updateUtenti(glob);
 
+                            glob.aggiungiMessaggio(new CasellaMessaggio("Tu", "Ciao", "2020-01-14", "09:32:45"));
                             chatUI.aggiungiUtente(glob);
                             chatUI.aggiungiTextPaneChatCorrente(glob);
 
