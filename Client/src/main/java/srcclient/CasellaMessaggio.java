@@ -3,7 +3,9 @@ package srcclient;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.event.MouseInputListener;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
 public class CasellaMessaggio extends JPanel 
@@ -26,13 +28,9 @@ public class CasellaMessaggio extends JPanel
 
         areaMessaggio.setAutoscrolls(true);
 
-        nomeUtente.setBackground(Color.WHITE);
-        dataTempoMessaggio.setBackground(Color.WHITE);
-
         nomeUtente.setBorder(null);
         dataTempoMessaggio.setBorder(null);
-
-        this.setBorder(BorderFactory.createLineBorder(Color.lightGray));
+        this.setBorder(null);
 
         areaMessaggio.setFont(fontMessaggio);
         nomeUtente.setFont(fontNome);
@@ -74,11 +72,24 @@ public class CasellaMessaggio extends JPanel
             
         });
 
-        this.setPreferredSize(new Dimension(500, 100));
-        this.setMinimumSize(new Dimension(500, 100));
-        this.setMaximumSize(new Dimension(500, 100));
-        this.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        this.setPreferredSize(new Dimension(350, 128));
+        this.setMinimumSize(new Dimension(350, 128));
+        this.setMaximumSize(new Dimension(350, 128));
         this.setLayout(new BorderLayout());
+
+        Color bg = new ColorUIResource(37, 211, 102);
+
+        this.areaMessaggio.setBackground(bg);
+        this.areaMessaggio.setForeground(Color.BLACK);
+
+        LineBorder line = new LineBorder(bg, 6, true);
+        this.setBorder(line);
+        nomeUtente.setBorder(line);
+        dataTempoMessaggio.setBorder(line);
+
+        this.setBackground(bg);
+        nomeUtente.setBackground(bg);
+        dataTempoMessaggio.setBackground(bg);
         
         this.add(nomeUtente, BorderLayout.PAGE_START);
         this.add(areaMessaggio, BorderLayout.CENTER);

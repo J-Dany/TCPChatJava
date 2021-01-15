@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
 public class CasellaUtente extends JPanel 
@@ -20,8 +21,22 @@ public class CasellaUtente extends JPanel
         this.labelNome = new JLabel(nome);
         this.labelNumeroMessaggi = new JLabel();
 
+        Color bg = new ColorUIResource(0.1f, 0.1f, 0.1f);
+        Color fg = new ColorUIResource(0.9f, 0.9f, 0.9f);
+
+        this.labelNome.setBackground(bg);
+        this.labelNome.setForeground(fg);
+        this.labelNumeroMessaggi.setBackground(bg);
+        this.labelNumeroMessaggi.setForeground(fg);
+        this.setBackground(bg);
+        this.setForeground(fg);
+
         this.labelNumeroMessaggi.setFont(fontNumeroMessaggi);
         this.labelNome.setFont(fontNome);
+
+        this.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        labelNome.setBorder(null);
+        labelNumeroMessaggi.setBorder(null);
 
         this.labelNumeroMessaggi.setPreferredSize(new Dimension(24, 32));
         this.labelNumeroMessaggi.setMinimumSize(new Dimension(24, 32));
@@ -31,8 +46,6 @@ public class CasellaUtente extends JPanel
         this.setMinimumSize(new Dimension(240, 64));
         this.setMaximumSize(new Dimension(240, 64));
         this.setLayout(new BorderLayout());
-        this.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        this.setBackground(Color.WHITE);
 
         this.addMouseListener(new MouseInputListener() 
         {
@@ -64,12 +77,12 @@ public class CasellaUtente extends JPanel
 
         JPanel wrapperNumeroMessaggi = new JPanel();
         wrapperNumeroMessaggi.setLayout(new BoxLayout(wrapperNumeroMessaggi, BoxLayout.PAGE_AXIS));
-        wrapperNumeroMessaggi.setBackground(Color.WHITE);
+        wrapperNumeroMessaggi.setBackground(bg);
         wrapperNumeroMessaggi.add(Box.createRigidArea(new Dimension(0, 16)));
         wrapperNumeroMessaggi.add(this.labelNumeroMessaggi);
 
         JPanel wrapperNome = new JPanel();
-        wrapperNome.setBackground(Color.WHITE);
+        wrapperNome.setBackground(bg);
         wrapperNome.setLayout(new BorderLayout());
         wrapperNome.add(this.labelNome, BorderLayout.CENTER);
 

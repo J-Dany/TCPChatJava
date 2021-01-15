@@ -12,6 +12,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import org.json.JSONObject;
 
@@ -44,7 +45,6 @@ public class ChatView {
             @Override
             public void propertyChange(PropertyChangeEvent evt) 
             {
-                System.out.println("Qualcosa è cambiato sul model");
                 switch (evt.getPropertyName())
                 {
                     case "Imposta-Chat-Corrente":
@@ -65,11 +65,12 @@ public class ChatView {
      */
     public void buildApp() 
     {
+        this.app.setBackground(new ColorUIResource(0f, 0f, 0f));
         this.app.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.app.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.app.setLayout(new BorderLayout());
 
-        JMenuBar menuBar = new JMenuBar();
+        /*JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
         file.setFont(font);
         JMenuItem quit = new JMenuItem("Quit");
@@ -118,7 +119,7 @@ public class ChatView {
         menuBar.add(file);
         menuBar.add(info);
         info.add(about);
-        this.app.setJMenuBar(menuBar);
+        this.app.setJMenuBar(menuBar);*/
 
         this.app.addWindowListener(new WindowListener() {
             @Override
@@ -157,20 +158,26 @@ public class ChatView {
         });
 
         panelUtenti = new JPanel();
-        panelUtenti.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        panelUtenti.setBackground(new ColorUIResource(0.1f, 0.1f, 0.1f));
+        panelUtenti.setBorder(null);
         panelUtenti.setLayout(new BoxLayout(panelUtenti, BoxLayout.PAGE_AXIS));
 
         JScrollPane scrollUtenti = new JScrollPane(panelUtenti);
+        scrollUtenti.setBorder(null);
         this.app.add(scrollUtenti, BorderLayout.LINE_START);
+
+        UIManager.put("TextField.inactiveBackground", new ColorUIResource(0.1f, 0.1f, 0.1f));
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
         utentiConnessi = new JTextField();
         utentiConnessi.setBorder(null);
         utentiConnessi.setFont(font);
-        utentiConnessi.setEditable(false);
+        utentiConnessi.setForeground(new ColorUIResource(215, 255, 137));
         utentiConnessi.setPreferredSize(new Dimension(WIDTH, 20));
+        utentiConnessi.setEditable(false);
         panel.add(utentiConnessi);
+        panel.setBackground(new ColorUIResource(0.1f, 0.1f, 0.1f));
         this.app.add(panel, BorderLayout.PAGE_START);
 
         JPanel panelInput = new JPanel();
@@ -179,6 +186,9 @@ public class ChatView {
 
         this.input = new JTextField();
         this.input.setFont(fontInviaMessaggio);
+        this.input.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        this.input.setBackground(new ColorUIResource(0.1f, 0.1f, 0.1f));
+        this.input.setForeground(new ColorUIResource(238, 238, 238));
         panelInput.add(input);
 
         JButton buttonInviaMessaggio = new JButton("Invia");
