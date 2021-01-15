@@ -51,10 +51,9 @@ public class Log extends Thread
 
             try
             {
-                this.coda.add(
-                    (type == LogType.OK) ? "[ OK  ] - " : "[ ERR ] - "
-                    + msg
-                );
+                String m = ((type == LogType.OK) ? "[ OK  ] - " : "[ ERR ] - ")
+                    + msg;
+                this.coda.add(m);
             }
             catch (Exception e)
             {
