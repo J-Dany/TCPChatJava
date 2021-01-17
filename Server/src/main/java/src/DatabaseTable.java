@@ -72,7 +72,7 @@ public class DatabaseTable
 
     /**
      * Rimuove soltanto il record con primary key uguale a {value}
-     * @param value, valore della primary key del record da eliminare
+     * @param value valore della primary key del record da eliminare
      */
     public void deleteOnce(String value)
     {
@@ -97,8 +97,8 @@ public class DatabaseTable
 
     /**
      * Inserisce un solo record nel database
-     * @param fields, i campi della tabella
-     * @param values, i valori dei campi
+     * @param fields i campi della tabella
+     * @param values i valori dei campi
      */
     public void insertOnce(String[] fields, Object[] values)
     {

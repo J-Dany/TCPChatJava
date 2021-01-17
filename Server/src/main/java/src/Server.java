@@ -61,8 +61,8 @@ public class Server extends Thread
     /**
      * Costruttore del Server
      * 
-     * @param name, rappresenta il nome del thread Server
-     * @param port, la porta in cui il Socket del Server resterà in ascolto
+     * @param name rappresenta il nome del thread Server
+     * @param port la porta in cui il Socket del Server resterà in ascolto
      * @throws IOException, errore con il Socket
      */
     public Server(String name, int port) throws IOException
@@ -78,7 +78,7 @@ public class Server extends Thread
     /**
      * Ritorna un JSONArray contenente tutti gli utenti connessi
      * 
-     * @param nome, una stringa che rappresenta il nome del client da non mettere nell'array
+     * @param nome una stringa che rappresenta il nome del client da non mettere nell'array
      * @return JSONArray
      */
     public synchronized JSONArray getListaUtentiConnessi(String nome)
@@ -132,7 +132,7 @@ public class Server extends Thread
     /**
      * Ritorna l'errore nell'index specificato
      * 
-     * @param index, l'indice dell'errore
+     * @param index l'indice dell'errore
      * @return String l'errore a quell'indice, null se non esiste quell'indice
      */
     public String erroreNellIndex(int index)
@@ -172,7 +172,7 @@ public class Server extends Thread
      * viene chiamato questo metodo che rimuove
      * il client dall'HashMap dei client connessi
      * 
-     * @param c, il puntatore al client da rimuovere
+     * @param c il puntatore al client da rimuovere
      */
     public synchronized void rimuoviClient(Client c)
     {
@@ -199,9 +199,9 @@ public class Server extends Thread
      * viene mandato a lui tramite il socket passato, solo
      * e soltanto a lui
      * 
-     * @param msg, messaggio da inviare
-     * @param c, rappresenta il mittente (o destinatario)
-     * @param s, rappresenta il socket del client
+     * @param msg messaggio da inviare
+     * @param c rappresenta il mittente (o destinatario)
+     * @param s rappresenta il socket del client
      */
     public synchronized void mandaMessaggio(String msg, Client c, Socket s)
     {
@@ -253,7 +253,7 @@ public class Server extends Thread
      * Principalmente usato per aggiornare il numero
      * dei client connessi nell'app del client.
      * 
-     * @param msg, messaggio da inviare a tutti
+     * @param msg messaggio da inviare a tutti
      */
     public synchronized void messaggioBroadcast(String msg)
     {

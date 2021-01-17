@@ -119,6 +119,7 @@ public class AppClient
                             chatUI.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
 
                             controller = new ChatController(chatUI, model);
+                            chatUI.setController(controller);
 
                             Utente glob = new Utente("Globale");
                             model.updateUtenti(glob);

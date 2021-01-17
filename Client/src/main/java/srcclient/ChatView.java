@@ -10,13 +10,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import org.json.JSONObject;
 
-public class ChatView {
+public class ChatView 
+{
     /**
      * Grandezza dell'applicazione
      */
@@ -30,131 +30,85 @@ public class ChatView {
     private Font fontInviaMessaggio = new FontUIResource("Noto Sans", Font.PLAIN, 18);
     private JButton buttonInvia;
     private ChatModel model;
+    private ChatController controller;
 
     /**
      * Ctor
      * 
-     * @param model, il Model dell'applicazione
+     * @param model il Model dell'applicazione
      * @throws IOException
      */
     public ChatView(ChatModel model) throws IOException {
         this.app = new JFrame("Chat");
         this.model = model;
-        model.addListener(new PropertyChangeListener() 
-        {
+        model.addListener(new PropertyChangeListener() {
             @Override
-            public void propertyChange(PropertyChangeEvent evt) 
-            {
-                switch (evt.getPropertyName())
-                {
+            public void propertyChange(PropertyChangeEvent evt) {
+                switch (evt.getPropertyName()) {
                     case "Imposta-Chat-Corrente":
-                        aggiungiTextPaneChatCorrente(
-                            (Utente) evt.getNewValue()
-                        );
-                    break;
+                        aggiungiTextPaneChatCorrente((Utente) evt.getNewValue());
+                        break;
                     case "Nuovo-Utente":
-                        aggiungiNuovoUtente(new CasellaUtente(((Utente)evt.getNewValue()).getNome()));
-                    break;
+                        aggiungiNuovoUtente(
+                            new CasellaUtente(
+                                ((Utente) evt.getNewValue()).getNome(), controller)
+                            );
+                        break;
                 }
-            }   
+            }
         });
+    }
+
+    public void setController(ChatController controller) {
+        this.controller = controller;
     }
 
     /**
      * Prepara l'interfaccia grafica dell'App
      */
-    public void buildApp() 
-    {
+    public void buildApp() {
         this.app.setBackground(new ColorUIResource(0f, 0f, 0f));
         this.app.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.app.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.app.setLayout(new BorderLayout());
 
-        /*JMenuBar menuBar = new JMenuBar();
-        JMenu file = new JMenu("File");
-        file.setFont(font);
-        JMenuItem quit = new JMenuItem("Quit");
-        quit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) 
-            {
-                try 
-                {
-                    JSONObject closeRequest = new JSONObject();
-                    closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
-
-                    AppClient.manda(closeRequest.toString());
-                    AppClient.dispose();
-                } 
-                catch (Exception e) 
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-        quit.setFont(font);
-        file.add(quit);
-        JMenu info = new JMenu("Info");
-        info.setFont(font);
-        JMenuItem about = new JMenuItem("About");
-        about.setFont(font);
-        about.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                JDialog dialog = new JDialog(app, "Info");
-                dialog.setLayout(new GridLayout(2, 1));
-
-                JLabel labelCreatore = new JLabel("Creatore: Daniele Castiglia");
-                labelCreatore.setFont(fontInviaMessaggio);
-                dialog.add(labelCreatore);
-
-                JLabel labelLinkGithub = new JLabel("https://github.com/J-Dany/TCPChatJava");
-                labelLinkGithub.setFont(fontInviaMessaggio);
-                dialog.add(labelLinkGithub);
-
-                dialog.setSize(400, 200);
-                dialog.setVisible(true);
-            }
-        });
-        menuBar.add(file);
-        menuBar.add(info);
-        info.add(about);
-        this.app.setJMenuBar(menuBar);*/
-
         this.app.addWindowListener(new WindowListener() {
             @Override
-            public void windowActivated(WindowEvent arg0) { }
+            public void windowActivated(WindowEvent arg0) {
+            }
 
             @Override
-            public void windowClosed(WindowEvent arg0) { }
+            public void windowClosed(WindowEvent arg0) {
+            }
 
             @Override
             public void windowClosing(WindowEvent arg0) {
-                try 
-                {
+                try {
                     JSONObject closeRequest = new JSONObject();
                     closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
 
                     AppClient.manda(closeRequest.toString());
                     AppClient.dispose();
-                }
-                catch (Exception e) 
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void windowDeactivated(WindowEvent arg0) { }
+            public void windowDeactivated(WindowEvent arg0) {
+            }
 
             @Override
-            public void windowDeiconified(WindowEvent arg0) { }
+            public void windowDeiconified(WindowEvent arg0) {
+            }
 
             @Override
-            public void windowIconified(WindowEvent arg0) { }
+            public void windowIconified(WindowEvent arg0) {
+            }
 
             @Override
-            public void windowOpened(WindowEvent arg0) { }
+            public void windowOpened(WindowEvent arg0) {
+            }
         });
 
         panelUtenti = new JPanel();
@@ -181,6 +135,7 @@ public class ChatView {
         this.app.add(panel, BorderLayout.PAGE_START);
 
         JPanel panelInput = new JPanel();
+        panelInput.setBackground(new ColorUIResource(0.1f, 0.1f, 0.1f));
         BoxLayout layoutInput = new BoxLayout(panelInput, BoxLayout.LINE_AXIS);
         panelInput.setLayout(layoutInput);
 
@@ -191,10 +146,16 @@ public class ChatView {
         this.input.setForeground(new ColorUIResource(238, 238, 238));
         panelInput.add(input);
 
-        JButton buttonInviaMessaggio = new JButton("Invia");
+        JButton buttonInviaMessaggio = new JButton();
+        Image img = new ImageIcon(getClass().getResource("/send.png")).getImage().getScaledInstance(32, 32,
+                java.awt.Image.SCALE_SMOOTH);
+        buttonInviaMessaggio.setIcon(new ImageIcon(img));
+        buttonInviaMessaggio.setOpaque(true);
+        buttonInviaMessaggio.setBackground(new Color(0.1f, 0.1f, 0.1f));
+        buttonInviaMessaggio.setForeground(new ColorUIResource(238, 238, 238));
         buttonInviaMessaggio.setPreferredSize(new Dimension(75, 40));
-        buttonInviaMessaggio.setFont(fontInviaMessaggio);
-        /*buttonInviaMessaggio.addActionListener(new ActionListener() {
+        buttonInviaMessaggio.addActionListener(new ActionListener() 
+        {
             @Override
             public void actionPerformed(ActionEvent arg0) 
             {
@@ -212,32 +173,7 @@ public class ChatView {
                         return;
                     }
 
-                    String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-
-                    System.out.println("Robe: " + nome + ", " + msg + ", " + data + ", " + time);
-
-                    JSONObject json = new JSONObject();
-                    json.put("Tipo-Richiesta", "Invio-Messaggio");
-                    json.put("Data", data);
-                    json.put("Time", time);
-                    json.put("Nome", nome);
-                    json.put("Messaggio", msg);
-
-                    if (!AppClient.getNomeUtenteCorrente().equals("Globale"))
-                    {
-                        json.put("Tipo-Messaggio", "Per");
-                        json.put("Per", AppClient.getNomeUtenteCorrente());
-                    }
-                    else
-                    {
-                        json.put("Tipo-Messaggio", "Plain-Text");
-                    }
-
-                    System.out.println(json);
-
-                    AppClient.getUtenteCorrente().aggiungiMessaggio(new CasellaMessaggio("Tu", msg, data, time));
-                    AppClient.manda(json.toString());
+                    controller.inviaMessaggio(msg);
 
                     input.setText("");
                 } 
@@ -246,7 +182,7 @@ public class ChatView {
                     e.printStackTrace();
                 }
             }
-        });*/
+        });
         buttonInviaMessaggio.setBorder(null);
 
         this.buttonInvia = buttonInviaMessaggio;
@@ -314,7 +250,7 @@ public class ChatView {
 
     /**
      * Elimina la casella dell'utente selezionato
-     * @param c, la casella da eliminare
+     * @param c la casella da eliminare
      */
     public void eliminaCasellaUtente(CasellaUtente c)
     {
@@ -339,14 +275,14 @@ public class ChatView {
      * Aggiunge l'immagine passata alla JTextPane
      * (Ancora non implementata)
      * 
-     * @param nome, l'utente che l'ha mandata
-     * @param img, l'immagine da aggiungere
+     * @param nome l'utente che l'ha mandata
+     * @param img l'immagine da aggiungere
      */
     public void aggiungiImmagine(String nome, ImageIcon img) { }
 
     /**
      * Incrementa il numero dei messaggi mandati dal mittente ancora non letti
-     * @param c, la casella del mittente
+     * @param c la casella del mittente
      */
     public void incrementaNumeroMessaggiDa(CasellaUtente c)
     {
@@ -358,7 +294,7 @@ public class ChatView {
     /**
      * Setta la JTextField del numero degli utenti connessi al numero passato come parametro
      * 
-     * @param numero, numero degli utenti connessi dato dal server
+     * @param numero numero degli utenti connessi dato dal server
      */
     public void setNumeroUtentiConnessi(int numero)
     {
@@ -381,5 +317,14 @@ public class ChatView {
         {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Rilascia le risorse allocate
+     * per l'interfaccia grafica
+     */
+    public void dispose()
+    {
+        this.app.dispose();
     }
 }

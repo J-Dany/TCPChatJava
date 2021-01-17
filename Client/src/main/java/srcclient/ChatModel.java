@@ -24,12 +24,15 @@ public class ChatModel implements PropertyChangeListener
      */
     private String nome;
 
+    /**
+     * Utente corrente
+     */
     private Utente utenteCorrente;
 
     /**
      * Ctor
      * 
-     * @param nome, nome dell'utente che ha avviato l'applicazione e si è autenticato
+     * @param nome nome dell'utente che ha avviato l'applicazione e si è autenticato
      */
     public ChatModel(String nome)
     {
@@ -50,7 +53,7 @@ public class ChatModel implements PropertyChangeListener
 
     /**
      * Aggiunge il listener
-     * @param prop
+     * @param prop il listener
      */
     public void addListener(PropertyChangeListener prop)
     {
@@ -70,11 +73,16 @@ public class ChatModel implements PropertyChangeListener
     /**
      * Rimuove l'utente dalla lista, null se non esiste
      * 
-     * @param nome, il nome dell'utente da eliminare
-     * @return Utente
+     * @param nome il nome dell'utente da eliminare
+     * @return Utente, null se l'utente non esiste o il nome è null
      */
     public Utente removeUtente(String nome)
     {
+        if (nome == null)
+        {
+            return null;
+        }
+
         if (utenti.containsKey(nome))
         {
             return utenti.remove(nome);
@@ -86,11 +94,16 @@ public class ChatModel implements PropertyChangeListener
     /**
      * Elimina la casella dell'utente selezionato e la ritorna, altrimenti ritorna null
      * 
-     * @param nome, il nome dell'utente
-     * @return CasellaUtente
+     * @param nome il nome dell'utente
+     * @return CasellaUtente, null se non esiste o se nome è null
      */
     public CasellaUtente removeCasella(String nome)
     {
+        if (nome == null)
+        {
+            return null;
+        }
+
         if (caselle.containsKey(nome))
         {
             return caselle.remove(nome);
@@ -102,7 +115,7 @@ public class ChatModel implements PropertyChangeListener
     /**
      * Ritorna un oggetto Utente se esiste, altrimenti null
      * 
-     * @param nome, nome dell'utente
+     * @param nome nome dell'utente
      * @return Utente
      */
     public Utente getUtente(String nome)
@@ -118,7 +131,7 @@ public class ChatModel implements PropertyChangeListener
     /**
      * Aggiorna la lista di utenti con il nuovo utente
      * 
-     * @param u, il nuovo utente
+     * @param u il nuovo utente
      */
     public void updateUtenti(Utente u)
     {
@@ -129,7 +142,7 @@ public class ChatModel implements PropertyChangeListener
     /**
      * Ritorna la casella dato il nome, null se non esiste
      * 
-     * @param nome, il nome dell'utente
+     * @param nome il nome dell'utente
      * @return CasellaUtente
      */
     public CasellaUtente getCasella(String nome)
@@ -145,8 +158,8 @@ public class ChatModel implements PropertyChangeListener
     /**
      * Aggiunge la casella degli utenti alla lista
      * 
-     * @param nome, il nome dell'utente che si è connesso
-     * @param c, la casella utente
+     * @param nome il nome dell'utente che si è connesso
+     * @param c la casella utente
      */
     public void updateCaselle(String nome, CasellaUtente c)
     {
@@ -156,7 +169,7 @@ public class ChatModel implements PropertyChangeListener
     /**
      * Incrementa nella casella utente il numero dei messaggi
      * non letti da ...
-     * @param nome, il nome del mittente
+     * @param nome il nome del mittente
      */
     public void incrementaNumeroMessaggiDa (String nome)
     {

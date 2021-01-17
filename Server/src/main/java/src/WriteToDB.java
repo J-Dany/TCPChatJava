@@ -13,7 +13,7 @@ public class WriteToDB extends Thread
 
     /**
      * Costruttore di WriteToDB
-     * @param name, il nome del thread
+     * @param name il nome del thread
      */
     public WriteToDB(String name)
     {
@@ -26,7 +26,7 @@ public class WriteToDB extends Thread
      * da inserire nel database. Solo un thread alla volta
      * può accedere qua dentro
      * 
-     * @param msg, messaggio arrivato (struttura: "data tempo|nomeUtente|messaggio")
+     * @param msg messaggio arrivato (struttura: "data tempo|nomeUtente|messaggio")
      */
     public synchronized void addMsg(String msg)
     {
@@ -84,9 +84,9 @@ public class WriteToDB extends Thread
 
     /**
      * Inserisce il messaggio all'interno del Database
-     * @param user, identifica il nome utente, colui che ha mandato il messaggio
-     * @param datetime, stringa che rappresenta data e tempo, quando il messaggio è stato inviato
-     * @param msg, messaggio mandato dall'utente
+     * @param user identifica il nome utente, colui che ha mandato il messaggio
+     * @param datetime stringa che rappresenta data e tempo, quando il messaggio è stato inviato
+     * @param msg messaggio mandato dall'utente
      */
     public boolean insertMessage(String user, String datetime, String msg)
     {

@@ -126,7 +126,7 @@ public class ConnectionClient implements Runnable
                                 messaggioPrivato.put("Messaggio", richiesta.getString("Messaggio"));
                                 messaggioPrivato.put("Data", richiesta.getString("Data"));
                                 messaggioPrivato.put("Time", richiesta.getString("Time"));
-                                messaggioPrivato.put("Destinatario", richiesta.getString("Per"));
+                                messaggioPrivato.put("Destinatario", richiesta.getString("Destinatario"));
 
                                 Server.getServer().mandaMessaggio(messaggioPrivato.toString(), this.client, null);
 

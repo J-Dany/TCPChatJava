@@ -11,13 +11,17 @@ public class CasellaUtente extends JPanel
 {
     private static final long serialVersionUID = 8745213302075828373L;
 
+    private String nome;
     private JLabel labelNome;
     private JLabel labelNumeroMessaggi;
     private Font fontNumeroMessaggi = new FontUIResource("monospace", Font.BOLD, 14);
     private Font fontNome = new FontUIResource("Arial", Font.PLAIN, 16);
+    private ChatController controller;
 
-    public CasellaUtente(String nome) 
+    public CasellaUtente(String nome, ChatController controller) 
     {
+        this.nome = nome;
+        this.controller = controller;
         this.labelNome = new JLabel(nome);
         this.labelNumeroMessaggi = new JLabel();
 
@@ -50,7 +54,10 @@ public class CasellaUtente extends JPanel
         this.addMouseListener(new MouseInputListener() 
         {
             @Override
-            public void mouseClicked(MouseEvent arg0) { }
+            public void mouseClicked(MouseEvent arg0) 
+            {
+                controller.setUtenteCorrente(nome);
+            }
 
             @Override
             public void mouseEntered(MouseEvent arg0) 
