@@ -32,10 +32,13 @@ public class ChatController
         json.put("Time", time);
         json.put("Messaggio", msg);
 
+        model.updateMessaggi(model.getUtenteCorrente().getNome(), new CasellaMessaggio(model.getNome(), msg, data, time));
+
         if (model.getUtenteCorrente().getNome().equals("Globale"))
         {
             json.put("Tipo-Richiesta", "Invio-Messaggio");
             json.put("Tipo-Messaggio", "Plain-Text");
+            json.put("Nome", model.getNome());
         }
         else
         {
@@ -58,5 +61,21 @@ public class ChatController
     public void setUtenteCorrente(String nome)
     {
         model.setUtenteCorrente(model.getUtente(nome));
+    }
+
+    /**
+     * Chiude la connessione con il server.
+     * Chiude anche l'applicazione.
+     */
+    public void chiudi ()
+    {
+        // Notifica il Server che ci vogliamo disconnettere
+        JSONObject closeRequest = new JSONObject();
+        closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
+
+        AppClient.manda(closeRequest.toString());
+
+        // Chiude tutto
+        AppClient.dispose();
     }
 }

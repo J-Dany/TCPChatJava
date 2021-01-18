@@ -203,20 +203,6 @@ public class AppClient
         }
     }
 
-    public static void dispose()
-    {
-        try
-        {
-            s.shutdownOutput();
-            s.close();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            System.exit(0);
-        }
-    }
-
     public static synchronized void manda(String data)
     {
         try
@@ -368,5 +354,26 @@ public class AppClient
         dialog.add(buttonLogin);
         dialog.pack();
         dialog.setVisible(true);
+    }
+
+    /**
+     * Chiude tutte le risorse allocate per
+     * l'applicazione, inclusi Controller/View/Model
+     */
+    public static void dispose()
+    {
+        try
+        {
+            s.shutdownOutput();
+            s.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.exit(0);
+        }
+
+        chatUI.dispose();
+        model.dispose();
     }
 }

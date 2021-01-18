@@ -47,13 +47,13 @@ public class ChatView
                 switch (evt.getPropertyName()) {
                     case "Imposta-Chat-Corrente":
                         aggiungiTextPaneChatCorrente((Utente) evt.getNewValue());
-                        break;
+                    break;
                     case "Nuovo-Utente":
                         aggiungiNuovoUtente(
                             new CasellaUtente(
                                 ((Utente) evt.getNewValue()).getNome(), controller)
                             );
-                        break;
+                    break;
                 }
             }
         });
@@ -66,32 +66,26 @@ public class ChatView
     /**
      * Prepara l'interfaccia grafica dell'App
      */
-    public void buildApp() {
+    public void buildApp() 
+    {
+        this.app.setIconImage(new ImageIcon(getClass().getResource("/icona_chat.png")).getImage());
         this.app.setBackground(new ColorUIResource(0f, 0f, 0f));
         this.app.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.app.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.app.setLayout(new BorderLayout());
 
-        this.app.addWindowListener(new WindowListener() {
+        this.app.addWindowListener(new WindowListener() 
+        {
             @Override
-            public void windowActivated(WindowEvent arg0) {
-            }
+            public void windowActivated(WindowEvent arg0) { }
 
             @Override
-            public void windowClosed(WindowEvent arg0) {
-            }
+            public void windowClosed(WindowEvent arg0) { }
 
             @Override
-            public void windowClosing(WindowEvent arg0) {
-                try {
-                    JSONObject closeRequest = new JSONObject();
-                    closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
-
-                    AppClient.manda(closeRequest.toString());
-                    AppClient.dispose();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            public void windowClosing(WindowEvent arg0) 
+            {
+                controller.chiudi();
             }
 
             @Override
@@ -147,8 +141,7 @@ public class ChatView
         panelInput.add(input);
 
         JButton buttonInviaMessaggio = new JButton();
-        Image img = new ImageIcon(getClass().getResource("/send.png")).getImage().getScaledInstance(32, 32,
-                java.awt.Image.SCALE_SMOOTH);
+        Image img = new ImageIcon(getClass().getResource("/send.png")).getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH);
         buttonInviaMessaggio.setIcon(new ImageIcon(img));
         buttonInviaMessaggio.setOpaque(true);
         buttonInviaMessaggio.setBackground(new Color(0.1f, 0.1f, 0.1f));
@@ -317,6 +310,11 @@ public class ChatView
         {
             e.printStackTrace();
         }
+    }
+
+    public void aggiungiMessaggio (CasellaMessaggio cm)
+    {
+        model.getUtenteCorrente().aggiungiMessaggio(cm);
     }
 
     /**

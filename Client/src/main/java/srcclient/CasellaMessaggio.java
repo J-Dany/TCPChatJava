@@ -16,9 +16,11 @@ public class CasellaMessaggio extends JPanel
     private JTextField nomeUtente;
     private JTextField dataTempoMessaggio;
 
+    private JScrollPane scrollPaneAreaMessaggio;
+
     private Font fontDataTempo = new FontUIResource("Noto Sans", Font.PLAIN, 12);
     private Font fontMessaggio = new FontUIResource("Noto Sans", Font.PLAIN, 16);
-    private Font fontNome = new FontUIResource("Noto Sans", Font.BOLD, 18);
+    private Font fontNome = new FontUIResource("Noto Sans", Font.BOLD, 19);
 
     public CasellaMessaggio(String nome, String msg, String data, String tempo) 
     {
@@ -42,7 +44,7 @@ public class CasellaMessaggio extends JPanel
 
         areaMessaggio.setText(msg);
         nomeUtente.setText(nome);
-        dataTempoMessaggio.setText(data + " " + tempo);
+        dataTempoMessaggio.setText(data + " -- " + tempo);
 
         this.addMouseListener(new MouseInputListener() 
         {
@@ -72,25 +74,28 @@ public class CasellaMessaggio extends JPanel
             
         });
 
-        this.setPreferredSize(new Dimension(350, 128));
-        this.setMinimumSize(new Dimension(350, 128));
-        this.setMaximumSize(new Dimension(350, 128));
-        this.setLayout(new BorderLayout());
+        scrollPaneAreaMessaggio = new JScrollPane(this.areaMessaggio);
+        scrollPaneAreaMessaggio.setBorder(null);
 
         Color bg = new ColorUIResource(37, 211, 102);
 
         this.areaMessaggio.setBackground(bg);
         this.areaMessaggio.setForeground(Color.BLACK);
+        this.areaMessaggio.setLineWrap(true);
+        this.areaMessaggio.setWrapStyleWord(true);
 
-        LineBorder line = new LineBorder(bg, 6, true);
+        this.setPreferredSize(new Dimension(350, 128));
+        this.setMinimumSize(new Dimension(350, 128 + (int)scrollPaneAreaMessaggio.getPreferredSize().getHeight()));
+        this.setMaximumSize(new Dimension(350, 128 + (int)scrollPaneAreaMessaggio.getPreferredSize().getHeight()));
+        this.setLayout(new BorderLayout());
+
+        LineBorder line = new LineBorder(bg, 16, true);
         this.setBorder(line);
-        nomeUtente.setBorder(line);
-        dataTempoMessaggio.setBorder(line);
 
         this.setBackground(bg);
         nomeUtente.setBackground(bg);
         dataTempoMessaggio.setBackground(bg);
-        
+
         this.add(nomeUtente, BorderLayout.PAGE_START);
         this.add(areaMessaggio, BorderLayout.CENTER);
         this.add(dataTempoMessaggio, BorderLayout.PAGE_END);
