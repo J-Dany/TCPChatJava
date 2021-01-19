@@ -44,7 +44,7 @@ public class CasellaMessaggio extends JPanel
 
         areaMessaggio.setText(msg);
         nomeUtente.setText(nome);
-        dataTempoMessaggio.setText(data + " -- " + tempo);
+        dataTempoMessaggio.setText(data + "        " + tempo);
 
         this.addMouseListener(new MouseInputListener() 
         {
@@ -77,27 +77,29 @@ public class CasellaMessaggio extends JPanel
         scrollPaneAreaMessaggio = new JScrollPane(this.areaMessaggio);
         scrollPaneAreaMessaggio.setBorder(null);
 
-        Color bg = new ColorUIResource(37, 211, 102);
+        Color bg = new ColorUIResource(7, 94, 84);
 
         this.areaMessaggio.setBackground(bg);
         this.areaMessaggio.setForeground(Color.BLACK);
         this.areaMessaggio.setLineWrap(true);
         this.areaMessaggio.setWrapStyleWord(true);
 
+        this.nomeUtente.setForeground(new ColorUIResource(52, 183, 241));
+
         this.setPreferredSize(new Dimension(350, 128));
-        this.setMinimumSize(new Dimension(350, 128 + (int)scrollPaneAreaMessaggio.getPreferredSize().getHeight()));
-        this.setMaximumSize(new Dimension(350, 128 + (int)scrollPaneAreaMessaggio.getPreferredSize().getHeight()));
+        this.setMinimumSize(new Dimension(350, 128));
+        this.setMaximumSize(new Dimension(350, 128));
         this.setLayout(new BorderLayout());
 
         LineBorder line = new LineBorder(bg, 16, true);
         this.setBorder(line);
 
-        this.setBackground(bg);
+        this.setBackground(Color.BLACK);
         nomeUtente.setBackground(bg);
         dataTempoMessaggio.setBackground(bg);
 
         this.add(nomeUtente, BorderLayout.PAGE_START);
-        this.add(areaMessaggio, BorderLayout.CENTER);
+        this.add(scrollPaneAreaMessaggio, BorderLayout.CENTER);
         this.add(dataTempoMessaggio, BorderLayout.PAGE_END);
     }
 }

@@ -13,7 +13,6 @@ import java.beans.PropertyChangeListener;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
-import org.json.JSONObject;
 
 public class ChatView 
 {
@@ -155,7 +154,7 @@ public class ChatView
                 try 
                 {
                     String msg = input.getText();
-                    if (msg.length() > 256) 
+                    if (msg.length() > 245) 
                     {
                         JOptionPane.showMessageDialog(app, "Il messaggio non deve superare i 256 caratteri",
                                 "Messaggio troppo lungo", JOptionPane.ERROR_MESSAGE);

@@ -5,6 +5,9 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import org.json.JSONObject;
 import java.net.Socket;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,6 +53,8 @@ public class AppClient
     
     public static void main(String[] args) 
     {
+        Crypt.initialize();
+
         Thread.currentThread().setName("Thread-Listener-Messaggi");
         try 
         {
@@ -98,8 +103,6 @@ public class AppClient
                 }
 
                 JSONObject risposta = new JSONObject(msg);
-
-                System.out.println(risposta);
 
                 switch (risposta.getString("Tipo-Richiesta"))
                 {
@@ -207,7 +210,14 @@ public class AppClient
     {
         try
         {
-            outputStream.write(data);
+            KeyPair keyPair = Crypt.getKeyPairGenerator();
+
+            PublicKey pubKey = keyPair.getPublic();
+            PrivateKey privKey = keyPair.getPrivate();
+
+            System.out.println("Pingas: " + new String(pubKey.getEncoded()));
+
+            outputStream.write(Crypt.encrypt(data, pubKey));
             outputStream.flush();
         }
         catch (Exception e)

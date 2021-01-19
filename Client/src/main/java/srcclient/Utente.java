@@ -2,6 +2,7 @@ package srcclient;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.Style;
@@ -24,12 +25,12 @@ public class Utente
         this.textArea.setBorder(null);
         this.textArea.setBackground(new ColorUIResource(0f, 0f, 0f));
         this.scrollPane = new JScrollPane(this.textArea);
-        this.scrollPane.setBackground(new ColorUIResource(0.1f, 0.1f, 0.1f));
         this.scrollPane.setBorder(null);
+        this.scrollPane.setBackground(new ColorUIResource(0.1f, 0.1f, 0.1f));
         this.scrollBar = this.scrollPane.getVerticalScrollBar();
         this.textArea.setEditable(false);
         this.doc = this.textArea.getStyledDocument();
-        this.textArea.setBorder(null);
+        this.textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
         this.textArea.setFont(fontTextArea);
     }
 

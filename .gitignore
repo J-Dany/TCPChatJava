@@ -10,3 +10,5 @@ out/*.jar
 .gradle
 build
 bin
+FAILURE
+.old-gradle

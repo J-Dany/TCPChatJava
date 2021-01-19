@@ -32,7 +32,7 @@ public class ChatController
         json.put("Time", time);
         json.put("Messaggio", msg);
 
-        model.updateMessaggi(model.getUtenteCorrente().getNome(), new CasellaMessaggio(model.getNome(), msg, data, time));
+        model.updateMessaggi(model.getUtenteCorrente().getNome(), new CasellaMessaggio("Tu", msg, data, time));
 
         if (model.getUtenteCorrente().getNome().equals("Globale"))
         {
