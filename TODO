@@ -1,0 +1,2 @@
+1. Esistono gli SSLServerSocket per implementare i Socket sicuri. Verrà usato in una
+prossima implementazione dell'applicazione

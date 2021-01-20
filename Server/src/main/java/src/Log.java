@@ -44,10 +44,6 @@ public class Log extends Thread
             {
                 Server.getServer().nuovoErrore(msg);
             }
-            else if (type == LogType.ERR && msg.contains("Console"))
-            {
-                System.out.println("C'e' stato un errore nell'eseguire l'ultimo comando");
-            }
 
             try
             {

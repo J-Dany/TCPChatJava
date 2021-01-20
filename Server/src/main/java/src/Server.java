@@ -2,6 +2,7 @@ package src;
 
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -206,12 +207,14 @@ public class Server extends Thread
     public synchronized void mandaMessaggio(String msg, Client c, Socket s)
     {
         Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
-        if (c == null)
+        if (c != null && s != null)
         {
             try
             {
-                OutputStreamWriter out = new OutputStreamWriter(s.getOutputStream(), "UTF8");
-                out.write(msg);
+                OutputStreamWriter out = new OutputStreamWriter(s.getOutputStream(), "UTF-8");
+                out.write(
+                    Crypt.encrypt(msg, c.getKey())
+                );
                 out.flush();
             }
             catch (Exception e)
@@ -234,8 +237,10 @@ public class Server extends Thread
             {
                 try
                 {
-                    OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "UTF8");
-                    out.write(msg);
+                    OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "UTF-8");
+                    out.write(
+                        Crypt.encrypt(msg, mittente.getKey())
+                    );
                     out.flush();
                 }
                 catch (Exception e)
@@ -266,7 +271,9 @@ public class Server extends Thread
             try
             {
                 OutputStreamWriter writer = new OutputStreamWriter(s.getOutputStream());
-                writer.write(msg);
+                writer.write(
+                    Crypt.encrypt(msg, ((Client)arr[i]).getKey())
+                );
                 writer.flush();
             }
             catch (Exception e)
@@ -328,14 +335,19 @@ public class Server extends Thread
     private void liberaRisorse()
     {
         this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " Chiudo tutti i socket dei client");
-        for (Socket s : this.connected_clients.values())
+        for (Object c : this.connected_clients.keySet().toArray())
         {
             try
             {
+                Client client = (Client) c;
+                Socket s = this.connected_clients.get(client);
+
                 JSONObject chiudiConnessione = new JSONObject();
                 chiudiConnessione.put("Tipo-Richiesta", "Chiudi-Connessione");
 
-                s.getOutputStream().write(chiudiConnessione.toString().getBytes());
+                s.getOutputStream().write(
+                    Crypt.encrypt(chiudiConnessione.toString(), client.getKey()).getBytes()
+                );
                 s.getOutputStream().flush();
                 
                 s.close();
@@ -379,6 +391,7 @@ public class Server extends Thread
 
     public static void main(String[] args)
     {
+        Crypt.initialize();
         Thread.currentThread().setName("Console");
         Server s = null;
 

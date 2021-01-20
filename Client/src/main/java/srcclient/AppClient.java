@@ -5,8 +5,6 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import org.json.JSONObject;
 import java.net.Socket;
-import java.security.KeyPair;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
@@ -34,6 +32,8 @@ public class AppClient
 
     private static String ip;
     private static int port;
+
+    private static PublicKey serverKey;
 
     /**
      * Socket di connessione del client
@@ -80,17 +80,74 @@ public class AppClient
                 System.exit(OUTPUT_STREAM_NON_INIZIALIZZATO);
             }
 
+            byte[] buffer = new byte[GRANDEZZA_BUFFER];
+            String msg = null;
+
+            synchronized (s)
+            {
+                try
+                {
+                    int l = s.getInputStream().read(buffer);
+                    msg = new String(buffer, 0, l, "UTF-8");
+                }
+                catch (StringIndexOutOfBoundsException e)
+                {
+                    System.exit(0);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            JSONObject risposta = new JSONObject(msg);
+
+            if (!risposta.getBoolean("Risultato"))
+            {
+                System.out.println("Utente non riconosciuto.");
+                System.exit(UTENTE_NON_RICONOSCIUTO);
+            }
+
+            serverKey = Crypt.decodePublicKey(risposta.getString("Chiave"));
+
+            try
+            {
+                model = new ChatModel(nome);
+                chatUI = new ChatView(model);
+                chatUI.buildApp();
+                chatUI.show();
+                chatUI.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
+
+                controller = new ChatController(chatUI, model);
+                chatUI.setController(controller);
+
+                Utente glob = new Utente("Globale");
+                model.updateUtenti(glob);
+                model.setUtenteCorrente(glob);
+
+                for (Object n : risposta.getJSONArray("Lista-Utenti").toList())
+                {
+                    String nome = (String) n;
+                    if (!nome.equals(AppClient.nome))
+                    {
+                        Utente u = new Utente(nome);
+                        model.updateUtenti(u);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
             while (true)
             {
-                byte[] buffer = new byte[GRANDEZZA_BUFFER];
-                String msg = null;
-
                 synchronized (s)
                 {
                     try
                     {
                         int l = s.getInputStream().read(buffer);
-                        msg = new String(buffer, 0, l, "UTF8");
+                        msg = new String(buffer, 0, l, "UTF-8");
                     }
                     catch (StringIndexOutOfBoundsException e)
                     {
@@ -102,47 +159,10 @@ public class AppClient
                     }
                 }
 
-                JSONObject risposta = new JSONObject(msg);
+                risposta = new JSONObject(Crypt.decrypt(msg, Crypt.getPrivateKey()));
 
                 switch (risposta.getString("Tipo-Richiesta"))
                 {
-                    case "Autenticazione":
-                        if (!risposta.getBoolean("Risultato"))
-                        {
-                            System.out.println("Utente non riconosciuto.");
-                            System.exit(UTENTE_NON_RICONOSCIUTO);
-                        }
-
-                        try
-                        {
-                            model = new ChatModel(nome);
-                            chatUI = new ChatView(model);
-                            chatUI.buildApp();
-                            chatUI.show();
-                            chatUI.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
-
-                            controller = new ChatController(chatUI, model);
-                            chatUI.setController(controller);
-
-                            Utente glob = new Utente("Globale");
-                            model.updateUtenti(glob);
-                            model.setUtenteCorrente(glob);
-
-                            for (Object n : risposta.getJSONArray("Lista-Utenti").toList())
-                            {
-                                String nome = (String) n;
-                                if (!nome.equals(AppClient.nome))
-                                {
-                                    Utente u = new Utente(nome);
-                                    model.updateUtenti(u);
-                                }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
-                        }
-                    break;
                     case "Nuovo-Messaggio":
                         switch (risposta.getString("Tipo-Messaggio"))
                         {
@@ -210,14 +230,7 @@ public class AppClient
     {
         try
         {
-            KeyPair keyPair = Crypt.getKeyPairGenerator();
-
-            PublicKey pubKey = keyPair.getPublic();
-            PrivateKey privKey = keyPair.getPrivate();
-
-            System.out.println("Pingas: " + new String(pubKey.getEncoded()));
-
-            outputStream.write(Crypt.encrypt(data, pubKey));
+            outputStream.write(Crypt.encrypt(data, serverKey));
             outputStream.flush();
         }
         catch (Exception e)
@@ -324,6 +337,7 @@ public class AppClient
                 JSONObject auth = new JSONObject();
                 auth.put("Tipo-Richiesta", "Autenticazione");
                 auth.put("Nome", n);
+                auth.put("Chiave", Crypt.getCodPubKey());
                 auth.put("Password", p);
 
                 nome = n;

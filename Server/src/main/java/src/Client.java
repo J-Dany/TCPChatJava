@@ -1,6 +1,7 @@
 package src;
 
 import java.net.InetAddress;
+import java.security.PublicKey;
 
 public class Client
 {
@@ -14,6 +15,8 @@ public class Client
     private long time;
     private int max_request_before_ban;
     private String nome;
+
+    private PublicKey key;
     
     public Client (InetAddress address)
     {
@@ -21,6 +24,16 @@ public class Client
         this.counter = this.MAX_REQUEST; 
         this.max_request_before_ban = this.MAX_REQUEST;
         this.time = System.currentTimeMillis() / 1000;
+    }
+
+    public void setKey(PublicKey key)
+    {
+        this.key = key;
+    }
+
+    public PublicKey getKey()
+    {
+        return this.key;
     }
 
     public void setNome(String nome)
