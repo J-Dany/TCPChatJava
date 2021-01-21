@@ -6,6 +6,12 @@ Piccolo progetto per una chat in java criptata.
 - mysql
 - make
 
+## Installazione (Linux)
+```bash
+make
+sudo make install
+```
+
 ## Console del programma Server
 **N.B.**: Ogni client deve essere registrato prima che quest'ultimo possa usare la chat.
 Per registrare un nuovo client usa il comando *aggiungi-utente*
@@ -40,6 +46,17 @@ I comandi per ora disponibili, con alias, sono:
     - Elimina tutti i messaggi fino ad ora salvati
 - **n-message-by** {nomeClient} (v. corta: *n-msg-by*, *nmb*)
     - Stampa il numero dei messaggi che {nomeClient} ha mandato oggi
+
+## Log del Server
+Eh si, esistono i log del Server :).
+Sotto *Windows* il file di log si trova in questo percorso:
+```bash
+C:/Chat-Log/
+```
+mentre su Linux il file di log si trova sotto:
+```bash
+/var/log/chat-log/
+```
 
 ## Codice di errore Client
 Se non riesci a connetterti con il client al server, puoi controllare

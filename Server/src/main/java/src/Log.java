@@ -18,12 +18,15 @@ public class Log extends Thread
     public Log(String filename)
     {
         this.setName("Logger");
-        File lop_dir = new File("/var/log/chat-log");
+        String folder = System.getProperty("os.name").equals("Windows 10")
+            ? "C:/ChatLog"
+            : "/var/log/chat-log";
+        File lop_dir = new File(folder);
         if (!lop_dir.exists())
         {
             lop_dir.mkdirs();
         }
-        this.filename = "/var/log/chat-log/" + filename;
+        this.filename = folder + "/" + filename;
         this.coda = new LinkedBlockingQueue<>(64);
         try
         {
