@@ -16,7 +16,8 @@ public class CasellaUtente extends JPanel
     private Font fontNumeroMessaggi = new FontUIResource("monospace", Font.BOLD, 14);
     private Font fontNome = new FontUIResource("Arial", Font.PLAIN, 16);
     
-    public CasellaUtente(String nome, ChatController controller) {
+    public CasellaUtente(String nome, ChatController controller) 
+    {
         this.labelNome = new JLabel(nome);
         this.labelNumeroMessaggi = new JLabel();
 

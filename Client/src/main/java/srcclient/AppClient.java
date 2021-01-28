@@ -118,7 +118,7 @@ public class AppClient
                 chatUI.show();
                 chatUI.setNumeroUtentiConnessi(risposta.getInt("Utenti-Connessi"));
 
-                controller = new ChatController(chatUI, model);
+                controller = new ChatController(model);
                 chatUI.setController(controller);
 
                 Utente glob = new Utente("Globale");
@@ -334,17 +334,11 @@ public class AppClient
                     System.exit(ERRORE_NEL_FORM);
                 }
 
-                JSONObject auth = new JSONObject();
-                auth.put("Tipo-Richiesta", "Autenticazione");
-                auth.put("Nome", n);
-                auth.put("Chiave", Crypt.getCodPubKey());
-                auth.put("Password", p);
-
                 nome = n;
 
                 try
                 {
-                    s.getOutputStream().write(auth.toString().getBytes());
+                    s.getOutputStream().write(Messaggio.autenticazione(nome, p).getBytes());
                     s.getOutputStream().flush();
                 }
                 catch (Exception e)

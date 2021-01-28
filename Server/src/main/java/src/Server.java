@@ -374,9 +374,38 @@ public class Server extends Thread
         this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " chiuso.");
     }
 
-    public synchronized HashMap<Client, Socket> getConnectedClients()
+    /**
+     * Quando un utente si connette e si autentica,
+     * il server controlla se si sta autenticando
+     * con un username che in questo momento è gia'
+     * loggato e sta chattando.
+     * @param nome
+     * @return boolean true se esiste gia' un utente con questo nome, false altrimenti
+     */
+    public boolean isAlreadyAuth (String nome)
     {
-        return connected_clients;
+        synchronized (this.connected_clients)
+        {
+            for (Object o : this.connected_clients.keySet().toArray())
+            {
+                if (
+                    ((Client) o).getNome().equals(nome)
+                )
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public HashMap<Client, Socket> getConnectedClients()
+    {
+        synchronized (this.connected_clients)
+        {
+            return connected_clients;
+        }
     }
 
     /**

@@ -3,16 +3,13 @@ package srcclient;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import org.json.JSONObject;
 
 public class ChatController 
 {
-    private ChatView view;
     private ChatModel model;
 
-    public ChatController(ChatView view, ChatModel model) 
+    public ChatController(ChatModel model) 
     {
-        this.view = view;
         this.model = model;
     }
 
@@ -22,34 +19,19 @@ public class ChatController
      */
     public void inviaMessaggio(String msg)
     {
-        JSONObject json = new JSONObject();
-
         String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-
-        json.put("Data", data);
-        json.put("Time", time);
-        json.put("Messaggio", msg);
 
         model.updateMessaggi(model.getUtenteCorrente().getNome(), new CasellaMessaggio("Tu", msg, data, time));
 
         if (model.getUtenteCorrente().getNome().equals("Globale"))
         {
-            json.put("Tipo-Richiesta", "Invio-Messaggio");
-            json.put("Tipo-Messaggio", "Plain-Text");
-            json.put("Nome", model.getNome());
+            AppClient.manda(Messaggio.nuovoMessaggio(model.getNome(), msg));
         }
         else
         {
-            json.put("Tipo-Richiesta", "Invio-Messaggio");
-            json.put("Tipo-Messaggio", "Per");
-
-            String dest = model.getUtenteCorrente().getNome();
-
-            json.put("Destinatario", dest);
+            AppClient.manda(Messaggio.nuovoMessaggioIndirizzato(msg, model.getUtenteCorrente().getNome()));
         }
-
-        AppClient.manda(json.toString());
     }
 
     /**
@@ -68,11 +50,7 @@ public class ChatController
      */
     public void chiudi ()
     {
-        // Notifica il Server che ci vogliamo disconnettere
-        JSONObject closeRequest = new JSONObject();
-        closeRequest.put("Tipo-Richiesta", "Chiudi-Connessione");
-
-        AppClient.manda(closeRequest.toString());
+        AppClient.manda(Messaggio.disconnessione());
 
         // Chiude tutto
         AppClient.dispose();

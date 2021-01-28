@@ -77,6 +77,8 @@ public class CasellaMessaggio extends JPanel
         scrollPaneAreaMessaggio = new JScrollPane(this.areaMessaggio);
         scrollPaneAreaMessaggio.setBorder(null);
 
+        JScrollBar scrollBar = scrollPaneAreaMessaggio.getVerticalScrollBar();
+
         Color bg = new ColorUIResource(7, 94, 84);
 
         this.areaMessaggio.setBackground(bg);
@@ -86,9 +88,7 @@ public class CasellaMessaggio extends JPanel
 
         this.nomeUtente.setForeground(new ColorUIResource(52, 183, 241));
 
-        this.setPreferredSize(new Dimension(350, 128));
-        this.setMinimumSize(new Dimension(350, 128));
-        this.setMaximumSize(new Dimension(350, 128));
+        this.setMaximumSize(new Dimension(350, 256 + scrollBar.getHeight()));
         this.setLayout(new BorderLayout());
 
         LineBorder line = new LineBorder(bg, 16, true);

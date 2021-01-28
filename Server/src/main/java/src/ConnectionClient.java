@@ -208,6 +208,13 @@ public class ConnectionClient implements Runnable
     private boolean gestisciAutenticazione(JSONObject richiesta)
     {
         String nomeUtente = richiesta.getString("Nome");
+
+        if (Server.getServer().isAlreadyAuth(nomeUtente))
+        {
+            Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + this.client.getAddress() + " ha provato ad autenticarsi con " + nomeUtente);
+            return false;
+        }
+
         String password = richiesta.getString("Password");
         this.client.setNome(nomeUtente);
         Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " nuovo client: " + nomeUtente);

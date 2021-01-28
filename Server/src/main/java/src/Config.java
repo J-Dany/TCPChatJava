@@ -22,8 +22,10 @@ public class Config
      */
     private static final String DB_NAME = "chat";
 
+    private static final String INDIRIZZO_DATABASE = System.getenv("IP_DB");
+
     /**
      * Url per la connessione al database
      */
-    public static final String URL = "jdbc:mysql://localhost:" + PORT + "/" + DB_NAME;
+    public static final String URL = "jdbc:mysql://" + INDIRIZZO_DATABASE + ":" + PORT + "/" + DB_NAME;
 }

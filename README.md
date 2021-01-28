@@ -15,6 +15,8 @@ sudo make install
 ## Console del programma Server
 **N.B.**: Ogni client deve essere registrato prima che quest'ultimo possa usare la chat.
 Per registrare un nuovo client usa il comando *aggiungi-utente*
+**N.B.**: Il server per funzionare ha bisogno di un database mysql. Nelle variabili
+d'ambiente dovete specificare *IP_DB* che rappresenta l'indirizzo IP del database
 
 Quando avviate un server, nella console apparirà:
 ```bash
