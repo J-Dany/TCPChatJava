@@ -137,7 +137,7 @@ public class Crypt
         {
             keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 
-            keyPairGenerator.initialize(3072);
+            keyPairGenerator.initialize(4096);
 
             keys = keyPairGenerator.genKeyPair();
         }

@@ -25,7 +25,6 @@ public class DatabaseTable
         {
             Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mi connetto al database");
                 Connection connection = DatabaseConnection.getConnection();
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mi connetto al database");
 
             Statement stmt = connection.createStatement();
 
@@ -39,7 +38,7 @@ public class DatabaseTable
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
+            Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
         }
 
         return null;
