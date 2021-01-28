@@ -45,8 +45,9 @@ public class Crypt
             cipher.init(Cipher.DECRYPT_MODE, privKey);
             byte[] contentBuff = Base64.getDecoder().decode(content.getBytes());
             byte[] buffDecrypted = cipher.update(contentBuff);
+            byte[] b = cipher.doFinal();
 
-            return new String(buffDecrypted, 0, buffDecrypted.length, "UTF-8");
+            return new String(b, 0, b.length, "UTF-8");
         }
         catch (Exception e)
         {
