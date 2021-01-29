@@ -2,7 +2,6 @@ package src;
 
 import java.awt.image.BufferedImage;
 import java.io.OutputStreamWriter;
-
 import org.json.JSONObject;
 import java.net.Socket;
 import java.sql.*;
@@ -42,16 +41,9 @@ public class ConnectionClient implements Runnable
                     this.client.setKey(Crypt.decodePublicKey(tmp.getString("Chiave")));
 
                     Thread.currentThread().setName("Thread-" + client.getNome());
-
-                    JSONObject autenticazioneCorretta = new JSONObject();
-                    autenticazioneCorretta.put("Tipo-Richiesta", "Autenticazione");
-                    autenticazioneCorretta.put("Chiave", Crypt.getCodPubKey());
-                    autenticazioneCorretta.put("Utenti-Connessi", Server.getServer().getNumeroUtentiConnessi());
-                    autenticazioneCorretta.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi(""));
-                    autenticazioneCorretta.put("Risultato", true);
                     
                     OutputStreamWriter out = new OutputStreamWriter(this.socket.getOutputStream());
-                    out.write(autenticazioneCorretta.toString());
+                    out.write(Messaggio.autenticazioneCorretta());
                     out.flush();
 
                     synchronized (Server.getServer().connected_clients)
@@ -73,13 +65,9 @@ public class ConnectionClient implements Runnable
                     Server.getServer().mandaMessaggio(numeroUtenti.toString(), this.client, null);
                 }
                 else
-                {
-                    JSONObject autenticazioneCorretta = new JSONObject();
-                    autenticazioneCorretta.put("Tipo-Richiesta", "Autenticazione");
-                    autenticazioneCorretta.put("Risultato", false);
-                    
+                {                    
                     OutputStreamWriter out = new OutputStreamWriter(this.socket.getOutputStream());
-                    out.write(autenticazioneCorretta.toString());
+                    out.write(Messaggio.autenticazioneFallita());
                     out.flush();
 
                     throw new Exception("Autenticazione fallita per " + this.client.getAddress());
@@ -107,21 +95,13 @@ public class ConnectionClient implements Runnable
                         Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
                         if (Server.getServer().banned.contains(this.client.getAddress()))
                         {
-                            JSONObject bannato = new JSONObject();
-                            bannato.put("Tipo-Richiesta", "Non-Puoi-Inviare-Messaggi");
-                            bannato.put("Motivo", "Sei stato bannato");
-
-                            Server.getServer().mandaMessaggio(bannato.toString(), null, this.socket);
+                            Server.getServer().mandaMessaggio(Messaggio.bannato(), null, this.socket);
 
                             break;
                         }
                         else if (this.client.getCounter() == 0)
                         {
-                            JSONObject mutato = new JSONObject();
-                            mutato.put("Tipo-Richiesta", "Non-Puoi-Inviare-Messaggi");
-                            mutato.put("Motivo", "Sei stato mutato per 1 minuto per aver mandato troppi messaggi");
-
-                            Server.getServer().mandaMessaggio(mutato.toString(), null, this.socket);
+                            Server.getServer().mandaMessaggio(Messaggio.mutato(), null, this.socket);
 
                             break;
                         }
@@ -129,7 +109,7 @@ public class ConnectionClient implements Runnable
                         switch (richiesta.getString("Tipo-Messaggio"))
                         {
                             case "Immagine":
-                                BufferedImage inputImage = ImageIO.read(ImageIO.createImageInputStream(socket.getOutputStream()));
+                                /*BufferedImage inputImage = ImageIO.read(ImageIO.createImageInputStream(socket.getOutputStream()));
 
                                 JSONObject invioImmagine = new JSONObject();
                                 invioImmagine.put("Tipo-Richiesta", "Nuovo-Messaggio");
@@ -138,19 +118,10 @@ public class ConnectionClient implements Runnable
                                 
                                 Server.getServer().mandaMessaggio(invioImmagine.toString(), this.client, null);
 
-                                ImageIO.write(inputImage, "PNG", socket.getOutputStream());
+                                ImageIO.write(inputImage, "PNG", socket.getOutputStream());*/
                             break;
                             case "Per":
-                                JSONObject messaggioPrivato = new JSONObject(); 
-                                messaggioPrivato.put("Tipo-Richiesta", "Nuovo-Messaggio");
-                                messaggioPrivato.put("Tipo-Messaggio", "Per");
-                                messaggioPrivato.put("Mittente", this.client.getNome());
-                                messaggioPrivato.put("Messaggio", richiesta.getString("Messaggio"));
-                                messaggioPrivato.put("Data", richiesta.getString("Data"));
-                                messaggioPrivato.put("Time", richiesta.getString("Time"));
-                                messaggioPrivato.put("Destinatario", richiesta.getString("Destinatario"));
-
-                                Server.getServer().mandaMessaggio(messaggioPrivato.toString(), this.client, null);
+                                Server.getServer().messaggioIndirizzato(richiesta.getString("Messaggio"), richiesta.getString("Destinatario"), this.client.getNome());
 
                                 Server.getServer().writer.addMsg(
                                     richiesta.getString("Data") + " " + richiesta.getString("Time")
@@ -161,15 +132,8 @@ public class ConnectionClient implements Runnable
                                 );
                             break;
                             case "Plain-Text":
-                                JSONObject invioPlainText = new JSONObject(); 
-                                invioPlainText.put("Tipo-Richiesta", "Nuovo-Messaggio");
-                                invioPlainText.put("Tipo-Messaggio", richiesta.getString("Tipo-Messaggio"));
-                                invioPlainText.put("Nome", this.client.getNome());
-                                invioPlainText.put("Messaggio", richiesta.getString("Messaggio"));
-                                invioPlainText.put("Data", richiesta.getString("Data"));
-                                invioPlainText.put("Time", richiesta.getString("Time"));
 
-                                Server.getServer().mandaMessaggio(invioPlainText.toString(), this.client, null);
+                                Server.getServer().mandaMessaggio(Messaggio.nuovoMessaggio(this.client.getNome(), richiesta.getString("Messaggio")), this.client, null);
 
                                 Server.getServer().writer.addMsg(
                                     richiesta.getString("Data") + " " + richiesta.getString("Time")

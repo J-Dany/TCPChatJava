@@ -42,6 +42,13 @@ public class Server extends Thread
     public HashMap<Client, Socket> connected_clients;
 
     /**
+     * HashMap che fa il bind tra il nome
+     * del client e l'oggetto stesso, per recuperarlo
+     * direttamente dall'HasMap {@code connected_clients]
+     */
+    public HashMap<String, Client> clients;
+
+    /**
      * Rappresenta la Thread Pool per gestire
      * i client
      */
@@ -398,6 +405,54 @@ public class Server extends Thread
         }
 
         return false;
+    }
+
+    public void bindNomeOggetto (String nome, Client client)
+    {
+        clients.put(nome, client);
+    }
+
+    /**
+     * Ritorna l'oggetto Client associato a quel nome
+     * 
+     * @param nome il nome del client
+     * @return Client
+     */
+    public Client getClientByName (String nome)
+    {
+        if (clients.containsKey(nome))
+        {
+            return clients.get(nome);
+        }
+
+        return null;
+    }
+
+    /**
+     * Questo metodo dovrebbe essere chiamato quando
+     * il client desidera mandare il messaggio ad un client
+     * specifico
+     * 
+     * @param msg il messaggio da mandare
+     * @param destinatario il destinatario
+     */
+    public void messaggioIndirizzato (String msg, String destinatario, String mittente)
+    {
+        logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mando un messaggio indirizzato");
+        
+        Socket s = connected_clients.get(
+            clients.get(destinatario)
+        );
+
+        try
+        {
+            s.getOutputStream().write(Crypt.encrypt(Messaggio.nuovoMessaggioIndirizzato(msg, mittente), clients.get(destinatario).getKey()).getBytes());
+            s.getOutputStream().flush();
+        }
+        catch (Exception e)
+        {
+            logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+        }
     }
 
     public HashMap<Client, Socket> getConnectedClients()
