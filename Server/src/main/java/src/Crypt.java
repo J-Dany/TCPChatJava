@@ -1,4 +1,4 @@
-package srcclient;
+package src;
 
 import java.security.Key;
 import java.security.KeyFactory;
