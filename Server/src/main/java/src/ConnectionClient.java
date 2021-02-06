@@ -1,11 +1,12 @@
 package src;
 
-import java.awt.image.BufferedImage;
 import java.io.OutputStreamWriter;
 import org.json.JSONObject;
+import src.Messaggio.TipoMessaggio;
+import src.Messaggio.TipoNumeroUtenti;
+import src.Messaggio.TipoRichiesta;
 import java.net.Socket;
 import java.sql.*;
-import javax.imageio.ImageIO;
 
 public class ConnectionClient implements Runnable
 {
@@ -32,8 +33,9 @@ public class ConnectionClient implements Runnable
             msg = new String(buffer, 0, l, "UTF-8");
 
             JSONObject tmp = new JSONObject(msg);
+            TipoRichiesta t = TipoRichiesta.valueOf(tmp.getString("Tipo-Richiesta"));
 
-            if (tmp.getString("Tipo-Richiesta").equals("Autenticazione"))
+            if (t == TipoRichiesta.AUTENTICAZIONE)
             {
                 Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " tipo richiesta: Autenticazione");
                 if (this.gestisciAutenticazione(tmp))
@@ -42,27 +44,16 @@ public class ConnectionClient implements Runnable
 
                     Thread.currentThread().setName("Thread-" + client.getNome());
                     
-                    OutputStreamWriter out = new OutputStreamWriter(this.socket.getOutputStream());
-                    out.write(Messaggio.autenticazioneCorretta());
-                    out.flush();
+                    Server.getServer().mandaMessaggio(Messaggio.autenticazioneCorretta(), this.client, this.socket);
 
-                    synchronized (Server.getServer().connected_clients)
-                    {
-                        if (!Server.getServer().connected_clients.containsKey(this.client)) 
-                        {
-                            Server.getServer().connected_clients.put(this.client, this.socket);
-                        }
-                    }
+                    Server.getServer().aggiungiNuovoClient(this.client, this.socket);
                 
                     Thread.sleep(64);
 
-                    JSONObject numeroUtenti = new JSONObject();
-                    numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
-                    numeroUtenti.put("Tipo-Set-Numero", "Connessione");
-                    numeroUtenti.put("Nome-Utente", this.client.getNome());
-                    numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi() - 1);
-
-                    Server.getServer().mandaMessaggio(numeroUtenti.toString(), this.client, null);
+                    Server.getServer().mandaMessaggio(
+                        Messaggio.numeroUtenti(TipoNumeroUtenti.CONNESSIONE, this.client.getNome(), Server.getServer().getNumeroUtentiConnessi() - 1), 
+                        this.client, null
+                    );
                 }
                 else
                 {                    
@@ -84,12 +75,15 @@ public class ConnectionClient implements Runnable
                 int len = this.socket.getInputStream().read(buff);
                 msg = new String(buff, 0, len, "UTF-8");
 
-                JSONObject richiesta = new JSONObject(Crypt.decrypt(msg, Crypt.getPrivateKey()));
+                JSONObject jsonRichiesta = new JSONObject(Crypt.decrypt(msg, Crypt.getPrivateKey()));
+
+                TipoRichiesta richiesta = TipoRichiesta.valueOf(jsonRichiesta.getString("Tipo-Richiesta"));
 
                 Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " gestisco tipo richiesta");
-                switch (richiesta.getString("Tipo-Richiesta"))
+
+                switch (richiesta)
                 {
-                    case "Invio-Messaggio":
+                    case INVIO_MESSAGGIO:
                         Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " tipo richiesta: Invio-Messaggio");
 
                         Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
@@ -106,46 +100,37 @@ public class ConnectionClient implements Runnable
                             break;
                         }
 
-                        switch (richiesta.getString("Tipo-Messaggio"))
+                        Messaggio.TipoMessaggio tipoMsg = TipoMessaggio.valueOf(jsonRichiesta.getString("Tipo-Messaggio"));
+
+                        switch (tipoMsg)
                         {
-                            case "Immagine":
-                                /*BufferedImage inputImage = ImageIO.read(ImageIO.createImageInputStream(socket.getOutputStream()));
+                            case INDIRIZZATO:
 
-                                JSONObject invioImmagine = new JSONObject();
-                                invioImmagine.put("Tipo-Richiesta", "Nuovo-Messaggio");
-                                invioImmagine.put("Tipo-Messaggio", "Immagine");
-                                invioImmagine.put("Nome", this.client.getNome());
-                                
-                                Server.getServer().mandaMessaggio(invioImmagine.toString(), this.client, null);
-
-                                ImageIO.write(inputImage, "PNG", socket.getOutputStream());*/
-                            break;
-                            case "Per":
-                                Server.getServer().messaggioIndirizzato(richiesta.getString("Messaggio"), richiesta.getString("Destinatario"), this.client.getNome());
+                                Server.getServer().messaggioIndirizzato(jsonRichiesta.getString("Messaggio"), jsonRichiesta.getString("Destinatario"), this.client.getNome());
 
                                 Server.getServer().writer.addMsg(
-                                    richiesta.getString("Data") + " " + richiesta.getString("Time")
+                                    jsonRichiesta.getString("Data") + " " + jsonRichiesta.getString("Time")
                                     + "|" +
-                                    richiesta.getString("Nome")
+                                    jsonRichiesta.getString("Nome")
                                     + "|" +
-                                    richiesta.getString("Messaggio")
+                                    jsonRichiesta.getString("Messaggio")
                                 );
                             break;
-                            case "Plain-Text":
+                            case PLAIN_TEXT:
 
-                                Server.getServer().mandaMessaggio(Messaggio.nuovoMessaggio(this.client.getNome(), richiesta.getString("Messaggio")), this.client, null);
+                                Server.getServer().mandaMessaggio(Messaggio.nuovoMessaggio(this.client.getNome(), jsonRichiesta.getString("Messaggio")), this.client, null);
 
                                 Server.getServer().writer.addMsg(
-                                    richiesta.getString("Data") + " " + richiesta.getString("Time")
+                                    jsonRichiesta.getString("Data") + " " + jsonRichiesta.getString("Time")
                                     + "|" +
-                                    richiesta.getString("Nome")
+                                    jsonRichiesta.getString("Nome")
                                     + "|" +
-                                    richiesta.getString("Messaggio")
+                                    jsonRichiesta.getString("Messaggio")
                                 );
                             break;
                         }
                     break;
-                    case "Chiudi-Connessione":
+                    case CHIUDI_CONNESSIONE:
                         msg = null;
                     break;
                 }
@@ -160,13 +145,7 @@ public class ConnectionClient implements Runnable
         Server.getServer().rimuoviClient(this.client);
 
         Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " " + this.client.getNome() + " si e' disconnesso, aggiorno il numero degli utenti connessi al client");
-        JSONObject numeroUtenti = new JSONObject();
-        numeroUtenti.put("Tipo-Richiesta", "Numero-Utenti");
-        numeroUtenti.put("Tipo-Set-Numero", "Disconnessione");
-        numeroUtenti.put("Nome", this.client.getNome());
-        numeroUtenti.put("Numero", Server.getServer().getNumeroUtentiConnessi() - 1);
-        numeroUtenti.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi(""));
-        Server.getServer().messaggioBroadcast(numeroUtenti.toString());
+        Server.getServer().messaggioBroadcast(Messaggio.numeroUtenti(TipoNumeroUtenti.DISCONNESSIONE, this.client.getNome(), Server.getServer().getNumeroUtentiConnessi() - 1));
     }
 
     private boolean gestisciAutenticazione(JSONObject richiesta)

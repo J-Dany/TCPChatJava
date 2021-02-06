@@ -3,11 +3,32 @@ package srcclient;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-
 import org.json.*;
 
 public class Messaggio 
 {
+    enum TipoRichiesta
+    {
+        INVIO_MESSAGGIO,
+        NUMERO_UTENTI,
+        NUOVO_MESSAGGIO,
+        CHIUDI_CONNESSIONE,
+        NON_PUOI_INVIARE_MESSAGGI,
+        AUTENTICAZIONE
+    };
+
+    enum TipoMessaggio
+    {
+        PLAIN_TEXT,
+        INDIRIZZATO
+    };
+
+    enum TipoNumeroUtenti
+    {
+        CONNESSIONE,
+        DISCONNESSIONE
+    };
+
     /**
      * Questo metodo ritorna il json contenente la
      * richiesta per autenticarsi nella chat
@@ -20,7 +41,7 @@ public class Messaggio
     {
         JSONObject json = new JSONObject();
 
-        json.put("Tipo-Richiesta", "Autenticazione");
+        json.put("Tipo-Richiesta", TipoRichiesta.AUTENTICAZIONE);
         json.put("Nome", nomeUtente);
         json.put("Chiave", Crypt.getCodPubKey());
         json.put("Password", passwd);
@@ -38,7 +59,7 @@ public class Messaggio
     {
         JSONObject json = new JSONObject();
 
-        json.put("Tipo-Richiesta", "Chiudi-Connessione");
+        json.put("Tipo-Richiesta", TipoRichiesta.CHIUDI_CONNESSIONE);
 
         return json.toString();
     }
@@ -58,8 +79,8 @@ public class Messaggio
         
         JSONObject json = new JSONObject();
 
-        json.put("Tipo-Richiesta", "Invio-Messaggio");
-        json.put("Tipo-Messaggio", "Plain-Text");
+        json.put("Tipo-Richiesta", TipoRichiesta.INVIO_MESSAGGIO);
+        json.put("Tipo-Messaggio", TipoMessaggio.PLAIN_TEXT);
         json.put("Data", data);
         json.put("Time", time);
         json.put("Messaggio", msg);
@@ -83,8 +104,8 @@ public class Messaggio
         
         JSONObject json = new JSONObject();
 
-        json.put("Tipo-Richiesta", "Invio-Messaggio");
-        json.put("Tipo-Messaggio", "Per");
+        json.put("Tipo-Richiesta", TipoRichiesta.INVIO_MESSAGGIO);
+        json.put("Tipo-Messaggio", TipoMessaggio.INDIRIZZATO);
         json.put("Data", data);
         json.put("Time", time);
         json.put("Messaggio", msg);

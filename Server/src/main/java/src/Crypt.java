@@ -44,7 +44,7 @@ public class Crypt
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, privKey);
             byte[] contentBuff = Base64.getDecoder().decode(content.getBytes());
-            byte[] buffDecrypted = cipher.update(contentBuff);
+            cipher.update(contentBuff);
             byte[] b = cipher.doFinal();
 
             return new String(b, 0, b.length, "UTF-8");

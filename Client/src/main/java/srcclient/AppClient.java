@@ -4,6 +4,10 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import org.json.JSONObject;
+
+import srcclient.Messaggio.TipoMessaggio;
+import srcclient.Messaggio.TipoRichiesta;
+
 import java.net.Socket;
 import java.security.PublicKey;
 import java.io.OutputStreamWriter;
@@ -160,13 +164,15 @@ public class AppClient
                 }
 
                 risposta = new JSONObject(Crypt.decrypt(msg, Crypt.getPrivateKey()));
+                TipoRichiesta tr = TipoRichiesta.valueOf(risposta.getString("Tipo-Richiesta"));
 
-                switch (risposta.getString("Tipo-Richiesta"))
+                switch (tr)
                 {
-                    case "Nuovo-Messaggio":
-                        switch (risposta.getString("Tipo-Messaggio"))
+                    case NUOVO_MESSAGGIO:
+                        TipoMessaggio tm = TipoMessaggio.valueOf(risposta.getString("Tipo-Messaggio"));
+                        switch (tm)
                         {
-                            case "Per":
+                            case INDIRIZZATO:
                                 model.incrementaNumeroMessaggiDa(risposta.getString("Mittente"));
                                 model.updateMessaggi(risposta.getString("Mittente"), new CasellaMessaggio(
                                     risposta.getString("Mittente"), 
@@ -176,7 +182,7 @@ public class AppClient
                                     )
                                 );
                             break;
-                            case "Plain-Text":
+                            case PLAIN_TEXT:
                                 model.incrementaNumeroMessaggiDa("Globale");
                                 model.updateMessaggi("Globale", new CasellaMessaggio(
                                     risposta.getString("Nome"), 
@@ -186,15 +192,13 @@ public class AppClient
                                     )
                                 );
                             break;
-                            case "Immagine":
-
-                            break;
                         }
                     break;
-                    case "Numero-Utenti":
-                        switch (risposta.getString("Tipo-Set-Numero"))
+                    case NUMERO_UTENTI:
+                        Messaggio.TipoNumeroUtenti tnu = Messaggio.TipoNumeroUtenti.valueOf(risposta.getString("Tipo-Set-Numero"));
+                        switch (tnu)
                         {
-                            case "Connessione":
+                            case CONNESSIONE:
                                 chatUI.setNumeroUtentiConnessi(risposta.getInt("Numero"));
 
                                 if (risposta.has("Nome-Utente"))
@@ -203,17 +207,17 @@ public class AppClient
                                     model.updateUtenti(u);
                                 }
                             break;
-                            case "Disconnessione":
+                            case DISCONNESSIONE:
                                 model.removeUtente(risposta.getString("Nome"));
                                 chatUI.setNumeroUtentiConnessi(risposta.getInt("Numero"));
                                 chatUI.eliminaCasellaUtente(model.getCasella(risposta.getString("Nome")));
                             break;
                         }
                     break;
-                    case "Non-Puoi-Inviare-Messaggi":
+                    case NON_PUOI_INVIARE_MESSAGGI:
                         JOptionPane.showMessageDialog(chatUI.app, risposta.getString("Motivo"), "Non puoi inviare messaggi", JOptionPane.ERROR_MESSAGE);                                   
                     break;
-                    case "Chiudi-Connessione":
+                    case CHIUDI_CONNESSIONE:
                         JOptionPane.showMessageDialog(chatUI.app, "Il server ha mandato una richiesta di disconnessione perché si sta chiudendo. Chiudo l'applicazione", "Server chiuso", JOptionPane.ERROR_MESSAGE);
                         dispose(); 
                     break;

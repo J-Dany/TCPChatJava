@@ -2,7 +2,6 @@ package src;
 
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -198,6 +197,25 @@ public class Server extends Thread
     public synchronized int getNumeroUtentiConnessi()
     {
         return this.connected_clients.size();
+    }
+
+    /**
+     * Aggiunge il nuovo client, appena connesso e autenticato, all'hasmap
+     * 
+     * @param c il nuovo client
+     * @param s il socket del client
+     */
+    public void aggiungiNuovoClient(Client c, Socket s)
+    {
+        synchronized (this.connected_clients)
+        {
+            this.connected_clients.put(c, s);
+        }
+
+        synchronized (this.clients)
+        {
+            this.clients.put(c.getNome(), c);
+        }
     }
 
     /**

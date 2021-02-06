@@ -6,13 +6,9 @@ import com.google.common.hash.Hashing;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.Statement;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.sql.ResultSet;
 import java.util.Scanner;
 import java.util.Stack;
-import org.json.JSONObject;
 
 public class Console 
 {
@@ -222,19 +218,9 @@ public class Console
 
                     if (msg != null && msg.length() != 0)
                     {
-                        JSONObject json = new JSONObject();
-                        json.put("Tipo-Richiesta", "Nuovo-Messaggio");
-                        json.put("Tipo-Messaggio", "Plain-Text");
-                        json.put("Nome", "SERVER");
-                        json.put("Messaggio", msg);
-
-                        String data = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); 
-                        String time = LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss"));
-
-                        json.put("Data", data);
-                        json.put("Time", time);
-
-                        Server.getServer().messaggioBroadcast(json.toString());
+                        Server.getServer().messaggioBroadcast(
+                            Messaggio.nuovoMessaggio("SERVER", msg)
+                        );
                     }
                 break;
                 case "n-message-by":
