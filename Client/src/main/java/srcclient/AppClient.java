@@ -57,7 +57,7 @@ public class AppClient
     
     public static void main(String[] args) 
     {
-        Crypt.initialize();
+        //Crypt.initialize();
 
         Thread.currentThread().setName("Thread-Listener-Messaggi");
         try 
@@ -234,7 +234,8 @@ public class AppClient
     {
         try
         {
-            outputStream.write(Crypt.encrypt(data, serverKey));
+            outputStream.write(data);
+            //outputStream.write(Crypt.encrypt(data, serverKey));
             outputStream.flush();
         }
         catch (Exception e)

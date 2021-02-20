@@ -238,7 +238,8 @@ public class Server extends Thread
             {
                 OutputStreamWriter out = new OutputStreamWriter(s.getOutputStream(), "UTF-8");
                 out.write(
-                    Crypt.encrypt(msg, c.getKey())
+                    msg
+                    //Crypt.encrypt(msg, c.getKey())
                 );
                 out.flush();
             }
@@ -264,7 +265,8 @@ public class Server extends Thread
                 {
                     OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "UTF-8");
                     out.write(
-                        Crypt.encrypt(msg, mittente.getKey())
+                        msg
+                        //Crypt.encrypt(msg, mittente.getKey())
                     );
                     out.flush();
                 }
@@ -297,7 +299,8 @@ public class Server extends Thread
             {
                 OutputStreamWriter writer = new OutputStreamWriter(s.getOutputStream());
                 writer.write(
-                    Crypt.encrypt(msg, ((Client)arr[i]).getKey())
+                    msg
+                    //Crypt.encrypt(msg, ((Client)arr[i]).getKey())
                 );
                 writer.flush();
             }
@@ -464,7 +467,10 @@ public class Server extends Thread
 
         try
         {
-            s.getOutputStream().write(Crypt.encrypt(Messaggio.nuovoMessaggioIndirizzato(msg, mittente), clients.get(destinatario).getKey()).getBytes());
+            s.getOutputStream().write(
+                Messaggio.nuovoMessaggioIndirizzato(msg, mittente).getBytes()
+                //Crypt.encrypt(Messaggio.nuovoMessaggioIndirizzato(msg, mittente), clients.get(destinatario).getKey()).getBytes()
+            );
             s.getOutputStream().flush();
         }
         catch (Exception e)
@@ -493,7 +499,7 @@ public class Server extends Thread
 
     public static void main(String[] args)
     {
-        Crypt.initialize();
+        //Crypt.initialize();
         Thread.currentThread().setName("Console");
         Server s = null;
 

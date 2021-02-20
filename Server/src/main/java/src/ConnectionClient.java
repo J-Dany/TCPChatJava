@@ -2,9 +2,14 @@ package src;
 
 import java.io.OutputStreamWriter;
 import org.json.JSONObject;
+
+import src.Log.LogType;
 import src.Messaggio.TipoMessaggio;
 import src.Messaggio.TipoNumeroUtenti;
 import src.Messaggio.TipoRichiesta;
+import src.richiesta.Richiesta;
+import src.richiesta.RichiestaFactory;
+
 import java.net.Socket;
 import java.sql.*;
 
@@ -25,127 +30,37 @@ public class ConnectionClient implements Runnable
     public void run() 
     {
         try
-        {
-            String msg = "";
-            
-            byte[] buffer = new byte[GRANDEZZA_BUFFER];
-            int l = this.socket.getInputStream().read(buffer);
-            msg = new String(buffer, 0, l, "UTF-8");
-
-            JSONObject tmp = new JSONObject(msg);
-            TipoRichiesta t = TipoRichiesta.valueOf(tmp.getString("Tipo-Richiesta"));
-
-            if (t == TipoRichiesta.AUTENTICAZIONE)
+        {            
+            while (true)
             {
-                Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " tipo richiesta: Autenticazione");
-                if (this.gestisciAutenticazione(tmp))
-                {   
-                    this.client.setKey(Crypt.decodePublicKey(tmp.getString("Chiave")));
+                byte[] buffer = new byte[GRANDEZZA_BUFFER];
+                int l = this.socket.getInputStream().read(buffer);
+                String msg = new String(buffer, 0, l, "UTF-8");
 
-                    Thread.currentThread().setName("Thread-" + client.getNome());
-                    
-                    Server.getServer().mandaMessaggio(Messaggio.autenticazioneCorretta(), this.client, this.socket);
-
-                    Server.getServer().aggiungiNuovoClient(this.client, this.socket);
-                
-                    Thread.sleep(64);
-
-                    Server.getServer().mandaMessaggio(
-                        Messaggio.numeroUtenti(TipoNumeroUtenti.CONNESSIONE, this.client.getNome(), Server.getServer().getNumeroUtentiConnessi() - 1), 
-                        this.client, null
-                    );
+                if (msg.isEmpty())
+                {
+                    throw new Exception("La richiesta è vuota.");
                 }
                 else
-                {                    
-                    OutputStreamWriter out = new OutputStreamWriter(this.socket.getOutputStream());
-                    out.write(Messaggio.autenticazioneFallita());
-                    out.flush();
-
-                    throw new Exception("Autenticazione fallita per " + this.client.getAddress());
-                }
-            }
-            else
-            {
-                throw new Exception("Il JSON ricevuto da " + this.client.getAddress() + " non contiene la richiesta di autenticazione");
-            }
-
-            while (msg != null)
-            {
-                byte[] buff = new byte[GRANDEZZA_BUFFER];
-                int len = this.socket.getInputStream().read(buff);
-                msg = new String(buff, 0, len, "UTF-8");
-
-                JSONObject jsonRichiesta = new JSONObject(Crypt.decrypt(msg, Crypt.getPrivateKey()));
-
-                TipoRichiesta richiesta = TipoRichiesta.valueOf(jsonRichiesta.getString("Tipo-Richiesta"));
-
-                Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " gestisco tipo richiesta");
-
-                switch (richiesta)
                 {
-                    case INVIO_MESSAGGIO:
-                        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " tipo richiesta: Invio-Messaggio");
-
-                        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " controllo se il client è mutato o bannato");
-                        if (Server.getServer().banned.contains(this.client.getAddress()))
-                        {
-                            Server.getServer().mandaMessaggio(Messaggio.bannato(), null, this.socket);
-
-                            break;
-                        }
-                        else if (this.client.getCounter() == 0)
-                        {
-                            Server.getServer().mandaMessaggio(Messaggio.mutato(), null, this.socket);
-
-                            break;
-                        }
-
-                        Messaggio.TipoMessaggio tipoMsg = TipoMessaggio.valueOf(jsonRichiesta.getString("Tipo-Messaggio"));
-
-                        switch (tipoMsg)
-                        {
-                            case INDIRIZZATO:
-
-                                Server.getServer().messaggioIndirizzato(jsonRichiesta.getString("Messaggio"), jsonRichiesta.getString("Destinatario"), this.client.getNome());
-
-                                Server.getServer().writer.addMsg(
-                                    jsonRichiesta.getString("Data") + " " + jsonRichiesta.getString("Time")
-                                    + "|" +
-                                    jsonRichiesta.getString("Nome")
-                                    + "|" +
-                                    jsonRichiesta.getString("Messaggio")
-                                );
-                            break;
-                            case PLAIN_TEXT:
-
-                                Server.getServer().mandaMessaggio(Messaggio.nuovoMessaggio(this.client.getNome(), jsonRichiesta.getString("Messaggio")), this.client, null);
-
-                                Server.getServer().writer.addMsg(
-                                    jsonRichiesta.getString("Data") + " " + jsonRichiesta.getString("Time")
-                                    + "|" +
-                                    jsonRichiesta.getString("Nome")
-                                    + "|" +
-                                    jsonRichiesta.getString("Messaggio")
-                                );
-                            break;
-                        }
-                    break;
-                    case CHIUDI_CONNESSIONE:
-                        msg = null;
-                    break;
+                    JSONObject json = new JSONObject(msg);
+                    Richiesta richiesta = RichiestaFactory.crea(json);
+                    
+                    if (richiesta != null)
+                    {
+                        richiesta.rispondi();
+                    }
+                    else
+                    {
+                        throw new Exception("Non è stato possibile rispondere alla richiesta.");
+                    }
                 }
-            }
+            }   
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+            Server.getServer().logger.add_msg(LogType.ERR, Thread.currentThread().getName() + " " + e);
         }
-
-        try { this.socket.close(); } catch (Exception e) { Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e); }
-        Server.getServer().rimuoviClient(this.client);
-
-        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " " + this.client.getNome() + " si e' disconnesso, aggiorno il numero degli utenti connessi al client");
-        Server.getServer().messaggioBroadcast(Messaggio.numeroUtenti(TipoNumeroUtenti.DISCONNESSIONE, this.client.getNome(), Server.getServer().getNumeroUtentiConnessi() - 1));
     }
 
     private boolean gestisciAutenticazione(JSONObject richiesta)

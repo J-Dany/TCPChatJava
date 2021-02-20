@@ -19,6 +19,8 @@ public class Crypt
 
     public static String encrypt (String content, Key pubKey)
     {
+        return content;
+        /*
         try
         {
             byte[] buff = content.getBytes();
@@ -34,12 +36,13 @@ public class Crypt
             e.printStackTrace();
         }
 
-        return null;
+        return null;*/
     }
 
     public static String decrypt (String content, Key privKey)
     {
-        try
+        return null;
+        /*try
         {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, privKey);
@@ -54,7 +57,7 @@ public class Crypt
             e.printStackTrace();
         }
 
-        return null;
+        return null;*/
     }
 
     public static String encodeKey (Key key)

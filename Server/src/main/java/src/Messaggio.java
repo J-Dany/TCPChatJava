@@ -7,7 +7,7 @@ import org.json.*;
 
 public class Messaggio 
 {
-    enum TipoRichiesta
+    public enum TipoRichiesta
     {
         INVIO_MESSAGGIO,
         NUMERO_UTENTI,
@@ -17,13 +17,13 @@ public class Messaggio
         AUTENTICAZIONE
     };
 
-    enum TipoMessaggio
+    public enum TipoMessaggio
     {
         PLAIN_TEXT,
         INDIRIZZATO
     };
 
-    enum TipoNumeroUtenti
+    public enum TipoNumeroUtenti
     {
         CONNESSIONE,
         DISCONNESSIONE
