@@ -10,11 +10,16 @@ public class Messaggio
     public enum TipoRichiesta
     {
         INVIO_MESSAGGIO,
-        NUMERO_UTENTI,
+        CHIUDI_CONNESSIONE,
+        AUTENTICAZIONE
+    };
+
+    public enum TipoRisposta
+    {
+        NON_PUOI_INVIARE_MESSAGGI,
         NUOVO_MESSAGGIO,
         CHIUDI_CONNESSIONE,
-        NON_PUOI_INVIARE_MESSAGGI,
-        AUTENTICAZIONE
+        NUMERO_UTENTI
     };
 
     public enum TipoMessaggio
@@ -41,7 +46,7 @@ public class Messaggio
         JSONObject json = new JSONObject();
 
         json.put("Tipo-Richiesta", TipoRichiesta.AUTENTICAZIONE);
-        json.put("Chiave", Crypt.getCodPubKey());
+        //json.put("Chiave", Crypt.getCodPubKey());
         json.put("Utenti-Connessi", Server.getServer().getNumeroUtentiConnessi());
         json.put("Lista-Utenti", Server.getServer().getListaUtentiConnessi(""));
         json.put("Risultato", true);
@@ -53,7 +58,7 @@ public class Messaggio
     {
         JSONObject json = new JSONObject();
 
-        json.put("Tipo-Richiesta", TipoRichiesta.NUMERO_UTENTI);
+        json.put("Tipo-Richiesta", TipoRisposta.NUMERO_UTENTI);
         json.put("Tipo-Set-Numero", tipo);
         json.put("Nome-Utente", mittente);
         json.put("Numero", numero);
@@ -107,7 +112,7 @@ public class Messaggio
         
         JSONObject json = new JSONObject();
 
-        json.put("Tipo-Richiesta", TipoRichiesta.NUOVO_MESSAGGIO);
+        json.put("Tipo-Richiesta", TipoRisposta.NUOVO_MESSAGGIO);
         json.put("Tipo-Messaggio", TipoMessaggio.PLAIN_TEXT);
         json.put("Data", data);
         json.put("Time", time);
@@ -128,7 +133,7 @@ public class Messaggio
     {
         JSONObject json = new JSONObject();
 
-        json.put("Tipo-Richiesta", TipoRichiesta.NON_PUOI_INVIARE_MESSAGGI);
+        json.put("Tipo-Richiesta", TipoRisposta.NON_PUOI_INVIARE_MESSAGGI);
         json.put("Motivo", "Sei stato mutato");
 
         return json.toString();
@@ -145,7 +150,7 @@ public class Messaggio
     {
         JSONObject json = new JSONObject();
 
-        json.put("Tipo-Richiesta", TipoRichiesta.NON_PUOI_INVIARE_MESSAGGI);
+        json.put("Tipo-Richiesta", TipoRisposta.NON_PUOI_INVIARE_MESSAGGI);
         json.put("Motivo", "Sei stato bannato");
 
         return json.toString();
@@ -166,7 +171,7 @@ public class Messaggio
         
         JSONObject json = new JSONObject();
 
-        json.put("Tipo-Richiesta", TipoRichiesta.NUOVO_MESSAGGIO);
+        json.put("Tipo-Richiesta", TipoRisposta.NUOVO_MESSAGGIO);
         json.put("Tipo-Messaggio", TipoMessaggio.INDIRIZZATO);
         json.put("Data", data);
         json.put("Time", time);

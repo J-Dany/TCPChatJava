@@ -1,15 +1,9 @@
 package src;
 
-import java.io.OutputStreamWriter;
 import org.json.JSONObject;
-
 import src.Log.LogType;
-import src.Messaggio.TipoMessaggio;
-import src.Messaggio.TipoNumeroUtenti;
-import src.Messaggio.TipoRichiesta;
 import src.richiesta.Richiesta;
 import src.richiesta.RichiestaFactory;
-
 import java.net.Socket;
 import java.sql.*;
 
@@ -48,7 +42,7 @@ public class ConnectionClient implements Runnable
                     
                     if (richiesta != null)
                     {
-                        richiesta.rispondi();
+                        richiesta.rispondi(json);
                     }
                     else
                     {

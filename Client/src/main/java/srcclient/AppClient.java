@@ -4,12 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import org.json.JSONObject;
-
-import srcclient.Messaggio.TipoMessaggio;
-import srcclient.Messaggio.TipoRichiesta;
-
 import java.net.Socket;
-import java.security.PublicKey;
 import java.io.OutputStreamWriter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,8 +31,6 @@ public class AppClient
 
     private static String ip;
     private static int port;
-
-    private static PublicKey serverKey;
 
     /**
      * Socket di connessione del client
@@ -112,8 +105,6 @@ public class AppClient
                 System.exit(UTENTE_NON_RICONOSCIUTO);
             }
 
-            serverKey = Crypt.decodePublicKey(risposta.getString("Chiave"));
-
             try
             {
                 model = new ChatModel(nome);
@@ -163,10 +154,10 @@ public class AppClient
                     }
                 }
 
-                risposta = new JSONObject(Crypt.decrypt(msg, Crypt.getPrivateKey()));
-                TipoRichiesta tr = TipoRichiesta.valueOf(risposta.getString("Tipo-Richiesta"));
+                risposta = new JSONObject(msg);
+                Messaggio.TipoRisposta tr = Messaggio.TipoRisposta.valueOf(risposta.getString("Tipo-Richiesta"));
 
-                switch (tr)
+                /*switch (tr)
                 {
                     case NUOVO_MESSAGGIO:
                         TipoMessaggio tm = TipoMessaggio.valueOf(risposta.getString("Tipo-Messaggio"));
@@ -221,7 +212,7 @@ public class AppClient
                         JOptionPane.showMessageDialog(chatUI.app, "Il server ha mandato una richiesta di disconnessione perché si sta chiudendo. Chiudo l'applicazione", "Server chiuso", JOptionPane.ERROR_MESSAGE);
                         dispose(); 
                     break;
-                }
+                }*/
             }
         }
         catch (Exception e) 

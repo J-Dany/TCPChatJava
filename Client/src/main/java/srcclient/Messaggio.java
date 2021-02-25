@@ -7,14 +7,19 @@ import org.json.*;
 
 public class Messaggio 
 {
-    enum TipoRichiesta
+    public enum TipoRichiesta
     {
         INVIO_MESSAGGIO,
-        NUMERO_UTENTI,
+        CHIUDI_CONNESSIONE,
+        AUTENTICAZIONE
+    };
+
+    public enum TipoRisposta
+    {
+        NON_PUOI_INVIARE_MESSAGGI,
         NUOVO_MESSAGGIO,
         CHIUDI_CONNESSIONE,
-        NON_PUOI_INVIARE_MESSAGGI,
-        AUTENTICAZIONE
+        NUMERO_UTENTI
     };
 
     enum TipoMessaggio
@@ -43,7 +48,7 @@ public class Messaggio
 
         json.put("Tipo-Richiesta", TipoRichiesta.AUTENTICAZIONE);
         json.put("Nome", nomeUtente);
-        json.put("Chiave", Crypt.getCodPubKey());
+        //json.put("Chiave", Crypt.getCodPubKey());
         json.put("Password", passwd);
 
         return json.toString();

@@ -1,0 +1,126 @@
+#####################################
+##                                 ##
+##         RICHIESTE CLIENT        ##
+##                                 ##
+#####################################
+
+Autenticazione
+=====================================
+
+{
+    "Tipo-Richiesta": "Autenticazione",
+    "Nome": ${nomeUtente},
+    "Password": ${passwordCriptata}
+}
+
+Disconnessione
+=====================================
+
+{
+    "Tipo-Richiesta": "CHIUDI_CONNESSIONE"
+}
+
+Nuovo messaggio globale
+=====================================
+
+{
+    "Tipo-Richiesta": "INVIO_MESSAGGIO",
+    "Tipo-Messaggio": "PLAIN_TEXT",
+    "Data": ${dataMessaggio},
+    "Time": ${timeMessaggio},
+    "Messaggio": ${messaggio},
+    "Nome": ${nomeClient}
+}
+
+Messaggio indirizzato
+=====================================
+
+{
+    "Tipo-Richiesta": "INVIO_MESSAGGIO",
+    "Tipo-Messaggio": "INDIRIZZATO",
+    "Data": ${dataMessaggio},
+    "Time": ${timeMessaggio},
+    "Messaggio": ${messaggio},
+    "Destinatario": ${destinatario}
+}
+
+#####################################
+##                                 ##
+##         RISPOSTE SERVER         ##
+##                                 ##
+#####################################
+
+Autenticazione corretta
+=====================================
+
+{
+    "Tipo-Risposta": "Autenticazione",
+    "Utenti-Connessi": ${numeroUtentiConnessi},
+    "Lista-Utenti": ${listaUtentiConnessi},
+    "Risultato": true
+}
+
+Autenticazione fallita
+=====================================
+
+{
+    "Tipo-Risposta": "Autenticazione",
+    "Risultato": false
+}
+
+Numero utenti connessi
+=====================================
+
+{
+    "Tipo-Risposta": "NUMERO_UTENTI",
+    "Tipo-Set-Numero": ${"Connessione"|"Disconnesione"},
+    "Nome-Utente": ${nomeNuovoUtenteConnesso},
+    "Numero": ${nuovoNumeroUtentiConnessi}
+}
+
+Disconnessione
+=====================================
+
+{
+    "Tipo-Risposta": "Disconnessione"
+}
+
+Nuovo messaggio globale
+=====================================
+
+{
+    "Tipo-Risposta": "NUOVO_MESSAGGIO",
+    "Tipo-Messaggio": "PLAIN_TEXT",
+    "Data": ${dataMessaggio},
+    "Time": ${timeMessaggio},
+    "Messaggio": ${messaggio},
+    "Nome": ${mittente}
+}
+
+Messaggio di informazione - Mutato
+=====================================
+
+{
+    "Tipo-Risposta": "NON_PUOI_INVIARE_MESSAGGI",
+    "Motivo": "Sei stato mutato"
+}
+
+Messaggio di informazione - Bannato
+=====================================
+
+{
+    "Tipo-Risposta": "NON_PUOI_INVIARE_MESSAGGI",
+    "Motivo": "Sei stato bannato"
+}
+
+Nuovo messaggio indirizzato
+=====================================
+
+{
+    "Tipo-Risposta": "NUOVO_MESSAGGIO",
+    "Tipo-Messaggio": "INDIRIZZATO",
+    "Data": ${dataMessaggio},
+    "Time": ${timeMessaggio},
+    "Messaggio": ${messaggio},
+    "Nome": ${mittente}
+}

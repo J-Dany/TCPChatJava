@@ -1,6 +1,8 @@
 package src.richiesta;
 
+import org.json.JSONObject;
+
 public interface Richiesta 
 {
-    public void rispondi();
+    public void rispondi(JSONObject json);
 }

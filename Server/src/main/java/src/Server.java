@@ -373,9 +373,7 @@ public class Server extends Thread
                 JSONObject chiudiConnessione = new JSONObject();
                 chiudiConnessione.put("Tipo-Richiesta", "Chiudi-Connessione");
 
-                s.getOutputStream().write(
-                    Crypt.encrypt(chiudiConnessione.toString(), client.getKey()).getBytes()
-                );
+                s.getOutputStream().write(chiudiConnessione.toString().getBytes());
                 s.getOutputStream().flush();
                 
                 s.close();
