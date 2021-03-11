@@ -8,6 +8,7 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import srcclient.oggetti_grafici.*;
 
 public class Utente 
 {

@@ -5,7 +5,7 @@ import src.Log.LogType;
 import src.richiesta.Richiesta;
 import src.richiesta.RichiestaFactory;
 import java.net.Socket;
-import java.sql.*;
+import src.eccezioni.*;
 
 public class ConnectionClient implements Runnable
 {
@@ -24,12 +24,14 @@ public class ConnectionClient implements Runnable
     public void run() 
     {
         try
-        {            
+        {
+            int l = 0;
+            String msg;    
             while (true)
             {
                 byte[] buffer = new byte[GRANDEZZA_BUFFER];
-                int l = this.socket.getInputStream().read(buffer);
-                String msg = new String(buffer, 0, l, "UTF-8");
+                l = this.socket.getInputStream().read(buffer);
+                msg = new String(buffer, 0, l, "UTF-8");
 
                 if (msg.isEmpty())
                 {
@@ -39,10 +41,10 @@ public class ConnectionClient implements Runnable
                 {
                     JSONObject json = new JSONObject(msg);
                     Richiesta richiesta = RichiestaFactory.crea(json);
-                    
+
                     if (richiesta != null)
                     {
-                        richiesta.rispondi(json);
+                        richiesta.rispondi(json, this.client, this.socket);
                     }
                     else
                     {
@@ -51,56 +53,21 @@ public class ConnectionClient implements Runnable
                 }
             }   
         }
-        catch (Exception e)
+        catch (AutenticazioneFallita e)
         {
-            Server.getServer().logger.add_msg(LogType.ERR, Thread.currentThread().getName() + " " + e);
+            Server.getServer().logger.addMsg(LogType.OK, Thread.currentThread().getName() + " autenticazione fallita per " + this.client.getNome() + " da " + this.client.getAddress());
+            return;
         }
-    }
-
-    private boolean gestisciAutenticazione(JSONObject richiesta)
-    {
-        String nomeUtente = richiesta.getString("Nome");
-
-        if (Server.getServer().isAlreadyAuth(nomeUtente))
+        catch (ChiudiConnessione e)
         {
-            Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + this.client.getAddress() + " ha provato ad autenticarsi con " + nomeUtente);
-            return false;
-        }
-
-        String password = richiesta.getString("Password");
-        this.client.setNome(nomeUtente);
-        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " nuovo client: " + nomeUtente);
-
-        try
-        {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mi connetto al database e istanzio un oggetto di tipo Statement");
-
-            Connection c = DatabaseConnection.getConnection();
-            Statement s = c.createStatement();
-
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " connesso al database e creato oggetto Statement, ora eseguo la query di ricerca utete");
-
-            ResultSet utenti = s.executeQuery("SELECT COUNT(*) as num_rows FROM utenti WHERE username = '" + nomeUtente + "' AND password = '" + password + "'");
-
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
-            
-            if (utenti.next() && utenti.getInt("num_rows") == 0)
-            {
-                Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " utente non riconosciuto (" + nomeUtente + ")");
-                throw new Exception("Utente non riconosciuto");
-            }
-
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " si e' connesso " + nomeUtente);
-
-            return true;
+            Server.getServer().logger.addMsg(LogType.OK, Thread.currentThread().getName() + " " + this.client.getNome() + " si è disconnesso");
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+            Server.getServer().logger.addMsg(LogType.ERR, Thread.currentThread().getName() + " " + e);
         }
 
-        return false;
+        Server.getServer().rimuoviClient(this.client);
+        Server.getServer().messaggioBroadcast(Messaggio.numeroUtenti(Messaggio.TipoNumeroUtenti.DISCONNESSIONE, this.client.getNome(), Server.getServer().getNumeroUtentiConnessi()));
     }
 }

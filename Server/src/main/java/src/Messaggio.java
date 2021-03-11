@@ -54,6 +54,17 @@ public class Messaggio
         return json.toString();
     }
 
+    /**
+     * Questo metodo viene chiamato quando va
+     * mandata al client il pacchetto per fargli
+     * sapere che un utente nuovo si è connesso
+     * o si è disconnesso un utente
+     * 
+     * @param tipo tipo di setNumeroUtenti {CONNESSIONE|DISCONNESSIONE}
+     * @param mittente il client che si è connesso o disconnesso
+     * @param numero nuovo numero di client connessi
+     * @return String
+     */
     public static String numeroUtenti(TipoNumeroUtenti tipo, String mittente, int numero)
     {
         JSONObject json = new JSONObject();

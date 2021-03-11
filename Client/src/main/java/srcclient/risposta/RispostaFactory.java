@@ -11,6 +11,8 @@ public class RispostaFactory
 
         switch (risposta)
         {
+            case AUTENTICAZIONE:
+                
             case CHIUDI_CONNESSIONE:
                 return new RispostaChiudiConnessione();
             case NUOVO_MESSAGGIO:

@@ -1,5 +1,6 @@
 package srcclient;
 
+import srcclient.oggetti_grafici.*;
 import java.io.IOException;
 import java.awt.*;
 import java.awt.event.ActionEvent;

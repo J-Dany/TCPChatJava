@@ -39,7 +39,7 @@ public class Log extends Thread
         }
     }
 
-    public synchronized void add_msg(Log.LogType type, String msg)
+    public synchronized void addMsg(Log.LogType type, String msg)
     {
         if (msg != null)
         {

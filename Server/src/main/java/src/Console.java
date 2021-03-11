@@ -31,7 +31,7 @@ public class Console
             String[] arguments = command.split(" ");
             String com = arguments[0];
 
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " ricevuto comando: " + command);
+            Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " ricevuto comando: " + command);
 
             switch (com)
             {
@@ -50,14 +50,14 @@ public class Console
                 break;
                 case "ban":
                     String ip = arguments[1].split("\\/")[0];
-                    Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " banna: " + ip);
+                    Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " banna: " + ip);
                     try
                     {
                         Server.getServer().ban(InetAddress.getByName(ip));
                     }
                     catch (Exception e)
                     {
-                        Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+                        Server.getServer().logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
                     }
                 break;
                 case "numero-errori":
@@ -114,7 +114,7 @@ public class Console
                     }
                     catch (Exception e)
                     {
-                        Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+                        Server.getServer().logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
                     }
                 break;
                 case "svuota-db-messaggi":
@@ -126,7 +126,7 @@ public class Console
                     }
                     catch (Exception e)
                     {
-                        Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+                        Server.getServer().logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
                     }
                 break;
                 case "show-connected-client":
@@ -154,7 +154,7 @@ public class Console
                     }
                     catch (Exception e)
                     {
-                        Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+                        Server.getServer().logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
                     }
                 break;
                 case "utenti-registrati":
@@ -171,7 +171,7 @@ public class Console
                     }
                     catch (Exception e)
                     {
-                        Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+                        Server.getServer().logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
                     }
                 break;
                 case "aggiungi-utente":
@@ -197,7 +197,7 @@ public class Console
                     }
                     catch (Exception e)
                     {
-                        Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+                        Server.getServer().logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
                     }
                 break;
                 case "manda-msg":
@@ -230,22 +230,22 @@ public class Console
                     
                     try
                     {
-                        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mi connetto al database");
+                        Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " mi connetto al database");
                             Connection connection = DatabaseConnection.getConnection();
-                        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mi connetto al database");
+                        Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " mi connetto al database");
                         
                         String query = "SELECT COUNT(*) as numero_messaggi "
                             + "FROM messaggi "
                             + "WHERE user = '" + n + "' AND "
                             + "date = CURRENT_DATE()";
 
-                        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " creo un oggetto di tipo Statement");
+                        Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " creo un oggetto di tipo Statement");
                             Statement stmt = connection.createStatement();
-                        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " oggetto creato");
+                        Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " oggetto creato");
 
-                        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " eseguo la query per sapere quanti messaggi " + n + " ha mandato oggi");
+                        Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " eseguo la query per sapere quanti messaggi " + n + " ha mandato oggi");
                             ResultSet result = stmt.executeQuery(query);
-                        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
+                        Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
                     
                         int nMsg = 0;
                         if (result.next() && (nMsg = result.getInt("numero_messaggi")) != 0)
@@ -259,7 +259,7 @@ public class Console
                     }
                     catch (Exception e)
                     {
-                        Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+                        Server.getServer().logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
                     }
                 break;
                 default:
@@ -271,7 +271,7 @@ public class Console
 
         input.close();
 
-        Server.getServer().logger.add_msg(Log.LogType.OK, "Libero la memoria creata per contenere la history");
+        Server.getServer().logger.addMsg(Log.LogType.OK, "Libero la memoria creata per contenere la history");
 
         history.clear();
     }

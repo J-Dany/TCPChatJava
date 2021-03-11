@@ -23,22 +23,22 @@ public class DatabaseTable
     {
         try
         {
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mi connetto al database");
+            Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " mi connetto al database");
                 Connection connection = DatabaseConnection.getConnection();
 
             Statement stmt = connection.createStatement();
 
             String query = "SELECT * FROM " + tableName;
 
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " eseguo la query per prendere tutti i dati dalla tabella");
+            Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " eseguo la query per prendere tutti i dati dalla tabella");
                 ResultSet result = stmt.executeQuery(query);
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
+            Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
 
             return result;
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+            Server.getServer().logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
         }
 
         return null;
@@ -49,7 +49,7 @@ public class DatabaseTable
      */
     public void delete()
     {
-        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " elimino tutti i record da " + this.tableName);
+        Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " elimino tutti i record da " + this.tableName);
     
         try
         {
@@ -61,11 +61,11 @@ public class DatabaseTable
 
             stmt.executeUpdate(query);
 
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
+            Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
+            Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
         }
     }
 
@@ -75,7 +75,7 @@ public class DatabaseTable
      */
     public void deleteOnce(String value)
     {
-        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " eseguo query per eliminare un record da " + this.tableName);
+        Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " eseguo query per eliminare un record da " + this.tableName);
 
         try
         {
@@ -86,11 +86,11 @@ public class DatabaseTable
     
             stmt.executeUpdate(query);
 
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
+            Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
+            Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
         }
     }
 
@@ -101,7 +101,7 @@ public class DatabaseTable
      */
     public void insertOnce(String[] fields, Object[] values)
     {
-        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " inserisco un nuovo record nella tabella " + this.tableName);
+        Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " inserisco un nuovo record nella tabella " + this.tableName);
         
         String query = "INSERT INTO " + this.tableName + " (";
 
@@ -134,11 +134,11 @@ public class DatabaseTable
     
             stmt.executeUpdate(query);
 
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
+            Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " query eseguita correttamente");
         }
         catch (Exception e)
         {
-            Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
+            Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
         }
     }
 }

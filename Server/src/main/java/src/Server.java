@@ -80,6 +80,7 @@ public class Server extends Thread
         this.connected_clients = new HashMap<>();
         this.writer = new WriteToDB("WriterDB");
         this.errors = new ArrayList<>();
+        this.clients = new HashMap<>();
     }
 
     /**
@@ -168,6 +169,8 @@ public class Server extends Thread
 
     /**
      * Banna l'IP passato come parametro
+     * 
+     * @param address, l'indirizzo IP da bannare
      */
     public void ban(InetAddress address)
     {
@@ -231,7 +234,7 @@ public class Server extends Thread
      */
     public synchronized void mandaMessaggio(String msg, Client c, Socket s)
     {
-        Server.getServer().logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
+        Server.getServer().logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " inoltro il messaggio arrivato...");
         if (c != null && s != null)
         {
             try
@@ -239,16 +242,15 @@ public class Server extends Thread
                 OutputStreamWriter out = new OutputStreamWriter(s.getOutputStream(), "UTF-8");
                 out.write(
                     msg
-                    //Crypt.encrypt(msg, c.getKey())
                 );
                 out.flush();
             }
             catch (Exception e)
             {
-                this.logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+                this.logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
             }
 
-            this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " messaggio inoltrato");
+            this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " messaggio inoltrato");
             return;
         }
 
@@ -266,18 +268,17 @@ public class Server extends Thread
                     OutputStreamWriter out = new OutputStreamWriter(send.getOutputStream(), "UTF-8");
                     out.write(
                         msg
-                        //Crypt.encrypt(msg, mittente.getKey())
                     );
                     out.flush();
                 }
                 catch (Exception e)
                 {
-                    this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
+                    this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
                 }
             }
         }
 
-        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " messaggio inoltrato");
+        this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " messaggio inoltrato");
     }
 
     /**
@@ -289,7 +290,7 @@ public class Server extends Thread
      */
     public synchronized void messaggioBroadcast(String msg)
     {
-        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mando messaggio in broadcast: " + msg);
+        this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " mando messaggio in broadcast: " + msg);
         arr = this.connected_clients.keySet().toArray();
         for (int i = 0; i < this.connected_clients.size(); ++i)
         {
@@ -300,16 +301,15 @@ public class Server extends Thread
                 OutputStreamWriter writer = new OutputStreamWriter(s.getOutputStream());
                 writer.write(
                     msg
-                    //Crypt.encrypt(msg, ((Client)arr[i]).getKey())
                 );
                 writer.flush();
             }
             catch (Exception e)
             {
-                this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
+                this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " " + e);
             }
         }
-        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mandato messaggio broadcast");
+        this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " mandato messaggio broadcast");
     }
 
     @Override
@@ -317,40 +317,40 @@ public class Server extends Thread
     {
         this.threadPoolClient = Executors.newScheduledThreadPool(32);
         
-        this.logger.add_msg(Log.LogType.OK, "Server partito");
+        this.logger.addMsg(Log.LogType.OK, "Server partito");
         try 
         {
             // Esegui finché non viene interrotto il server
             while (!Thread.currentThread().isInterrupted()) 
             {
                 // Sta in ascolto per le connessioni in entrata
-                this.logger.add_msg(Log.LogType.OK, this.getName() + " sta in ascolto per i client");
+                this.logger.addMsg(Log.LogType.OK, this.getName() + " sta in ascolto per i client");
                 Socket sclient = null;
                 try 
                 {
                     sclient = this.socket.accept();
-                    this.logger.add_msg(Log.LogType.OK, "Connessione accettata per " + sclient.getInetAddress());                    
+                    this.logger.addMsg(Log.LogType.OK, "Connessione accettata per " + sclient.getInetAddress());                    
                 }
                 catch (SocketException e) 
                 {
-                    this.logger.add_msg(Log.LogType.ERR, this.getName() + " exception: " + e);
+                    this.logger.addMsg(Log.LogType.ERR, this.getName() + " exception: " + e);
                     Thread.currentThread().interrupt();
                     break;
                 }
 
                 // Creo un nuovo oggetto client, che rappresenta il client connesso
-                this.logger.add_msg(Log.LogType.OK, "Creo un oggetto Client per rappresentare il client connesso...");
+                this.logger.addMsg(Log.LogType.OK, "Creo un oggetto Client per rappresentare il client connesso...");
                     Client c = new Client(sclient.getInetAddress());
-                this.logger.add_msg(Log.LogType.OK, "Oggetto creato");
+                this.logger.addMsg(Log.LogType.OK, "Oggetto creato");
 
-                this.logger.add_msg(Log.LogType.OK, "Sto in ascolto per i messaggi di questo client.");
+                this.logger.addMsg(Log.LogType.OK, "Sto in ascolto per i messaggi di questo client.");
 
                 this.threadPoolClient.submit(new ConnectionClient(sclient, c));
             }
         } 
         catch (Exception e) 
         {
-            this.logger.add_msg(Log.LogType.ERR, this.getName() + " exception: " + e);
+            this.logger.addMsg(Log.LogType.ERR, this.getName() + " exception: " + e);
         }
 
         // Libera le risorse allocate
@@ -362,7 +362,7 @@ public class Server extends Thread
      */
     private void liberaRisorse()
     {
-        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " Chiudo tutti i socket dei client");
+        this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " Chiudo tutti i socket dei client");
         for (Object c : this.connected_clients.keySet().toArray())
         {
             try
@@ -380,24 +380,35 @@ public class Server extends Thread
             }
             catch (Exception e)
             {
-                this.logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+                this.logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
             }
         }
-        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " Chiusi tutti i socket dei client");
+        this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " Chiusi tutti i socket dei client");
 
-        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " Libero la memoria creata per contenere hashmap");
+        this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " Libero la memoria creata per contenere hashmap");
         
         // Elimino hashmap
         this.connected_clients.clear();
 
-        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " Libero la memoria creata per contenere arraylist di client bannati");
+        this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " Libero la memoria creata per contenere arraylist di client bannati");
         // Elimino i client bannati
         this.banned.clear();
 
-        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " spengo la ThreadPool");
+        this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " spengo la ThreadPool");
         this.threadPoolClient.shutdownNow();
 
-        this.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " chiuso.");
+        this.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " chiuso.");
+    }
+
+    /**
+     * Restituisce vero se l'indirizzo passato
+     * è contenuto dentro l'array {@code banned}
+     * @param address l'indirizzo da controllare
+     * @return vero se è bannato, falso altrimenti
+     */
+    public boolean isBanned (InetAddress address)
+    {
+        return banned.contains(address);
     }
 
     /**
@@ -426,6 +437,14 @@ public class Server extends Thread
         return false;
     }
 
+    /**
+     * Fa il bind tra il nome del client e l'oggetto
+     * a esso associato, per recuperare più velocemente
+     * in futuro l'oggetto Client
+     * 
+     * @param nome il nome del client
+     * @param client l'oggetto che rappresenta il client
+     */
     public void bindNomeOggetto (String nome, Client client)
     {
         clients.put(nome, client);
@@ -457,7 +476,7 @@ public class Server extends Thread
      */
     public void messaggioIndirizzato (String msg, String destinatario, String mittente)
     {
-        logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " mando un messaggio indirizzato");
+        logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " mando un messaggio indirizzato");
         
         Socket s = connected_clients.get(
             clients.get(destinatario)
@@ -467,16 +486,20 @@ public class Server extends Thread
         {
             s.getOutputStream().write(
                 Messaggio.nuovoMessaggioIndirizzato(msg, mittente).getBytes()
-                //Crypt.encrypt(Messaggio.nuovoMessaggioIndirizzato(msg, mittente), clients.get(destinatario).getKey()).getBytes()
             );
             s.getOutputStream().flush();
         }
         catch (Exception e)
         {
-            logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+            logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
         }
     }
 
+    /**
+     * Ritorna l'HashMap contenente tutti i client connessi
+     * in questo momento
+     * @return HashMap
+     */
     public HashMap<Client, Socket> getConnectedClients()
     {
         synchronized (this.connected_clients)
@@ -497,7 +520,6 @@ public class Server extends Thread
 
     public static void main(String[] args)
     {
-        //Crypt.initialize();
         Thread.currentThread().setName("Console");
         Server s = null;
 
@@ -516,13 +538,13 @@ public class Server extends Thread
             
             server = s;
             
-            // Setto la priorita' del server
             s.setPriority(Thread.MAX_PRIORITY);
 
-            // Setto la priorita' del logger
+            s.setName("Server");
+
             s.logger.setPriority(Thread.NORM_PRIORITY);
 
-            // Faccio partire server e logger
+            // Faccio partire server e il logger
             s.start();
             s.logger.start();
 
@@ -534,24 +556,24 @@ public class Server extends Thread
             Console console = new Console();
             console.avvia();
 
-            s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " sta per chiudere il server");
+            s.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " sta per chiudere il server");
 
             // Chiudo il socket
             s.socket.close();
 
-            s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " ha chiuso il socket");
-            s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " aspetta la fine dell'esecuzione del server");
+            s.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " ha chiuso il socket");
+            s.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " aspetta la fine dell'esecuzione del server");
             
             // Aspetto che il server si chiuda correttamente
             s.join();
 
-            s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " interrompe il thread WriterToDB");
+            s.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " interrompe il thread WriterToDB");
 
             // Interrompo e aspetto il thread Writer
             s.writer.interrupt();
             s.writer.join();
 
-            s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " thread WriterToDB interrotto");
+            s.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " thread WriterToDB interrotto");
         }
         catch (IOException | InterruptedException e)
         {
@@ -569,11 +591,11 @@ public class Server extends Thread
         }
         catch (Exception e)
         {
-            s.logger.add_msg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
+            s.logger.addMsg(Log.LogType.ERR, Thread.currentThread().getName() + " " + e);
         }
 
         // Interrompo il logger
-        s.logger.add_msg(Log.LogType.OK, Thread.currentThread().getName() + " fine programma");
+        s.logger.addMsg(Log.LogType.OK, Thread.currentThread().getName() + " fine programma");
 
         // Chiudo correttamente il logger
         s.logger.shutdown();

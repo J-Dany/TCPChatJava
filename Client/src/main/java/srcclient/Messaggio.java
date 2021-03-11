@@ -16,6 +16,7 @@ public class Messaggio
 
     public enum TipoRisposta
     {
+        AUTENTICAZIONE,
         NON_PUOI_INVIARE_MESSAGGI,
         NUOVO_MESSAGGIO,
         CHIUDI_CONNESSIONE,

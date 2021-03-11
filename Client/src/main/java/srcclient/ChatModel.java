@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
 import javax.swing.event.SwingPropertyChangeSupport;
+import srcclient.oggetti_grafici.*;
 
 public class ChatModel implements PropertyChangeListener
 {

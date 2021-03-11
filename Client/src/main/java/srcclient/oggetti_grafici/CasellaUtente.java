@@ -1,4 +1,4 @@
-package srcclient;
+package srcclient.oggetti_grafici;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
+import srcclient.ChatController;
 
 public class CasellaUtente extends JPanel 
 {
